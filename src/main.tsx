@@ -13,6 +13,7 @@ import Register from './components/pages/Register.tsx';
 import DealsPage from './components/pages/DealsPage.tsx';
 import NewProductsPage from './components/pages/NewProductsPage.tsx';
 import AdminRoot from './routes/AdminRoot.tsx';
+import { AuthProvider } from './contexts/AuthContext.tsx';
 
 
 const router = createBrowserRouter([
@@ -58,6 +59,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>,
 )
