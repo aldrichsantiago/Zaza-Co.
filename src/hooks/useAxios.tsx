@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
-axios.defaults.baseURL = 'https://jsonplaceholder.typicode.com';
+axios.defaults.baseURL = `${import.meta.env.VITE_API_URL}`;
 type Methods = "head" | "options" | "put" | "post" | "patch" | "delete" | "get";
 
 const useAxios = ({ url, method, body = null, headers = null }: { url: string, method: Methods, body: string | null, headers: string | null,  }) => {

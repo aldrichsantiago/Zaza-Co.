@@ -12,19 +12,39 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useForm } from 'react-hook-form'
+import axios from 'axios'
+import useRefreshToken from '@/hooks/useRefreshToken'
+import { useNavigate } from 'react-router-dom'
+
+
+
 
 
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
-  password: z.string().min(8, {
+  password: z.string().min(5, {
     message: "Password must be at least 8 characters.",
   }),
 })
 
 
 const Login: React.FC = () => {
+  
+  const { token, username, expire, loading, error } = useRefreshToken();
+  const navigate = useNavigate();
+
+  const Auth = async (values: any) => {
+    try {
+        await axios.post('http://localhost:8000/login',values);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      console.log({status: 200, message: "success"});
+      navigate("/");
+    }
+  }
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -39,8 +59,12 @@ const Login: React.FC = () => {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values)
+    Auth(values)
+    console.log(token, username, expire, loading, error);
+    
   }
+
+  
 
   return (
     <>

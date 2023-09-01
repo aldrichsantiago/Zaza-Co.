@@ -1,8 +1,12 @@
 import React from 'react'
 import ProductCard from '../ProductCard'
 import { products } from '@/test_data'
+import useRefreshToken from '@/hooks/useRefreshToken'
 
 const Home: React.FC = () => {
+  const  { token, username, expire, loading, error }  = useRefreshToken();
+  console.log(token);
+
 
 
   return (

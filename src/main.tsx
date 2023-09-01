@@ -14,6 +14,7 @@ import DealsPage from './components/pages/DealsPage.tsx';
 import NewProductsPage from './components/pages/NewProductsPage.tsx';
 import AdminRoot from './routes/AdminRoot.tsx';
 import { AuthProvider } from './contexts/AuthContext.tsx';
+import axios from 'axios';
 
 
 const router = createBrowserRouter([
@@ -56,6 +57,7 @@ const router = createBrowserRouter([
 
 ]);
 
+axios.defaults.withCredentials = true;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
