@@ -15,8 +15,7 @@ import { useForm } from 'react-hook-form'
 import axios from 'axios'
 import useRefreshToken from '@/hooks/useRefreshToken'
 import { useNavigate } from 'react-router-dom'
-
-
+import { useToast } from "@/components/ui/use-toast"
 
 
 
@@ -25,7 +24,7 @@ const formSchema = z.object({
     message: "Username must be at least 2 characters.",
   }),
   password: z.string().min(5, {
-    message: "Password must be at least 8 characters.",
+    message: "Password must be at least 5 characters.",
   }),
 })
 
@@ -34,17 +33,7 @@ const Login: React.FC = () => {
   
   const { token, username, expire, loading, error } = useRefreshToken();
   const navigate = useNavigate();
-
-  const Auth = async (values: any) => {
-    try {
-        await axios.post('http://localhost:8000/login',values);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      console.log({status: 200, message: "success"});
-      navigate("/");
-    }
-  }
+  const { toast } = useToast()
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -54,15 +43,22 @@ const Login: React.FC = () => {
       password: "",
     },
   })
- 
+
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    Auth(values)
+ 
+     axios.post('http://localhost:8000/login', values)
+     .then(()=>navigate("/"))
+     .catch (error => {
+      console.log(error.response.data.message)
+      toast({
+        description: error.response.data.message,
+        variant: "destructive"
+      })
+    })
     console.log(token, username, expire, loading, error);
-    
   }
+
 
   
 
@@ -106,7 +102,7 @@ const Login: React.FC = () => {
                           <FormControl>
                             <Input placeholder="Password" {...field} type='password'/>
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage/>
                         </FormItem>
                       )}
                     />

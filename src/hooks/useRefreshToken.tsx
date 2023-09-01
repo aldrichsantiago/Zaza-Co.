@@ -22,7 +22,6 @@ const useRefreshToken = () => {
         })
         .finally(() => {
             setLoading(false);
-            console.log({token, username, expire});
             
         });
     };
