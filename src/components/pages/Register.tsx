@@ -12,6 +12,9 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useForm } from 'react-hook-form'
+import axios from 'axios'
+import { useToast } from '../ui/use-toast'
+import { useNavigate } from 'react-router-dom'
 
 
 const formSchema = z.object({
@@ -21,10 +24,16 @@ const formSchema = z.object({
   username: z.string().min(4, {message: "Username must be at least 4 characters.",}).max(16, {message: "Username should not exceed 16 characters."}),
   password: z.string().min(8, {message: "Password must be at least 8 characters.",}),
   confirmPassword: z.string().min(8, {message: "Password must be at least 8 characters.",}),
-})
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirm"], // path of error
+});
 
 
 const Register: React.FC = () => {
+
+  const navigate = useNavigate();
+  const { toast } = useToast()
 
       // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -39,7 +48,21 @@ const Register: React.FC = () => {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values)
+    axios.post(`${import.meta.env.VITE_API_URL}/register`, values)
+     .then(()=>{
+      navigate("/login")
+      toast({
+        description: "You've successfully registered",
+      })
+    })
+     .catch (error => {
+      console.log(error.response.data.message)
+      toast({
+        description: error.response.data.message,
+        variant: "destructive"
+      })
+    });
+    console.log(values, `${import.meta.env.VITE_API_URL}/register`)
   }
 
   return (

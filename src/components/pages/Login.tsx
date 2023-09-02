@@ -20,8 +20,8 @@ import { useToast } from "@/components/ui/use-toast"
 
 
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  username: z.string().min(4, {
+    message: "Username must be at least 4 characters.",
   }),
   password: z.string().min(5, {
     message: "Password must be at least 5 characters.",
@@ -47,15 +47,22 @@ const Login: React.FC = () => {
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
  
-     axios.post('http://localhost:8000/login', values)
-     .then(()=>navigate("/"))
+     axios.post(`${import.meta.env.VITE_API_URL}/login`, values)
+     .then(() => {
+      navigate("/");
+      toast({
+        description: "Logged in successfully",
+        variant: "default",
+        duration: 1500
+      })
+     })
      .catch (error => {
       console.log(error.response.data.message)
       toast({
         description: error.response.data.message,
         variant: "destructive"
       })
-    })
+    });
     console.log(token, username, expire, loading, error);
   }
 

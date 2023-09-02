@@ -21,22 +21,48 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import CartProductCard, { CartCardProps } from './CartProductCard'
 import { useContext } from "react"
 import { Separator } from "./ui/separator"
 import CartContext from "@/contexts/CartContext"
+import axios from "axios"
+import { useToast } from "@/components/ui/use-toast"
 
 
 const Navbar:React.FC = () => {
+    const navigate = useNavigate();
+    const {toast} = useToast();
     const cart:any = useContext(CartContext);
     let subtotal = 0;
     let cartCount = cart.cartArray.reduce((accumulator: any, object: { itemCountCart: any }) => {
         return accumulator + object.itemCountCart;
       }, 0);
     function isAuth() {
-        return false;
+        return true;
     }
+
+    const Logout = () => {
+        try {
+            axios.delete(`${import.meta.env.VITE_API_URL}/logout`)
+            .then(() => {
+                navigate("/login");   
+            })
+            .catch (error => {
+                console.log(error.response.data.message)
+            });
+            toast({
+                description: "You've logged out",
+                variant: "destructive"
+            });
+            
+        } catch (error) {
+            
+        }
+        
+        
+    } 
+   
 
 
 
@@ -101,7 +127,7 @@ const Navbar:React.FC = () => {
                                                 <DropdownMenuItem><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>
                                                 <DropdownMenuItem><Settings width={20}/> &nbsp; Settings</DropdownMenuItem>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem><LogOut width={20}/> &nbsp; Logout</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={Logout}><LogOut width={20}/> &nbsp; Logout</DropdownMenuItem>
                                             </DropdownMenuContent>
                                         :
                                             <DropdownMenuContent>
@@ -218,7 +244,7 @@ const Navbar:React.FC = () => {
                                 <DropdownMenuItem><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>
                                 <DropdownMenuItem><Settings width={20}/> &nbsp; Settings</DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem><LogOut width={20}/> &nbsp; Logout</DropdownMenuItem>
+                                <DropdownMenuItem onClick={Logout}><LogOut width={20}/> &nbsp; Logout</DropdownMenuItem>
                             </DropdownMenuContent>
                         :
                             <DropdownMenuContent>
