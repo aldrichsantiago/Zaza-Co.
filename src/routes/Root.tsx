@@ -43,7 +43,7 @@ function Root() {
         cartArray[cartProduct].itemCountCart += 1;
       } else {
         cartArray[cartProduct].itemCountCart = cartArray[cartProduct].stocks;
-        toast({variant: "destructive", description: "You've achieve the maximum amount of this product!",})
+        toast({variant: "destructive", description: "You've achieve the maximum quantity of this product!",})
       }
       setCartArray([...cartArray])
     }

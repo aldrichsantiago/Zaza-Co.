@@ -49,13 +49,15 @@ const Login: React.FC = () => {
  
      axios.post(`${import.meta.env.VITE_API_URL}/login`, values)
      .then(() => {
-      navigate("/");
+      navigate("/")
       toast({
         description: "Logged in successfully",
         variant: "default",
         duration: 1500
       })
-     })
+      navigate(0);
+      
+    })
      .catch (error => {
       console.log(error.response.data.message)
       toast({
@@ -64,8 +66,8 @@ const Login: React.FC = () => {
       })
     });
     console.log(token, username, expire, loading, error);
-  }
 
+  }
 
   
 

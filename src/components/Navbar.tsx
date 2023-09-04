@@ -23,30 +23,38 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Link, useNavigate } from 'react-router-dom'
 import CartProductCard, { CartCardProps } from './CartProductCard'
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Separator } from "./ui/separator"
 import CartContext from "@/contexts/CartContext"
 import axios from "axios"
 import { useToast } from "@/components/ui/use-toast"
+import useRefreshToken from "@/hooks/useRefreshToken"
 
 
 const Navbar:React.FC = () => {
     const navigate = useNavigate();
     const {toast} = useToast();
+    const { token }:{token: string | null} = useRefreshToken();
+    const [ tokenObj,setTokenObj ] = useState<string|null>();
     const cart:any = useContext(CartContext);
+
+    useEffect(()=>{
+        setTokenObj(token)
+        console.log(token);
+        
+    },[token])
+
     let subtotal = 0;
     let cartCount = cart.cartArray.reduce((accumulator: any, object: { itemCountCart: any }) => {
         return accumulator + object.itemCountCart;
       }, 0);
-    function isAuth() {
-        return true;
-    }
+
 
     const Logout = () => {
         try {
             axios.delete(`${import.meta.env.VITE_API_URL}/logout`)
             .then(() => {
-                navigate("/login");   
+                navigate("/login");
             })
             .catch (error => {
                 console.log(error.response.data.message)
@@ -55,16 +63,15 @@ const Navbar:React.FC = () => {
                 description: "You've logged out",
                 variant: "destructive"
             });
-            
-        } catch (error) {
-            
+        } catch (error) {   
+            console.log(error);
         }
+        const refresh = setTimeout(() => {
+            navigate(0);
+        }, 1500);
+        clearTimeout(refresh)
         
-        
-    } 
-   
-
-
+    }
 
   return (
     <>
@@ -119,7 +126,7 @@ const Navbar:React.FC = () => {
                                             </Avatar>
                                         </DropdownMenuTrigger>
                                         {
-                                            isAuth() ? 
+                                            tokenObj ? 
                                             <DropdownMenuContent>
                                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
@@ -236,7 +243,7 @@ const Navbar:React.FC = () => {
                             </Avatar>
                         </DropdownMenuTrigger>
                         {
-                            isAuth() ? 
+                            tokenObj ? 
                             <DropdownMenuContent>
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
