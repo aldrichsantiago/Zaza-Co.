@@ -2,21 +2,15 @@ import React from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
-import useRefreshToken from '@/hooks/useRefreshToken'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from "@/components/ui/use-toast"
-
+import useAuth from '@/hooks/useAuth'
+import { UseAuthProps } from '@/contexts/AuthProvider'
+import useRefreshToken from '@/hooks/useRefreshToken'
 
 
 const formSchema = z.object({
@@ -29,11 +23,14 @@ const formSchema = z.object({
 })
 
 
+
+
 const Login: React.FC = () => {
   
-  const { token, username, expire, loading, error } = useRefreshToken();
   const navigate = useNavigate();
-  const { toast } = useToast()
+  const { toast } = useToast();
+  const { auth, setAuth }: UseAuthProps = useAuth();
+  const { token } = useRefreshToken();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,32 +42,32 @@ const Login: React.FC = () => {
   })
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
- 
-     axios.post(`${import.meta.env.VITE_API_URL}/login`, values)
-     .then(() => {
-      navigate("/")
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, values, {headers: {"Content-Type": 'application/json'}, withCredentials: true})
+      setAuth? setAuth({token: response?.data.token, roles: response?.data.role}):""
+
       toast({
         description: "Logged in successfully",
         variant: "default",
-        duration: 1500
+        duration: 1500 
       })
-      navigate(0);
-      
-    })
-     .catch (error => {
-      console.log(error.response.data.message)
+      console.log({token: response.data.token, roles: response?.data?.role})
+      console.log(auth)
+      navigate("/")
+      navigate(0)
+    } catch (error:any) {
       toast({
         description: error.response.data.message,
         variant: "destructive"
       })
-    });
-    console.log(token, username, expire, loading, error);
+      console.log(error)
+    }
 
+     
   }
 
   
-
   return (
     <>
     

@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
                         </div>
                     </div>
                     <div className="p-6">
-                        <h1 className="text-md font-medium">Delivery Partners</h1>
+                        <h1 className="text-md font-medium">Delivery Services</h1>
                         <div className="flex items-center flex-wrap">
                             <img className='m-1 rounded-lg' src={Fedex} width={75}/>
                             <img className='m-1 rounded-lg' src={Jt} width={75}/>

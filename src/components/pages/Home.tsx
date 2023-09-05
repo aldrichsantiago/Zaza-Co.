@@ -1,9 +1,13 @@
 import React from 'react'
 import ProductCard from '../ProductCard'
 import { products } from '@/test_data'
+import useAuth from '@/hooks/useAuth';
+import { UseAuthProps } from '@/contexts/AuthProvider';
 
 const Home: React.FC = () => {
-  console.log("token");
+  const { auth }: UseAuthProps = useAuth();
+  console.log(auth? auth: "");
+  
 
 
   return (

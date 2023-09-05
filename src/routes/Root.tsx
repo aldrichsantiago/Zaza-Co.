@@ -1,11 +1,13 @@
+import { useEffect, useState } from "react"
+import { Outlet } from "react-router-dom"
 import Footer from "@/components/Footer"
 import Navbar from "@/components/Navbar"
-import { Outlet } from "react-router-dom"
 import { Toaster } from "@/components/ui/toaster"
-import {products} from"../test_data"
-import { useEffect, useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
 import CartContext from "@/contexts/CartContext"
+import {products} from"../test_data"
+import { AuthProvider } from "@/contexts/AuthProvider"
+
 
 
 const cartFromLocalStorage = JSON.parse(localStorage.getItem("cart") || "[]")
@@ -49,7 +51,7 @@ function Root() {
     }
   }
 
-const handleDecrement = (id: number) => {
+  const handleDecrement = (id: number) => {
     const cartProduct = cartArray.findIndex((product: { id: number }) => product.id === id);
     if ( cartArray[cartProduct]?.id  === id ) {
       console.log(cartArray[cartProduct]);
@@ -60,8 +62,18 @@ const handleDecrement = (id: number) => {
       }
       setCartArray([...cartArray])
     }
-
   }
+
+  const removeFromCart = (id: number) => {
+    const cartProduct = cartArray.findIndex((product: { id: number }) => product.id === id);
+    if ( cartArray[cartProduct]?.id  === id ) {
+      console.log(cartArray[cartProduct]);
+      delete cartArray[cartProduct]
+      const newCartArr = cartArray.filter((product: object) => product !== undefined)
+      setCartArray([...newCartArr])
+      console.log(cartArray)
+    }
+  }  
 
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cartArray))
@@ -72,18 +84,21 @@ const handleDecrement = (id: number) => {
     cartArray,
     addToCart,
     handleIncrement,
-    handleDecrement
+    handleDecrement,
+    removeFromCart
   }
   
 
   return (
     <>
-      <CartContext.Provider value={cartContextValues}>
-        <Navbar/>
-        <Outlet/>
-        <Footer/>
-        <Toaster />
-      </CartContext.Provider>
+      <AuthProvider>
+        <CartContext.Provider value={cartContextValues}>
+          <Navbar/>
+          <Outlet/>
+          <Footer/>
+          <Toaster />
+        </CartContext.Provider>
+      </AuthProvider>
       
     </>
   )

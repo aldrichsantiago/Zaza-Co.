@@ -34,27 +34,26 @@ import useRefreshToken from "@/hooks/useRefreshToken"
 const Navbar:React.FC = () => {
     const navigate = useNavigate();
     const {toast} = useToast();
-    const { token }:{token: string | null} = useRefreshToken();
+    const { token, username }:{token: string | null, username: string | null} = useRefreshToken();
     const [ tokenObj,setTokenObj ] = useState<string|null>();
     const cart:any = useContext(CartContext);
 
     useEffect(()=>{
         setTokenObj(token)
         console.log(token);
-        
     },[token])
 
     let subtotal = 0;
     let cartCount = cart.cartArray.reduce((accumulator: any, object: { itemCountCart: any }) => {
-        return accumulator + object.itemCountCart;
+        return accumulator + object?.itemCountCart;
       }, 0);
-
 
     const Logout = () => {
         try {
             axios.delete(`${import.meta.env.VITE_API_URL}/logout`)
             .then(() => {
                 navigate("/login");
+                navigate(0);
             })
             .catch (error => {
                 console.log(error.response.data.message)
@@ -66,11 +65,6 @@ const Navbar:React.FC = () => {
         } catch (error) {   
             console.log(error);
         }
-        const refresh = setTimeout(() => {
-            navigate(0);
-        }, 1500);
-        clearTimeout(refresh)
-        
     }
 
   return (
@@ -245,9 +239,9 @@ const Navbar:React.FC = () => {
                         {
                             tokenObj ? 
                             <DropdownMenuContent>
-                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-center">{username}</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem><Package width={20}/> &nbsp; Orders</DropdownMenuItem>
+                                <DropdownMenuItem onClick={()=>navigate("/orders")}><Package width={20}/> &nbsp; Orders</DropdownMenuItem>
                                 <DropdownMenuItem><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>
                                 <DropdownMenuItem><Settings width={20}/> &nbsp; Settings</DropdownMenuItem>
                                 <DropdownMenuSeparator />
@@ -284,16 +278,16 @@ const Navbar:React.FC = () => {
                             </SheetHeader>
                             <ScrollArea className="h-[600px] w-full rounded-md border-none p-4">
                                 {cart.cartArray.map(({id, name, price, images, ratings, itemCountCart, handleIncrement, handleDecrement}: CartCardProps) => (
-                                        <CartProductCard 
-                                        key={id}
-                                        id={id}
-                                        name={name}
-                                        price={price}
-                                        images={images}
-                                        ratings={ratings}
-                                        itemCountCart={itemCountCart}
-                                        handleIncrement={handleIncrement}
-                                        handleDecrement={handleDecrement}/>
+                                    <CartProductCard 
+                                    key={id}
+                                    id={id}
+                                    name={name}
+                                    price={price}
+                                    images={images}
+                                    ratings={ratings}
+                                    itemCountCart={itemCountCart}
+                                    handleIncrement={handleIncrement}
+                                    handleDecrement={handleDecrement}/>
                                         
                                 ))}
                             </ScrollArea>
@@ -306,12 +300,12 @@ const Navbar:React.FC = () => {
                                 </div>
                                 <div className="flex justify-between">
                                     <h2 className="m-3">Shipping: </h2>
-                                    <h2 className="m-3 font-extrabold"> ${(subtotal/4).toFixed(2)}</h2>
+                                    <h2 className="m-3 font-extrabold"> ${(subtotal/8).toFixed(2)}</h2>
                                 </div>
                                 <Separator/>
                                 <div className="flex justify-between">
                                     <h2 className="m-3">Total: </h2>
-                                    <h2 className="m-3 font-extrabold">${(subtotal+subtotal/4).toFixed(2)}</h2>
+                                    <h2 className="m-3 font-extrabold">${(subtotal+subtotal/8).toFixed(2)}</h2>
                                     
                                 </div>
                                 

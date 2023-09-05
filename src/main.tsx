@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import './index.css'
 import Root from './routes/Root.tsx';
 import ErrorPage from './ErrorPage.tsx';
@@ -13,8 +13,10 @@ import Register from './components/pages/Register.tsx';
 import DealsPage from './components/pages/DealsPage.tsx';
 import NewProductsPage from './components/pages/NewProductsPage.tsx';
 import AdminRoot from './routes/AdminRoot.tsx';
-import { AuthProvider } from './contexts/AuthContext.tsx';
+import { AuthProvider } from './contexts/AuthProvider.tsx';
 import axios from 'axios';
+import Orders from './components/pages/Orders.tsx';
+import RequireAuth from './components/pages/RequireAuth.tsx';
 
 
 const router = createBrowserRouter([
@@ -44,6 +46,15 @@ const router = createBrowserRouter([
       },{
         path: "/new-products",
         element: <NewProductsPage/>
+      },{
+        path: "/orders",
+        element: <Orders/>,
+        // children: [
+        //   {
+        //     path: "/orders",
+        //     element: <Orders/>
+        //   },
+        // ]
       }
     ]
   },{
