@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom'
 import { useToast } from "@/components/ui/use-toast"
 import useAuth from '@/hooks/useAuth'
 import { UseAuthProps } from '@/contexts/AuthProvider'
-import useRefreshToken from '@/hooks/useRefreshToken'
 
 
 const formSchema = z.object({
@@ -30,7 +29,6 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { auth, setAuth }: UseAuthProps = useAuth();
-  const { token } = useRefreshToken();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,17 +43,20 @@ const Login: React.FC = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, values, {headers: {"Content-Type": 'application/json'}, withCredentials: true})
-      setAuth? setAuth({token: response?.data.token, roles: response?.data.role}):""
+      setAuth? setAuth({token: response?.data.token, roles: [response?.data.role], username: response?.data.username}):""
 
       toast({
         description: "Logged in successfully",
         variant: "default",
         duration: 1500 
       })
-      console.log({token: response.data.token, roles: response?.data?.role})
+      console.log({token: response.data.token, roles: response?.data?.role, username: response?.data.username})
       console.log(auth)
-      navigate("/")
-      navigate(0)
+      if (response?.data?.role === "admin"){
+        navigate("/admin")
+      } else{
+        navigate("/")
+      }
     } catch (error:any) {
       toast({
         description: error.response.data.message,

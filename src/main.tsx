@@ -17,6 +17,7 @@ import { AuthProvider } from './contexts/AuthProvider.tsx';
 import axios from 'axios';
 import Orders from './components/pages/Orders.tsx';
 import RequireAuth from './components/pages/RequireAuth.tsx';
+import Wishlist from './components/pages/Wishlist.tsx';
 
 
 const router = createBrowserRouter([
@@ -47,25 +48,32 @@ const router = createBrowserRouter([
         path: "/new-products",
         element: <NewProductsPage/>
       },{
-        path: "/orders",
-        element: <Orders/>,
-        // children: [
-        //   {
-        //     path: "/orders",
-        //     element: <Orders/>
-        //   },
-        // ]
-      }
-    ]
-  },{
+        path: "",
+        element: <RequireAuth allowedRoles={["client", "admin"]}/>,
+        children: [
+          {
+            path: "/orders",
+            element: <Orders/>
+          },{
+            path: "/wishlist",
+            element: <Wishlist/>
+          },
+        ]
+      },
+    ]},
+    {
     path: "/admin",
     element: <AdminRoot/>,
     errorElement: <ErrorPage/>,
     children: [
-
+      {
+        path: "admin",
+        element: <AdminRoot/>,
+        children: [
+        ]
+      },
     ]
-  },
-
+  }
 ]);
 
 axios.defaults.withCredentials = true;

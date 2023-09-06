@@ -23,7 +23,7 @@ const formSchema = z.object({
   email: z.string().email({message: "Please enter a valid email",}),
   username: z.string().min(4, {message: "Username must be at least 4 characters.",}).max(16, {message: "Username should not exceed 16 characters."}),
   password: z.string().min(8, {message: "Password must be at least 8 characters.",}),
-  confirmPassword: z.string().min(8, {message: "Password must be at least 8 characters.",}),
+  confirmPassword: z.string().min(4, {message: "Password must be at least 8 characters.",}),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirm"], // path of error

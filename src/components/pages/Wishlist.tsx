@@ -1,16 +1,18 @@
 import useRefreshToken from "@/hooks/useRefreshToken";
+import { FC } from "react"
 
-const Orders = () => {
+const Wishlist:FC = () => {
 
-  useRefreshToken();
+    useRefreshToken();
 
+    
   return (
     <div className="container py-12 w-full bg-slate-300">
         <div className="container">
-            Orders
+            Wishlist
         </div>
     </div>
   )
 }
 
-export default Orders
+export default Wishlist

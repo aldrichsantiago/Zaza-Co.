@@ -1,10 +1,13 @@
 import Sidebar from '@/components/admin/Sidebar'
 import React from 'react'
+import { Outlet } from 'react-router-dom'
 
 const AdminRoot:React.FC = () => {
   return (
     <>
-        <Sidebar></Sidebar>
+      <Sidebar></Sidebar>
+      <Outlet></Outlet>
+
     </>
   )
 }

@@ -91,15 +91,12 @@ function Root() {
 
   return (
     <>
-      <AuthProvider>
-        <CartContext.Provider value={cartContextValues}>
-          <Navbar/>
-          <Outlet/>
-          <Footer/>
-          <Toaster />
-        </CartContext.Provider>
-      </AuthProvider>
-      
+      <CartContext.Provider value={cartContextValues}>
+        <Navbar/>
+        <Outlet/>
+        <Footer/>
+        <Toaster />
+      </CartContext.Provider>      
     </>
   )
 }

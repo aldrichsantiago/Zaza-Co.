@@ -29,19 +29,24 @@ import CartContext from "@/contexts/CartContext"
 import axios from "axios"
 import { useToast } from "@/components/ui/use-toast"
 import useRefreshToken from "@/hooks/useRefreshToken"
+import useAuth from "@/hooks/useAuth"
+import { UseAuthProps } from "@/contexts/AuthProvider"
 
 
 const Navbar:React.FC = () => {
     const navigate = useNavigate();
     const {toast} = useToast();
-    const { token, username }:{token: string | null, username: string | null} = useRefreshToken();
+    const { token, username, role }:{token: string | null, username: string | null, role: string } = useRefreshToken();
     const [ tokenObj,setTokenObj ] = useState<string|null>();
     const cart:any = useContext(CartContext);
+    const { auth, setAuth }: UseAuthProps = useAuth();
 
     useEffect(()=>{
         setTokenObj(token)
+        setAuth? setAuth({token, username, roles:[...role]}): console.log("setAuth is null")
         console.log(token);
     },[token])
+
 
     let subtotal = 0;
     let cartCount = cart.cartArray.reduce((accumulator: any, object: { itemCountCart: any }) => {
@@ -120,12 +125,12 @@ const Navbar:React.FC = () => {
                                             </Avatar>
                                         </DropdownMenuTrigger>
                                         {
-                                            tokenObj ? 
+                                        auth.token || tokenObj ? 
                                             <DropdownMenuContent>
-                                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                                <DropdownMenuLabel>{auth.username || username}</DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem><Package width={20}/> &nbsp; Orders</DropdownMenuItem>
-                                                <DropdownMenuItem><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={()=>navigate("/orders")}><Package width={20}/> &nbsp; Orders</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={()=>navigate("/wishlist")}><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>
                                                 <DropdownMenuItem><Settings width={20}/> &nbsp; Settings</DropdownMenuItem>
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem onClick={Logout}><LogOut width={20}/> &nbsp; Logout</DropdownMenuItem>
@@ -237,12 +242,12 @@ const Navbar:React.FC = () => {
                             </Avatar>
                         </DropdownMenuTrigger>
                         {
-                            tokenObj ? 
+                            auth.token || tokenObj ? 
                             <DropdownMenuContent>
-                                <DropdownMenuLabel className="text-center">{username}</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-center">{auth.username? auth.username: username}</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={()=>navigate("/orders")}><Package width={20}/> &nbsp; Orders</DropdownMenuItem>
-                                <DropdownMenuItem><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>
+                                <DropdownMenuItem onClick={()=>navigate("/wishlist")}><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>
                                 <DropdownMenuItem><Settings width={20}/> &nbsp; Settings</DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={Logout}><LogOut width={20}/> &nbsp; Logout</DropdownMenuItem>
