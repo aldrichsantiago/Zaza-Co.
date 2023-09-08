@@ -29,9 +29,10 @@ interface Product {
   quantitySold?: number
   images?: string[] 
   category?: string 
+  disp?: boolean
 }
 
-const ProductCard = ({ id, name, description, price, images, quantitySold, ratings }: Product) => {
+const ProductCard = ({ id, name, description, price, images, quantitySold, ratings, disp }: Product) => {
   const navigate = useNavigate();
   let isAuth: boolean = false;
   const cart:any = useContext(CartContext);
@@ -65,7 +66,7 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
 
           
           <Link className="w-full h-full absolute z-10 flex justify-center" to={`/products/${id}`}>
-            <img src={images? images[0]: ""} alt="Image here" className="w-4/5 hover:scale-110 transition-transform"/>
+            <img src={images? images[0]: ""} alt="Image here" className="hover:scale-110 transition-transform max-w-full"/>
           </Link>
         </CardContent>
         <CardHeader className="w-full p-3">
@@ -105,11 +106,17 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
             <p className="mx-3">({quantitySold})</p>
             </span>
         </CardHeader>
+        { disp?
+
+        ""
+        :
         <CardFooter className="w-full p-2">
             <Button variant="outline" 
             className="rounded-3xl hover:bg-green-900 hover:text-white"
             onClick={()=>cart.addToCart(id)}>Add to cart</Button>
         </CardFooter>
+        }
+        
         </Card>
 
     </>

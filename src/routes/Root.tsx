@@ -6,7 +6,6 @@ import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import CartContext from "@/contexts/CartContext"
 import {products} from"../test_data"
-import { AuthProvider } from "@/contexts/AuthProvider"
 
 
 
