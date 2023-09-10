@@ -1,7 +1,5 @@
 import React from 'react'
-
-import { Button } from "@/components/ui/button"
-import { LayoutDashboard, Settings, Users, ScrollText, BarChart3, Newspaper } from 'lucide-react';
+import { LayoutDashboard, Settings, Users, ScrollText, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Sidebar: React.FC = () => {
@@ -13,37 +11,31 @@ const Sidebar: React.FC = () => {
         </h1>
             
             <div className="w-full flex flex-col text-left">
-                <Link to={"/dashboard"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
+                <Link to={"/admin/dashboard"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
                     <div className='w-full flex items-center justify-left'>
                         <LayoutDashboard className='mx-5'/>
                         <p>Dashboard</p>
                     </div>
                 </Link>
-                <Link to={"/analytics"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
+                <Link to={"/admin/analytics"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
                     <div className='w-full flex items-center justify-left'>
                         <BarChart3 className='mx-5'/>
                         <p>Analytics</p>
                     </div>
                 </Link>
-                <Link to={"/report"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
-                    <div className='w-full flex items-center justify-left'>
-                        <Newspaper className='mx-5'/>
-                        <p>Report</p>
-                    </div>
-                </Link>
-                <Link to={"/logs"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
+                <Link to={"/admin/logs"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
                     <div className='w-full flex items-center justify-left'>
                         <ScrollText className='mx-5'/>
                         <p>Logs</p>
                     </div>
                 </Link>
-                <Link to={"/users"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
+                <Link to={"/admin/users"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
                     <div className='w-full flex items-center justify-left'>
                         <Users className='mx-5'/>
                         <p>Users</p>
                     </div>
                 </Link>
-                <Link to={"/settings"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
+                <Link to={"/admin/settings"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
                     <div className='w-full flex items-center justify-left'>
                         <Settings className='mx-5'/>
                         <p>Settings</p>

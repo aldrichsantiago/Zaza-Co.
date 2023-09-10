@@ -5,9 +5,10 @@ import { Outlet } from 'react-router-dom'
 const AdminRoot:React.FC = () => {
   return (
     <>
+    <div className="flex">
       <Sidebar></Sidebar>
       <Outlet></Outlet>
-
+    </div>
     </>
   )
 }

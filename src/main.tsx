@@ -18,6 +18,11 @@ import axios from 'axios';
 import Orders from './components/pages/Orders.tsx';
 import RequireAuth from './components/pages/RequireAuth.tsx';
 import Wishlist from './components/pages/Wishlist.tsx';
+import Dashboard from './components/admin/Dashboard.tsx';
+import Analytics from './components/admin/Analytics.tsx';
+import Logs from './components/admin/Logs.tsx';
+import Users from './components/admin/Users.tsx';
+import Settings from './components/admin/Settings.tsx';
 
 
 const router = createBrowserRouter([
@@ -67,10 +72,24 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage/>,
     children: [
       {
-        path: "admin",
-        element: <AdminRoot/>,
-        children: [
-        ]
+        path: "dashboard",
+        element: <Dashboard/>,
+      },
+      {
+        path: "analytics",
+        element: <Analytics/>,
+      },
+      {
+        path: "logs",
+        element: <Logs/>,
+      },
+      {
+        path: "users",
+        element: <Users/>,
+      },
+      {
+        path: "settings",
+        element: <Settings/>,
       },
     ]
   }
