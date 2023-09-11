@@ -75,7 +75,7 @@ const Logs = () => {
         </h2>
         <ScrollArea className='h-[500px]'>
         <Table>
-            <TableHeader>
+            <TableHeader >
                 <TableRow>
                 <TableHead className="w-[100px]">Invoice</TableHead>
                 <TableHead>Status</TableHead>
