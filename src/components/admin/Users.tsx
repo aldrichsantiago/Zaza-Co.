@@ -42,82 +42,8 @@ import {
   DialogFooter
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import useAxios from "@/hooks/useAxios"
  
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@gmail.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@gmail.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@gmail.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-  {
-    id: "bhqecj4x",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-  {
-    id: "bhqecj4x",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-  {
-    id: "bhqecj4x",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-  {
-    id: "bhqecj4x",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-  {
-    id: "bhqecj4x",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-  {
-    id: "bhqecj4x",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-  {
-    id: "bhqecj4x",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-  
-]
  
 export type Payment = {
   id: string
@@ -147,10 +73,24 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "id",
+    header: "ID",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
+      <div className="capitalize">{row.getValue("id")}</div>
+    ),
+  },
+  {
+    accessorKey: "firstName",
+    header: "First name",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("firstName")}</div>
+    ),
+  },
+  {
+    accessorKey: "lastName",
+    header: "Last name",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("lastName")}</div>
     ),
   },
   {
@@ -169,22 +109,24 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
- 
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount)
- 
-      return <div className="text-right font-medium">{formatted}</div>
+    accessorKey: "username",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Username
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
     },
+    cell: ({ row }) => <div className="lowercase">{row.getValue("username")}</div>,
   },
+
   {
     id: "actions",
+    header: "Actions",
     enableHiding: false,
     cell: ({ row }) => {
       const payment = row.original
@@ -217,14 +159,20 @@ export const columns: ColumnDef<Payment>[] = [
 
 
 const Users = () => {
-const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+
+  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [data, setData] = React.useState([])
  
+  const { response } = useAxios({url: "/", method: "get"});
+  React.useEffect(() => {
+    if (response !== null) {
+        setData(response);
+    }
+}, [response]);
+
   const table = useReactTable({
     data,
     columns,
@@ -256,18 +204,42 @@ const [sorting, setSorting] = React.useState<SortingState>([])
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Edit user</DialogTitle>
+              <DialogTitle>Add user</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Name
+                <Label htmlFor="name" className="text-left">
+                  First Name
                 </Label>
                 <Input id="name" value={""} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-right">
+                <Label htmlFor="name" className="text-left">
+                  Last Name
+                </Label>
+                <Input id="name" value={""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="username" className="text-left">
                   Username
+                </Label>
+                <Input id="username" value={""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="username" className="text-left">
+                  Email
+                </Label>
+                <Input id="username" value={""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="username" className="text-left">
+                  Password
+                </Label>
+                <Input id="username" value={""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="username" className="text-left">
+                  Confirm Password
                 </Label>
                 <Input id="username" value={""} className="col-span-3" />
               </div>

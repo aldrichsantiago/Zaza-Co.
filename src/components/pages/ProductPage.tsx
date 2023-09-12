@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { products } from '@/test_data';
 import { Separator } from "@/components/ui/separator"
@@ -7,6 +7,10 @@ import { Button } from '../ui/button';
 import { ShoppingBag, Truck } from 'lucide-react';
 import { Rating } from '@smastrom/react-rating';
 import { useToast } from "@/components/ui/use-toast"
+import { EmblaOptionsType } from 'embla-carousel-react';
+import ProductCarousel from './Carousel/ProductCarousel';
+import './Carousel/css/productCaroursel/embla.css'
+import useImages from '@/hooks/useImages';
 
 type ProductParams = {
   productId: string;
@@ -17,6 +21,18 @@ const ProductPage:React.FC = () => {
   const { productId } = useParams<ProductParams>();
   const [itemCount, setItemCount] = useState<number>(1);
   const { toast } = useToast()
+  const selectedProduct:any = products.find((p)=>{return p.id === Number(productId)})
+  // const {images} = useImages(productId? productId:"1")
+  const OPTIONS: EmblaOptionsType = {}
+  const SLIDE_COUNT = selectedProduct?.images.length
+  const SLIDES = Array.from(Array(SLIDE_COUNT).keys())
+  const [images,setImages] = useState([]);
+
+  useEffect(()=>{
+    setImages(selectedProduct.images)
+
+  },[productId]);
+  console.log(selectedProduct? selectedProduct:"")
 
     const handleIncrement = (e: React.FormEvent) => {
         e.preventDefault();
@@ -50,14 +66,16 @@ const ProductPage:React.FC = () => {
 
       </div>
       <div className='h-screen pt-10 container flex flex-wrap mb-[300px] sm:mb-[100px]'>
-        <div className='md:h-3/5 md:w-3/5 h-auto w-full p-5 rounded-xl bg-slate-100'>
-        {products.map(({id, images}) => (
-            Number(productId) === id && images ? 
-            <div className='w-full h-full flex justify-center items-start' key={id}>
-              <img src={images[0]} alt="Image goes here" className='w-3/5'/>
+        <div className='md:h-3/5 md:w-3/5 h-auto w-full p-5 rounded-xl '>
+            <div className='max-w-5/6 flex justify-center items-start'>
+              {/* <img src={images[0]} alt="Image goes here" className='w-3/5'/> */}
+              <main className="sandbox">
+                <section className="sandbox__carousel">
+                  <ProductCarousel slides={SLIDES} options={OPTIONS} images={images}/>
+                </section>
+              </main>
             </div>
-            : ``
-            ))}
+        
         </div>
         <div className='md:w-2/5 w-full h-4/6 px-5'>
           {products.map(({id, name, description, price, ratings, stocks, quantitySold}) => (

@@ -6,5 +6,6 @@ import image3 from '../../../assets/electronics-banner.png'
 export const images: string[] = [image1, image2, image3]
 
 const imageByIndex = (index: number): string => images[index % images.length]
+export const productImageByIndex = (index: number, images: string[]): string => images[index % images.length]
 
 export default imageByIndex

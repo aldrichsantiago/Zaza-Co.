@@ -1,8 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { LayoutDashboard, Settings, Users, ScrollText, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import useAuth from '@/hooks/useAuth';
+import { UseAuthProps } from '@/contexts/AuthProvider';
+import useRefreshToken from '@/hooks/useRefreshToken';
 
 const Sidebar: React.FC = () => {
+    const { token, username, role }:{token: string | null, username: string | null, role: string } = useRefreshToken();
+    // const { auth, setAuth }: UseAuthProps = useAuth();
+
+    // useEffect(()=>{
+    //     setAuth? setAuth({token, username, roles:[...role]}): console.log("setAuth is null")
+    //     console.log(auth);
+    // },[token])
+
   return (
     <>
         <div className='w-full sm:w-1/6 h-screen py-8 bg-slate-50 flex flex-col items-center justify-start'>

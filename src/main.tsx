@@ -65,32 +65,40 @@ const router = createBrowserRouter([
           },
         ]
       },
-    ]},
+    ]
+  },
     {
     path: "/admin",
     element: <AdminRoot/>,
     errorElement: <ErrorPage/>,
     children: [
       {
-        path: "dashboard",
-        element: <Dashboard/>,
+        path: "",
+        element: <RequireAuth allowedRoles={["admin","client"]}/>,
+        children: [
+          {
+            path: "dashboard",
+            element: <Dashboard/>,
+          },
+          {
+            path: "analytics",
+            element: <Analytics/>,
+          },
+          {
+            path: "logs",
+            element: <Logs/>,
+          },
+          {
+            path: "users",
+            element: <Users/>,
+          },
+          {
+            path: "settings",
+            element: <Settings/>,
+          },
+        ]
       },
-      {
-        path: "analytics",
-        element: <Analytics/>,
-      },
-      {
-        path: "logs",
-        element: <Logs/>,
-      },
-      {
-        path: "users",
-        element: <Users/>,
-      },
-      {
-        path: "settings",
-        element: <Settings/>,
-      },
+      
     ]
   }
 ]);
