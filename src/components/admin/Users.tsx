@@ -1,4 +1,4 @@
-import * as React from "react"
+import { useEffect, useState } from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -39,20 +39,57 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter
+  DialogFooter,
+  DialogDescription
 } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import useAxios from "@/hooks/useAxios"
+import useAxiosPrivate from "@/hooks/useAxiosPrivate"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { useForm } from 'react-hook-form'
+import axios from 'axios'
+import { useToast } from '../ui/use-toast'
+import { useNavigate } from 'react-router-dom' 
+
+const formSchema = z.object({
+  firstName: z.string().min(2, {message: "First name must be at least 2 characters.",}),
+  lastName: z.string().min(2, {message: "Last name must be at least 2 characters.",}),
+  email: z.string().email({message: "Please enter a valid email",}),
+  username: z.string().min(4, {message: "Username must be at least 4 characters.",}).max(16, {message: "Username should not exceed 16 characters."}),
+  password: z.string().min(8, {message: "Password must be at least 8 characters.",}),
+  confirmPassword: z.string().min(4, {message: "Password must be at least 8 characters.",}),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirm"], // path of error
+});
+
+const editFormSchema = z.object({
+  id: z.number(),
+  firstName: z.string().min(2, {message: "First name must be at least 2 characters.",}),
+  lastName: z.string().min(2, {message: "Last name must be at least 2 characters.",}),
+  email: z.string().email({message: "Please enter a valid email",}),
+  username: z.string().min(4, {message: "Username must be at least 4 characters.",}).max(16, {message: "Username should not exceed 16 characters."}),
+});
  
- 
-export type Payment = {
-  id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
+export type User = {
+  id: string,
+  firstName: string,
+  lastName: string,
+  email: string,
+  username: string,
+  role: "admin" | "client",
+  isActivated: boolean,
+  isDeleted: boolean,
 }
  
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -92,23 +129,7 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("lastName")}</div>
     ),
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
+  },{
     accessorKey: "username",
     header: ({ column }) => {
       return (
@@ -122,14 +143,68 @@ export const columns: ColumnDef<Payment>[] = [
       )
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("username")}</div>,
-  },
-
-  {
+  },{
+    accessorKey: "email",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Email
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+  },{
+    accessorKey: "role",
+    header: "Role",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("role")}</div>
+    ),
+  },{
     id: "actions",
     header: "Actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original
+      const user = row.original
+
+      const navigate = useNavigate();
+      const { toast } = useToast()
+
+      // 1. Define your EDIT form.
+      const form = useForm<z.infer<typeof editFormSchema>>({
+        resolver: zodResolver(editFormSchema),
+        defaultValues: {
+          id: Number(user.id),
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          username: user.username,
+        },
+      })
+    
+      // 2. Define a EDIT submit handler.
+      function onSubmit(values: z.infer<typeof editFormSchema>) {
+        console.log(`${import.meta.env.VITE_API_URL}/edit/user/${user.id}`, values);
+        
+        axios.patch(`${import.meta.env.VITE_API_URL}/edit/user/${user.id}`, values)
+        .then(()=>{
+          toast({
+            description: "Account Details updated",
+          })
+          // navigate(0);
+        })
+        .catch (error => {
+          console.log(error.response.data.message)
+          toast({
+            description: error.response.data.message,
+            variant: "destructive"
+          })
+        });
+        console.log(values, `${import.meta.env.VITE_API_URL}/register`)
+      }
  
       return (
         <DropdownMenu>
@@ -141,37 +216,171 @@ export const columns: ColumnDef<Payment>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+            {/* <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(user.id)}
             >
-              Copy payment ID
-            </DropdownMenuItem>
+              Edit User Info
+            </DropdownMenuItem> */}
+            <Dialog>
+              <DialogTrigger className="hover:bg-slate-100 w-full px-2 py-1.5 text-sm text-left rounded-sm transition-colors">Edit User</DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Edit user</DialogTitle>
+                </DialogHeader>
+                {/* <Form {...form}>
+                  <form className="space-y-3 ">
+                    <div className="flex flex-wrap justify-between">
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem className='w-1/2 px-1'>
+                          <FormLabel>First name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="First name" {...field}  defaultValue={user.firstName}/>
+                          </FormControl>
+                          <FormMessage className="font-normal text-xs"/>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem className='w-1/2 px-1'>
+                          <FormLabel>Last name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Last name" {...field} defaultValue={user.lastName}/>
+                          </FormControl>
+                          <FormMessage className="font-normal text-xs"/>
+                        </FormItem>
+                      )}
+                    />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Email" {...field} type='email' defaultValue={user.email}/>
+                          </FormControl>
+                          <FormMessage className="font-normal text-xs"/>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Username</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Username" {...field} defaultValue={user.username} disabled/>
+                          </FormControl>
+                          <FormMessage className="font-normal text-xs"/>
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" onClick={()=>onSubmit} className='w-full my-72'>Save changes</Button>
+                  </form>
+                </Form> */}
+              </DialogContent>
+            </Dialog>
+            <DropdownMenuItem>Change password</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            
+            <Dialog>
+              <DialogTrigger className="hover:bg-red-500 hover:text-white w-full p-1.5 text-sm text-left rounded-sm transition-colors">Delete account</DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure you want to delete this account?</DialogTitle>
+                </DialogHeader>
+                <DialogDescription>
+                  This action cannot be undone
+                </DialogDescription>
+                <DialogFooter>
+                  <Button variant={"outline"}>Cancel</Button>
+                  <Button variant={"destructive"}>Delete</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </DropdownMenuContent>
         </DropdownMenu>
       )
     },
   },
 ]
- 
-
 
 const Users = () => {
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
+  const [data, setData] = useState([])
+  const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const { toast } = useToast()
 
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
-  const [data, setData] = React.useState([])
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      password: "",
+    },
+  })
  
-  const { response } = useAxios({url: "/", method: "get"});
-  React.useEffect(() => {
-    if (response !== null) {
-        setData(response);
+  // 2. Define a submit handler.
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    axios.post(`${import.meta.env.VITE_API_URL}/register`, values)
+     .then(()=>{
+      navigate(0);
+      toast({
+        description: "You've successfully created an account",
+      })
+    })
+     .catch (error => {
+      console.log(error.response.data.message)
+      toast({
+        description: error.response.data.message,
+        variant: "destructive"
+      })
+    });
+    console.log(values, `${import.meta.env.VITE_API_URL}/register`)
+  }
+
+  
+
+
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+    const getUsers = async() => {
+      try {
+        const response: any = await axiosPrivate.get(`/users`, { 
+          signal: controller.signal
+        });
+        setData(response.data)
+        console.log(response.data)
+
+        isMounted && setData(response.data)
+      } catch (error) {
+        console.log(error);
+      }
     }
-}, [response]);
+    getUsers();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    }
+  }, [])
+
 
   const table = useReactTable({
     data,
@@ -204,49 +413,100 @@ const Users = () => {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Add user</DialogTitle>
+              <DialogTitle className='text-3xl font-medium'>Create an Account</DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-left">
-                  First Name
-                </Label>
-                <Input id="name" value={""} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-left">
-                  Last Name
-                </Label>
-                <Input id="name" value={""} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-left">
-                  Username
-                </Label>
-                <Input id="username" value={""} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-left">
-                  Email
-                </Label>
-                <Input id="username" value={""} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-left">
-                  Password
-                </Label>
-                <Input id="username" value={""} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-left">
-                  Confirm Password
-                </Label>
-                <Input id="username" value={""} className="col-span-3" />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">Save changes</Button>
-            </DialogFooter>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 ">
+                <div className="flex flex-wrap justify-between">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem className='w-1/2 px-1'>
+                      <FormLabel>First name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="First name" {...field} />
+                      </FormControl>
+                      <FormMessage className="font-normal text-xs"/>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem className='w-1/2 px-1'>
+                      <FormLabel>Last name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Last name" {...field} />
+                      </FormControl>
+                      <FormMessage className="font-normal text-xs"/>
+                    </FormItem>
+                  )}
+                />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Email" {...field} type='email'/>
+                      </FormControl>
+                      <FormMessage className="font-normal text-xs"/>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Username" {...field}/>
+                      </FormControl>
+                      <FormMessage className="font-normal text-xs"/>
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex flex-wrap justify-between">
+                    <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                        <FormItem className='w-1/2 px-1'>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                            <Input placeholder="Password" {...field} type='password'/>
+                        </FormControl>
+                        <FormMessage className="font-normal text-xs"/>
+                        </FormItem>
+                    )}
+                    />
+
+                    <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                        <FormItem className='w-1/2 px-1'>
+                        <FormLabel>&nbsp;</FormLabel>
+                        <FormControl>
+                            <Input placeholder="Confirm password" {...field} type='password'/>
+                        </FormControl>
+                        <FormMessage className="font-normal text-xs"/>
+                        </FormItem>
+                    )}
+                    />
+                </div>
+                <Button type="submit" className='w-full my-72'>Register</Button>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>
@@ -257,7 +517,7 @@ const Users = () => {
                 placeholder="Filter emails..."
                 value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
                 onChange={(event) =>
-                    table.getColumn("email")?.setFilterValue(event.target.value)
+                  table.getColumn("email")?.setFilterValue(event.target.value)
                 }
                 className="max-w-sm"
                 />

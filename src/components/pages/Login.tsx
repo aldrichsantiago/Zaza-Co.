@@ -43,14 +43,14 @@ const Login: React.FC = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, values, {headers: {"Content-Type": 'application/json'}, withCredentials: true})
-      setAuth? setAuth({token: response?.data.token, roles: [response?.data.role], username: response?.data.username}):""
+      setAuth? setAuth({accessToken: response?.data.token, roles: [response?.data.role], username: response?.data.username}):""
 
       toast({
         description: "Logged in successfully",
         variant: "default",
         duration: 1500 
       })
-      console.log({token: response.data.token, roles: response?.data?.role, username: response?.data.username})
+      console.log({accessToken: response.data.token, roles: response?.data?.role, username: response?.data.username})
       console.log(auth)
       if (response?.data?.role === "admin"){
         navigate("/admin/dashboard")

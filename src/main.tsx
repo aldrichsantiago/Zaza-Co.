@@ -19,88 +19,103 @@ import Orders from './components/pages/Orders.tsx';
 import RequireAuth from './components/pages/RequireAuth.tsx';
 import Wishlist from './components/pages/Wishlist.tsx';
 import Dashboard from './components/admin/Dashboard.tsx';
-import Analytics from './components/admin/Analytics.tsx';
+import Analytics from './components/admin/Products.tsx';
 import Logs from './components/admin/Logs.tsx';
 import Users from './components/admin/Users.tsx';
 import Settings from './components/admin/Settings.tsx';
+import PersistLogin from './components/PersistLogin.tsx';
 
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Root/>,
-    errorElement: <ErrorPage/>,
-    children: [
-      {
-        path: "/",
-        element: <Home/>
-      },{
-        path: "/login",
-        element: <Login/>
-      },{
-        path: "/register",
-        element: <Register/>
-      },{
-        path: "products/:productId",
-        element: <ProductPage/>
-      },{
-        path: "category/:categoryName",
-        element: <CategoryPage/>
-      },{
-        path: "/deals",
-        element: <DealsPage/>
-      },{
-        path: "/new-products",
-        element: <NewProductsPage/>
-      },{
-        path: "",
-        element: <RequireAuth allowedRoles={["client", "admin"]}/>,
-        children: [
-          {
-            path: "/orders",
-            element: <Orders/>
-          },{
-            path: "/wishlist",
-            element: <Wishlist/>
-          },
-        ]
-      },
-    ]
-  },
+      element: <PersistLogin/>,
+      errorElement: <ErrorPage/>,
+      children: [
+        {
+          path: "/",
+          element: <Root/>,
+          errorElement: <ErrorPage/>,
+          children: [
+            {
+              path: "/",
+              element: <Home/>
+            },{
+              path: "/login",
+              element: <Login/>
+            },{
+              path: "/register",
+              element: <Register/>
+            },{
+              path: "products/:productId",
+              element: <ProductPage/>
+            },{
+              path: "category/:categoryName",
+              element: <CategoryPage/>
+            },{
+              path: "/deals",
+              element: <DealsPage/>
+            },{
+              path: "/new-products",
+              element: <NewProductsPage/>
+            },{
+              path: "",
+              element: <RequireAuth allowedRoles={["client", "admin"]}/>,
+              children: [
+                {
+                  path: "/orders",
+                  element: <Orders/>
+                },{
+                  path: "/wishlist",
+                  element: <Wishlist/>
+                },
+              ]
+            },
+          ]
+        },
+      ]
+    },
     {
-    path: "/admin",
-    element: <AdminRoot/>,
-    errorElement: <ErrorPage/>,
-    children: [
-      {
-        path: "",
-        element: <RequireAuth allowedRoles={["admin","client"]}/>,
-        children: [
-          {
-            path: "dashboard",
-            element: <Dashboard/>,
-          },
-          {
-            path: "analytics",
-            element: <Analytics/>,
-          },
-          {
-            path: "logs",
-            element: <Logs/>,
-          },
-          {
-            path: "users",
-            element: <Users/>,
-          },
-          {
-            path: "settings",
-            element: <Settings/>,
-          },
-        ]
-      },
-      
-    ]
-  }
+      element: <PersistLogin/>,
+      errorElement: <ErrorPage/>,
+      children: [
+        {
+          path: "/admin",
+          element: <AdminRoot/>,
+          errorElement: <ErrorPage/>,
+          children: [
+            {
+              path: "",
+              element: <RequireAuth allowedRoles={["admin","client"]}/>,
+              children: [
+                {
+                  path: "dashboard",
+                  element: <Dashboard/>,
+                },
+                {
+                  path: "analytics",
+                  element: <Analytics/>,
+                },
+                {
+                  path: "logs",
+                  element: <Logs/>,
+                },
+                {
+                  path: "users",
+                  element: <Users/>,
+                },
+                {
+                  path: "settings",
+                  element: <Settings/>,
+                },
+              ]
+            },
+            
+          ]
+        }
+      ],
+    },
+  
+  
 ]);
 
 axios.defaults.withCredentials = true;

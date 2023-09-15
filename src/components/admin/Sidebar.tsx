@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react'
-import { LayoutDashboard, Settings, Users, ScrollText, BarChart3 } from 'lucide-react';
+import React from 'react'
+import { LayoutDashboard, Settings, Users, ScrollText, ShoppingBasket } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import useAuth from '@/hooks/useAuth';
-import { UseAuthProps } from '@/contexts/AuthProvider';
+// import useAuth from '@/hooks/useAuth';
+// import { UseAuthProps } from '@/contexts/AuthProvider';
 import useRefreshToken from '@/hooks/useRefreshToken';
 
 const Sidebar: React.FC = () => {
-    const { token, username, role }:{token: string | null, username: string | null, role: string } = useRefreshToken();
+    // const refresh = useRefreshToken();
     // const { auth, setAuth }: UseAuthProps = useAuth();
 
     // useEffect(()=>{
@@ -28,12 +28,7 @@ const Sidebar: React.FC = () => {
                         <p>Dashboard</p>
                     </div>
                 </Link>
-                <Link to={"/admin/analytics"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
-                    <div className='w-full flex items-center justify-left'>
-                        <BarChart3 className='mx-5'/>
-                        <p>Analytics</p>
-                    </div>
-                </Link>
+                
                 <Link to={"/admin/logs"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
                     <div className='w-full flex items-center justify-left'>
                         <ScrollText className='mx-5'/>
@@ -44,6 +39,12 @@ const Sidebar: React.FC = () => {
                     <div className='w-full flex items-center justify-left'>
                         <Users className='mx-5'/>
                         <p>Users</p>
+                    </div>
+                </Link>
+                <Link to={"/admin/analytics"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
+                    <div className='w-full flex items-center justify-left'>
+                        <ShoppingBasket className='mx-5'/>
+                        <p>Products</p>
                     </div>
                 </Link>
                 <Link to={"/admin/settings"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>

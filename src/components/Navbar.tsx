@@ -34,18 +34,13 @@ import { UseAuthProps } from "@/contexts/AuthProvider"
 
 
 const Navbar:React.FC = () => {
+    const { auth }: UseAuthProps = useAuth();
+    const cart:any = useContext(CartContext);
     const navigate = useNavigate();
     const {toast} = useToast();
-    const { token, username, role }:{token: string | null, username: string | null, role: string } = useRefreshToken();
-    const [ tokenObj,setTokenObj ] = useState<string|null>();
-    const cart:any = useContext(CartContext);
-    const { auth, setAuth }: UseAuthProps = useAuth();
+    const refresh = useRefreshToken();
+    console.log(auth)
 
-    useEffect(()=>{
-        setTokenObj(token)
-        setAuth? setAuth({token, username, roles:[...role]}): console.log("setAuth is null")
-        console.log(token);
-    },[token])
 
 
     let subtotal = 0;
@@ -125,9 +120,9 @@ const Navbar:React.FC = () => {
                                             </Avatar>
                                         </DropdownMenuTrigger>
                                         {
-                                        auth.token || tokenObj ? 
+                                        auth.accessToken ? 
                                             <DropdownMenuContent>
-                                                <DropdownMenuLabel>{auth.username || username}</DropdownMenuLabel>
+                                                <DropdownMenuLabel>{auth.username}</DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem onClick={()=>navigate("/orders")}><Package width={20}/> &nbsp; Orders</DropdownMenuItem>
                                                 <DropdownMenuItem onClick={()=>navigate("/wishlist")}><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>
@@ -242,9 +237,9 @@ const Navbar:React.FC = () => {
                             </Avatar>
                         </DropdownMenuTrigger>
                         {
-                            auth.token || tokenObj ? 
+                            auth.accessToken ? 
                             <DropdownMenuContent>
-                                <DropdownMenuLabel className="text-center">{auth.username? auth.username: username}</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-center">{auth.username? auth.username: "username"}</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={()=>navigate("/orders")}><Package width={20}/> &nbsp; Orders</DropdownMenuItem>
                                 <DropdownMenuItem onClick={()=>navigate("/wishlist")}><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>

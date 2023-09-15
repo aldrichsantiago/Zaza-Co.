@@ -35,7 +35,7 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast()
 
-      // 1. Define your form.
+  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -174,8 +174,6 @@ const Register: React.FC = () => {
                     <Button type="submit" className='w-full my-72'>Register</Button>
                   </form>
                 </Form>
-
-
                 </div>
             </div>
         </div>

@@ -7,10 +7,12 @@ import EmblaCarousel from './Carousel/EmblaCarousel'
 import { EmblaOptionsType } from 'embla-carousel-react'
 import './Carousel/css/sanbox.css'
 import './Carousel/css/embla.css'
+import { Button } from '../ui/button';
+import useRefreshToken from '@/hooks/useRefreshToken';
 
 const Home: React.FC = () => {
   const { auth }: UseAuthProps = useAuth();
-  console.log(auth? auth: "");
+  const refresh = useRefreshToken();
 
   const OPTIONS: EmblaOptionsType = { loop: true }
   const SLIDE_COUNT = 3
@@ -25,6 +27,7 @@ const Home: React.FC = () => {
         <section className="sandbox__carousel">
           <EmblaCarousel slides={SLIDES} options={OPTIONS} />
         </section>
+        <Button onClick={()=>refresh()}>Refresh</Button>
       </main>
         <h1 className="text-4xl font-sans font-medium mt-12 mb-3 ml-8">Featured Products</h1>
         <div className="flex flex-wrap justify-center">
