@@ -9,8 +9,8 @@ const useAxios = ({ url, method, body = null, headers = null }: { url: string, m
     const [error, setError] = useState('');
     const [loading, setloading] = useState(true);
 
-    const fetchData = () => {
-        axios[method](url, JSON.parse(headers || '{}'), JSON.parse(body || '{}'))
+    const fetchData = async() => {
+        await axios[method](url, JSON.parse(headers || '{}'), JSON.parse(body || '{}'))
             .then((res: AxiosResponse) => {
                 setResponse(res.data);
             })

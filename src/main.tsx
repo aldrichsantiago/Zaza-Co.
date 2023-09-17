@@ -24,6 +24,7 @@ import Logs from './components/admin/Logs.tsx';
 import Users from './components/admin/Users.tsx';
 import Settings from './components/admin/Settings.tsx';
 import PersistLogin from './components/PersistLogin.tsx';
+import Products from './components/admin/Products.tsx';
 
 
 const router = createBrowserRouter([
@@ -85,15 +86,15 @@ const router = createBrowserRouter([
           children: [
             {
               path: "",
-              element: <RequireAuth allowedRoles={["admin","client"]}/>,
+              element: <RequireAuth allowedRoles={["admin"]}/>,
               children: [
                 {
                   path: "dashboard",
                   element: <Dashboard/>,
                 },
                 {
-                  path: "analytics",
-                  element: <Analytics/>,
+                  path: "products",
+                  element: <Products/>,
                 },
                 {
                   path: "logs",

@@ -241,6 +241,13 @@ const Navbar:React.FC = () => {
                             <DropdownMenuContent>
                                 <DropdownMenuLabel className="text-center">{auth.username? auth.username: "username"}</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
+                                {
+                                    auth.roles[0] === "admin" ? 
+                                <DropdownMenuItem onClick={()=>navigate("/admin")}><Package width={20}/> &nbsp; ADMIN PANEL</DropdownMenuItem>
+                                    :
+                                ""
+
+                                }
                                 <DropdownMenuItem onClick={()=>navigate("/orders")}><Package width={20}/> &nbsp; Orders</DropdownMenuItem>
                                 <DropdownMenuItem onClick={()=>navigate("/wishlist")}><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>
                                 <DropdownMenuItem><Settings width={20}/> &nbsp; Settings</DropdownMenuItem>

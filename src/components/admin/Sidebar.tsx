@@ -41,7 +41,7 @@ const Sidebar: React.FC = () => {
                         <p>Users</p>
                     </div>
                 </Link>
-                <Link to={"/admin/analytics"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
+                <Link to={"/admin/products"} className='mx-1 w-full text-2xl py-6 hover:bg-slate-100'>
                     <div className='w-full flex items-center justify-left'>
                         <ShoppingBasket className='mx-5'/>
                         <p>Products</p>

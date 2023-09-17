@@ -27,7 +27,7 @@ interface Product {
   price: number
   ratings?: number
   quantitySold?: number
-  images?: string[] 
+  images: string
   category?: string 
   disp?: boolean
 }
@@ -45,6 +45,12 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
       navigate("/login");
     }
   }
+
+  const arrImages = JSON.parse(images)
+  
+  console.log(arrImages);
+  
+  
 
 
   return (
@@ -66,7 +72,7 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
 
           
           <Link className="w-full h-full absolute z-10 flex justify-center" to={`/products/${id}`}>
-            <img src={images? images[0]: ""} alt="Image here" className="hover:scale-110 transition-transform max-w-full"/>
+            <img src={images? `${import.meta.env.VITE_API_URL}/uploads/${arrImages[0]}`: ""} alt="Image here" className="hover:scale-105 transition-transform max-w-full -z-30"/>
           </Link>
         </CardContent>
         <CardHeader className="w-full p-3">

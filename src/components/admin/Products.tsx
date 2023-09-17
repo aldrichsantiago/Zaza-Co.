@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, ChevronDown, Cross, MoreHorizontal, X } from "lucide-react"
  
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -42,23 +42,12 @@ import {
   DialogFooter
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { useForm } from 'react-hook-form'
-import axios from 'axios'
 import { useToast } from '../ui/use-toast'
 import { useNavigate } from 'react-router-dom'
 import useAxiosPrivate from "@/hooks/useAxiosPrivate"
 import { Textarea } from "../ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import axios from "@/api/axios"
  
  
 export type Product = {
@@ -100,52 +89,70 @@ export const columns: ColumnDef<Product>[] = [
     ),
   },
   {
-    accessorKey: "firstName",
-    header: "First name",
+    accessorKey: "name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("firstName")}</div>
+      <div className="capitalize">{row.getValue("description")}</div>
     ),
   },
   {
-    accessorKey: "lastName",
-    header: "Last name",
+    accessorKey: "category",
+    header: "Category",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("lastName")}</div>
+      <div className="capitalize">{row.getValue("category")}</div>
     ),
-  },{
-    accessorKey: "username",
+  },
+  {
+    accessorKey: "price",
+    header: "Price",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("price")}</div>
+    ),
+  },
+  {
+    accessorKey: "stocks",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Username
+          Stocks
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("username")}</div>,
-  },{
-    accessorKey: "email",
+    cell: ({ row }) => <div className="lowercase">{row.getValue("stocks")}</div>,
+  },
+  {
+    accessorKey: "quantitySold",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Email
+          Quantity Sold
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },{
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("role")}</div>
-    ),
+    cell: ({ row }) => <div className="lowercase">{row.getValue("quantitySold")}</div>,
   },{
     id: "actions",
     header: "Actions",
@@ -191,9 +198,10 @@ interface AddProduct {
   description?: string
   price?: number
   stocks?: number
-  category?: 'electronics' | 'health-and-fitness' | 'Furnitures' | 'accessories' | 'clothing'
+  category?: 'electronics' | 'health-and-fitness' | 'Furnitures' | 'accessories' | 'clothing' | string
   images?: string[]
 }
+
 
 
 const Products = () => {
@@ -207,23 +215,76 @@ const Products = () => {
   const navigate = useNavigate();
   const { toast } = useToast()
   const [addProductForm, setAddProductForm] = useState<AddProduct>();
+  const [selectedFiles, setSelectedFiles]: any = useState([]);
+  const [message, setMessage] = useState('');
 
   const handleAddProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const fieldName = e.target.getAttribute("name");
     const fieldValue = e.target.value;
-    const newFormData = { ...addProductForm };
-    newFormData[fieldName] = fieldValue
+    const newFormData: any = { ...addProductForm };
+    fieldName ? newFormData[fieldName] = fieldValue : ""
     setAddProductForm(newFormData)
     console.log(addProductForm)
   }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files: any = e.target.files;
+    setSelectedFiles([...files]);
+    console.log(files);
+    
+  };
+  const handleFileCancel = (index: number) => {
+    const files = selectedFiles.splice(index, 1)
+    setSelectedFiles([...selectedFiles]);
+    console.log([...files]);
+    
+    console.log(selectedFiles,index);
+    
+  };
+
+  const combineForm = async() => {
+    setAddProductForm({...addProductForm, images:[...selectedFiles]})
+
+  } 
+
+
+  const handleUpload = async() => {
+    // const formData = {...addProductForm, images:[...selectedFiles]};
+    const formData = new FormData();
+
+    for (const file of selectedFiles) {
+      formData.append('file', file);
+    }
+    formData.append('data', JSON.stringify(addProductForm))
+   
+    console.log(addProductForm);
+    console.log(selectedFiles);
+    console.log(formData);
+    
+
+    axios
+      .post('/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then((response) => {
+        setMessage(response.data);
+        setSelectedFiles([]);
+      })
+      .catch((error) => {
+        console.error(error);
+        setMessage('File upload failed.');
+      });
+  };
 
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
     const getProducts = async() => {
       try {
-        const response: any = await axiosPrivate.get(`/`, { 
+        const response: any = await axiosPrivate.get(`/products`, { 
           signal: controller.signal
         });
         setData(response.data)
@@ -275,49 +336,63 @@ const Products = () => {
             <DialogHeader>
               <DialogTitle>Add a product</DialogTitle>
             </DialogHeader>
-            <form action="POST" enctype='multipart/form-data'>
-            <Label htmlFor="name">Name: </Label>
-            <Input onChange={handleAddProductChange} name="name" className="my-1"/>
-
-            <Label htmlFor="description">Description: </Label>
-            <Textarea name="description" className="my-1"/>
-
-           
-            <div className="flex gap-2">
-              <div>
-                <Label htmlFor="price">Price: </Label>
-                <Input onChange={handleAddProductChange} name="price" type="number" pattern="^[1-9]\d+$" className="my-1"/>
-              </div>
-              <div>
-                <Label htmlFor="stocks">Stocks: </Label>
-                <Input onChange={handleAddProductChange} name="stocks" type="number" pattern="^[1-9]\d+$" className="my-1"/>
-             </div>
-            </div>
-
-            <div className="flex gap-2">
-              <div>
-                <Label htmlFor="category">Category: </Label>
-                <Select name="category">
-                  <SelectTrigger className="w-[185px] my-1 font-medium">
-                    <SelectValue placeholder="" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem className="font-medium" value="accessories">Accessories</SelectItem>
-                    <SelectItem className="font-medium" value="health-and-fitness">Health & Fitness</SelectItem>
-                    <SelectItem className="font-medium" value="electronics">Electronics</SelectItem>
-                    <SelectItem className="font-medium" value="furnitures">Furnitures</SelectItem>
-                    <SelectItem className="font-medium" value="clothing">Clothing</SelectItem>
-                  </SelectContent>
-                </Select>
+            <form action="http://localhost:8000/upload" method="post" encType='multipart/form-data' onSubmit={handleUpload}>
+              <Label htmlFor="name">Name: </Label>
+              <Input onChange={handleAddProductChange} name="name" className="my-1"/>
+              <Label htmlFor="description">Description: </Label>
+              <Textarea name="description" className="my-1"/>
+              <div className="flex gap-2 justify-between">
+                <div>
+                  <Label htmlFor="price">Price: </Label>
+                  <Input onChange={handleAddProductChange} name="price" type="number" pattern="^[1-9]\d+$" className="my-1" min={0} max={9999}/>
+                </div>
+                <div>
+                  <Label htmlFor="stocks">Stocks: </Label>
+                  <Input onChange={handleAddProductChange} name="stocks" type="number" pattern="^[1-9]\d+$" className="my-1" min={0} max={1000}/>
+                </div>
+                  <div>
+                    <Label htmlFor="category">Category: </Label>
+                    <Select name="category" onValueChange={(value:string )=>setAddProductForm({...addProductForm, category: value})}>
+                      <SelectTrigger className="w-[185px] my-1 font-medium">
+                        <SelectValue placeholder="" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem className="font-medium" value="accessories">Accessories</SelectItem>
+                        <SelectItem className="font-medium" value="health-and-fitness">Health & Fitness</SelectItem>
+                        <SelectItem className="font-medium" value="electronics">Electronics</SelectItem>
+                        <SelectItem className="font-medium" value="furnitures">Furnitures</SelectItem>
+                        <SelectItem className="font-medium" value="clothing">Clothing</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
               </div>
 
-              <div className="grid w-1/2 max-w-sm items-center gap-1.5 my-1">
-                <Label htmlFor="images">Picture</Label>
-                <Input onChange={handleAddProductChange} id="images" name="images" type="file" multiple/>
-              </div>
+              <div className="flex gap-2">
+                <div className="grid w-full max-w-sm items-center gap-1.5 my-1">
+                  <Label htmlFor="images">Picture</Label>
+                  <Input onChange={handleFileChange} id="images" name="images" type="file" accept=".jpg, .jpeg, .png" multiple/>
+                  <div>
+                    {selectedFiles.length > 0 && (
+                      <div>
+                        <h2>Selected Files:</h2>
+                        <ul>
+                          {selectedFiles.map((file: { name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined }, index: number ) => (
+                            <li key={index} 
+                              className="flex justify-between">
+                                {file.name} 
+                                <X type="button" 
+                                onClick={()=>{handleFileCancel(index)}} 
+                                className="text-slate-400 hover:text-red-500 cursor-pointer"/>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-            </div>
-            <Button type="submit" onClick={(e)=>{e.preventDefault(); console.log(addProductForm)}}>Save changes</Button>
+              </div>
+              <Button type="submit">Submit</Button>
             </form>
             
             <DialogFooter>

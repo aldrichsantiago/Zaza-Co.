@@ -10,7 +10,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { EmblaOptionsType } from 'embla-carousel-react';
 import ProductCarousel from './Carousel/ProductCarousel';
 import './Carousel/css/productCaroursel/embla.css'
-import useImages from '@/hooks/useImages';
+import useAxios from '@/hooks/useAxios';
 
 type ProductParams = {
   productId: string;
@@ -21,18 +21,38 @@ const ProductPage:React.FC = () => {
   const { productId } = useParams<ProductParams>();
   const [itemCount, setItemCount] = useState<number>(1);
   const { toast } = useToast()
-  const selectedProduct:any = products.find((p)=>{return p.id === Number(productId)})
-  // const {images} = useImages(productId? productId:"1")
+  const [data, setData]:any = useState([]);
+  const [images, setImages] = useState<string[]>([]);
+  const { response }:any = useAxios({
+    method: 'get',
+    url: '/product/'+ productId,
+    headers: JSON.stringify({ accept: '*/*' }),
+    
+  });
+
+  useEffect(() => {
+    if (response !== null || response !== undefined) {
+      setData(response);
+    }
+  }, [response]);
+  
+  console.log(data);
+
+  const selectedProduct:any = data?.find((p:any)=>{return p.id === Number(productId)})  
   const OPTIONS: EmblaOptionsType = {}
-  const SLIDE_COUNT = selectedProduct?.images.length
+  const SLIDE_COUNT = 3
   const SLIDES = Array.from(Array(SLIDE_COUNT).keys())
-  const [images,setImages] = useState([]);
 
+  const arrImages = selectedProduct?.images?  JSON.parse(selectedProduct?.images): [];
+  const srcImages:string[] = []
+  for(const img of arrImages){
+    srcImages.push(`${import.meta.env.VITE_API_URL}/uploads/${img}`)
+  }
+ 
   useEffect(()=>{
-    setImages(selectedProduct.images)
+    setImages(srcImages);
+   },[data]);
 
-  },[productId]);
-  console.log(selectedProduct? selectedProduct:"")
 
     const handleIncrement = (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,13 +76,19 @@ const ProductPage:React.FC = () => {
         setItemCount(itemCount-1);
         }
     }
-
-  console.log(productId);
-  
   return (
     <>
       <div className="container pt-20">
-        <p className='text-slate-500'><Link to={`/category/${products[Number(productId)-1].category.toLowerCase()}`} className='text-black hover:underline'>{products[Number(productId)-1].category.toUpperCase()}</Link> / {products[Number(productId)-1].name} </p>
+      <p className='text-slate-500'>
+        {data?.map(({category, name}:any)=>{
+        <>
+          <Link to={`/category/${category.toLowerCase()}`} className='text-black hover:underline'>
+            {category.toUpperCase()}
+          </Link> / {name} 
+        </>
+          
+        })}
+      </p>
 
       </div>
       <div className='h-screen pt-10 container flex flex-wrap mb-[300px] sm:mb-[100px]'>
@@ -78,7 +104,7 @@ const ProductPage:React.FC = () => {
         
         </div>
         <div className='md:w-2/5 w-full h-4/6 px-5'>
-          {products.map(({id, name, description, price, ratings, stocks, quantitySold}) => (
+          {data?.map(({id, name, description, price, ratings, stocks, quantitySold}:{id:number, name:string, description:string, price:number, ratings:number, stocks:number, quantitySold:number}) => (
             Number(productId) === id ? 
             <div className='container' key={id}>
               <p className='mb-2 text-4xl font-semibold'>{name}</p>
