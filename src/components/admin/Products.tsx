@@ -39,7 +39,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter
+  DialogFooter,
+  DialogDescription
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { useToast } from '../ui/use-toast'
@@ -48,18 +49,21 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate"
 import { Textarea } from "../ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import axios from "@/api/axios"
+import { DialogClose } from "@radix-ui/react-dialog"
  
  
 export type Product = {
   id: string,
-  firstName: string,
-  lastName: string,
-  email: string,
-  username: string,
-  role: "admin" | "client",
-  isActivated: boolean,
+  name: string,
+  description: string,
+  price: number,
+  stocks: number,
+  category: "admin" | "client",
+  quantitySold: number,
   isDeleted: boolean,
 }
+
+
  
 export const columns: ColumnDef<Product>[] = [
   {
@@ -159,6 +163,49 @@ export const columns: ColumnDef<Product>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const product = row.original
+      const navigate = useNavigate();
+      const { toast } = useToast();
+      const [editProductForm, setEditProductForm] = useState({});
+
+      const handleDelete = async(id:string) => {
+        axios
+          .patch('/delete/product/'+id, {id})
+          .then((response) => {
+            console.log(response.data);
+            navigate(0)
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+          console.log(id);
+      }
+
+      const handleEditProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const fieldName = e.target.getAttribute("name");
+        const fieldValue = e.target.value;
+        const newFormData: any = { ...editProductForm };
+        fieldName ? newFormData[fieldName] = fieldValue : ""
+        setEditProductForm(newFormData)
+        console.log(editProductForm)
+      }
+
+      const handleEditProductSubmit = async(id:string) => {
+        axios
+          .patch('/edit/product/'+ id, editProductForm)
+          .then((response) => {
+            console.log(response.data);
+            navigate(0);
+            toast({
+              title: "Updated Successfully",
+              description: response.data.message,
+            })
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+          console.log(id);
+      }
  
       return (
         <DropdownMenu>
@@ -170,14 +217,68 @@ export const columns: ColumnDef<Product>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(product.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
+            <Dialog>
+              <DialogTrigger className="hover:bg-slate-100 w-full p-1.5 text-sm text-left rounded-sm transition-colors">Edit Product Information</DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Edit Product Information</DialogTitle>
+                </DialogHeader>
+                <form  method="patch" onSubmit={()=>handleEditProductSubmit(product.id)}>
+                  <Label htmlFor="name">Name: </Label>
+                  <Input onChange={handleEditProductChange} name="name" className="my-1" defaultValue={product.name}/>
+                  <Label htmlFor="description">Description: </Label>
+                  <Textarea onChange={(e: React.ChangeEvent<HTMLTextAreaElement> )=>setEditProductForm({...editProductForm, description: e.target.value})} name="description" className="my-1" defaultValue={product.description}/>
+                  <div className="flex gap-2 justify-between">
+                    <div>
+                      <Label htmlFor="price">Price: </Label>
+                      <Input onChange={handleEditProductChange} name="price" type="number" pattern="^[1-9]\d+$" className="my-1" min={0} max={99999} defaultValue={product.price}/>
+                    </div>
+                    <div>
+                      <Label htmlFor="stocks">Stocks: </Label>
+                      <Input onChange={handleEditProductChange} name="stocks" type="number" pattern="^[1-9]\d+$" className="my-1" min={0} max={99999} defaultValue={product.stocks}/>
+                    </div>
+                      <div>
+                        <Label htmlFor="category">Category: </Label>
+                        <Select name="category" defaultValue={product.category} onValueChange={(value:string )=>setEditProductForm({...editProductForm, category: value})}>
+                          <SelectTrigger className="w-[185px] my-1 font-medium">
+                            <SelectValue placeholder="" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem className="font-medium" value="accessories">Accessories</SelectItem>
+                            <SelectItem className="font-medium" value="health-and-fitness">Health & Fitness</SelectItem>
+                            <SelectItem className="font-medium" value="electronics">Electronics</SelectItem>
+                            <SelectItem className="font-medium" value="furnitures">Furnitures</SelectItem>
+                            <SelectItem className="font-medium" value="clothing">Clothing</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                  </div>
+                  <div className="flex justify-end">
+                  <Button className="my-4" variant={"default"} type="submit">Save changes</Button>
+
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>Change Product Images</DropdownMenuItem>
+            <Dialog>
+              <DialogTrigger className="hover:bg-red-500 hover:text-white w-full p-1.5 text-sm text-left rounded-sm transition-colors">Delete Product</DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure you want to delete this product?</DialogTitle>
+                </DialogHeader>
+                <DialogDescription>
+                  This action cannot be undone
+                </DialogDescription>
+                <DialogFooter>
+                  <DialogClose>
+                    <Button aria-label="Close" variant={"outline"}>Cancel</Button>
+                  </DialogClose>
+                  <Button onClick={()=>handleDelete(product.id)} variant={"destructive"}>Delete</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -243,10 +344,7 @@ const Products = () => {
     
   };
 
-  const combineForm = async() => {
-    setAddProductForm({...addProductForm, images:[...selectedFiles]})
 
-  } 
 
 
   const handleUpload = async() => {

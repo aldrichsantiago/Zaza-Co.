@@ -47,12 +47,6 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
   }
 
   const arrImages = JSON.parse(images)
-  
-  console.log(arrImages);
-  
-  
-
-
   return (
     <>
         <Card className="w-[300px] h-[400px] m-3 flex flex-col items-center border-none shadow-none">
@@ -72,7 +66,7 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
 
           
           <Link className="w-full h-full absolute z-10 flex justify-center" to={`/products/${id}`}>
-            <img src={images? `${import.meta.env.VITE_API_URL}/uploads/${arrImages[0]}`: ""} alt="Image here" className="hover:scale-105 transition-transform max-w-full -z-30"/>
+            <img src={images? `${import.meta.env.VITE_API_URL}/uploads/${arrImages[0]}`: ""} alt="Image here" className="hover:scale-105 transition-transform max-w-full rounded-2xl"/>
           </Link>
         </CardContent>
         <CardHeader className="w-full p-3">

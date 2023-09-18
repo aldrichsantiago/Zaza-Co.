@@ -49,7 +49,7 @@ const ProductCarousel: React.FC<PropType> = (props) => {
                 <span>{index + 1}</span>
               </div>
               <img
-                className="embla__slide__img"
+                className="embla__slide__img max-w-md"
                 src={productImageByIndex(index, images?images:[])}
                 alt="Your alt text"
               />

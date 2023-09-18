@@ -1,9 +1,10 @@
 import { products } from '@/test_data';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ProductCard from '../ProductCard';
 import EmblaCarousel from './Carousel/EmblaCarousel'
 import { EmblaOptionsType } from 'embla-carousel-react'
+import useAxios from '@/hooks/useAxios';
 
 type CategoryParams = {
     categoryName: string;
@@ -16,6 +17,20 @@ const CategoryPage: React.FC = () => {
     const OPTIONS: EmblaOptionsType = { loop: true }
     const SLIDE_COUNT = 3
     const SLIDES = Array.from(Array(SLIDE_COUNT).keys())
+    const [data, setData] = useState([]);
+
+    const { response } = useAxios({
+        method: 'get',
+        url: '/products',
+        headers: JSON.stringify({ accept: '*/*' }),
+        
+      });
+    
+      useEffect(() => {
+        if (response !== null) {
+            setData(response);
+        }
+      }, [response]);
 
 
     return (
@@ -29,7 +44,7 @@ const CategoryPage: React.FC = () => {
             </main>
 
             <div className="flex flex-wrap justify-center mb-10">
-                {products.map(({id, name, description, price, ratings, images, quantitySold, category})=> (
+                {data?.map(({id, name, description, price, ratings, images, quantitySold, category})=> (
                     categoryName === category ?
                         <ProductCard key={id}
                         id={id} 

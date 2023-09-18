@@ -39,10 +39,6 @@ const Navbar:React.FC = () => {
     const navigate = useNavigate();
     const {toast} = useToast();
     const refresh = useRefreshToken();
-    console.log(auth)
-
-
-
     let subtotal = 0;
     let cartCount = cart.cartArray.reduce((accumulator: any, object: { itemCountCart: any }) => {
         return accumulator + object?.itemCountCart;

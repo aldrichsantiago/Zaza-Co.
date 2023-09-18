@@ -57,6 +57,7 @@ import { useForm } from 'react-hook-form'
 import axios from 'axios'
 import { useToast } from '../ui/use-toast'
 import { useNavigate } from 'react-router-dom' 
+import { DialogClose } from "@radix-ui/react-dialog"
 
 const formSchema = z.object({
   firstName: z.string().min(2, {message: "First name must be at least 2 characters.",}),
@@ -173,38 +174,18 @@ export const columns: ColumnDef<User>[] = [
       const navigate = useNavigate();
       const { toast } = useToast()
 
-      // 1. Define your EDIT form.
-      const form = useForm<z.infer<typeof editFormSchema>>({
-        resolver: zodResolver(editFormSchema),
-        defaultValues: {
-          id: Number(user.id),
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          username: user.username,
-        },
-      })
-    
-      // 2. Define a EDIT submit handler.
-      function onSubmit(values: z.infer<typeof editFormSchema>) {
-        console.log(`${import.meta.env.VITE_API_URL}/edit/user/${user.id}`, values);
-        
-        axios.patch(`${import.meta.env.VITE_API_URL}/edit/user/${user.id}`, values)
-        .then(()=>{
-          toast({
-            description: "Account Details updated",
+      const handleDelete = async(id:string) => {
+        axios
+          .patch('/delete/user/'+id, {id})
+          .then((response) => {
+            console.log(response.data);
+            navigate(0)
           })
-          // navigate(0);
-        })
-        .catch (error => {
-          console.log(error.response.data.message)
-          toast({
-            description: error.response.data.message,
-            variant: "destructive"
-          })
-        });
-        console.log(values, `${import.meta.env.VITE_API_URL}/register`)
-      }
+          .catch((error) => {
+            console.error(error);
+          });
+          console.log(id);
+      } 
  
       return (
         <DropdownMenu>
@@ -304,8 +285,10 @@ export const columns: ColumnDef<User>[] = [
                   This action cannot be undone
                 </DialogDescription>
                 <DialogFooter>
-                  <Button variant={"outline"}>Cancel</Button>
-                  <Button variant={"destructive"}>Delete</Button>
+                  <DialogClose>
+                    <Button aria-label="Close" variant={"outline"}>Cancel</Button>
+                  </DialogClose>
+                  <Button onClick={()=>handleDelete(user.id)} variant={"destructive"}>Delete</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
