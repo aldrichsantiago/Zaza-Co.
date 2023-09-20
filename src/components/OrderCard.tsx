@@ -54,7 +54,7 @@ const OrderCard = () => {
                     <div className="flex flex-col space-y-1.5">
                     <ScrollArea className="h-[400px] w-full rounded-md border p-4 horizontal" data-orientation="horizontal" type="hover">
                       <div className="flex flex-wrap justify-around">
-                      {orders.map(({id, name, description, price, ratings, images, quantitySold})=> (
+                      {/* {orders.map(({id, name, description, price, ratings, images, quantitySold})=> (
                         <ProductCard key={id}
                         id={id} 
                         name={name} 
@@ -64,7 +64,7 @@ const OrderCard = () => {
                         images={images}
                         quantitySold={quantitySold}
                         disp={true}/>
-                      ))}
+                      ))} */}
                       </div>
                     </ScrollArea>
                     </div>

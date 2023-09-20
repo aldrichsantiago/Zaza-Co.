@@ -31,6 +31,7 @@ import { useToast } from "@/components/ui/use-toast"
 import useRefreshToken from "@/hooks/useRefreshToken"
 import useAuth from "@/hooks/useAuth"
 import { UseAuthProps } from "@/contexts/AuthProvider"
+import { DialogClose } from "@radix-ui/react-dialog"
 
 
 const Navbar:React.FC = () => {
@@ -242,7 +243,6 @@ const Navbar:React.FC = () => {
                                 <DropdownMenuItem onClick={()=>navigate("/admin")}><Package width={20}/> &nbsp; ADMIN PANEL</DropdownMenuItem>
                                     :
                                 ""
-
                                 }
                                 <DropdownMenuItem onClick={()=>navigate("/orders")}><Package width={20}/> &nbsp; Orders</DropdownMenuItem>
                                 <DropdownMenuItem onClick={()=>navigate("/wishlist")}><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>
@@ -315,7 +315,10 @@ const Navbar:React.FC = () => {
                             </div>
                             <div className='container flex justify-between py-4'>
                                 <Button variant="outline" className='rounded-3xl w-50'>Cancel</Button>
-                                <Button className='rounded-3xl w-50'>Checkout</Button>
+                                <DialogClose>
+                                <Button className='rounded-3xl w-50' onClick={()=>navigate("/checkout")}>Checkout</Button>
+
+                                </DialogClose>
                             </div>
                         </SheetContent>
                     </Sheet>

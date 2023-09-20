@@ -28,7 +28,10 @@ function Root() {
   }, [response]);
 
   console.log(data);
-  const addToCart = (id:number) => {
+  const addToCart = (id:number, ...args: number[]) => {
+    let itemCount = args[0];
+    console.log(itemCount);
+    
     const selectedProduct: any = data.find(product => product.id == id);
     console.log(selectedProduct)
     const cartProduct = cartArray.find((product: { id: number }) => product.id == id);
@@ -38,7 +41,16 @@ function Root() {
     if(selectedProduct.id === id){
       if ( cartProduct?.id  === id ) {
         if (cartProduct.stocks > cartProduct.itemCountCart){
-          cartProduct.itemCountCart += 1;
+          if(itemCount){
+            if(cartProduct.stocks < cartProduct.itemCountCart + itemCount){
+              cartProduct.itemCountCart = cartProduct.stocks;
+              toast({variant: "destructive", description: "You've achieve the maximum amount of this product!",})
+            } else {
+            cartProduct.itemCountCart += itemCount;
+            }
+          } else {
+            cartProduct.itemCountCart += 1;
+          }
           toast({description: "Product(s)  has been added to cart",})
         } else {
           cartProduct.itemCountCart = cartProduct.stocks;
@@ -46,8 +58,11 @@ function Root() {
         }
         setCartArray([...cartArray])
       }else {
-        setCartArray([...cartArray, {...selectedProduct, itemCountCart:1}])
-
+        if(itemCount) {
+          setCartArray([...cartArray, {...selectedProduct, itemCountCart:itemCount}])
+        }else {
+          setCartArray([...cartArray, {...selectedProduct, itemCountCart:1}])
+        }
       }
     }
   }

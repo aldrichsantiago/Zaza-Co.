@@ -58,6 +58,11 @@ import axios from 'axios'
 import { useToast } from '../ui/use-toast'
 import { useNavigate } from 'react-router-dom' 
 import { DialogClose } from "@radix-ui/react-dialog"
+import { Textarea } from "../ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { Label } from "@/components/ui/label"
+import { axiosPrivate } from "@/api/axios"
+
 
 const formSchema = z.object({
   firstName: z.string().min(2, {message: "First name must be at least 2 characters.",}),
@@ -71,13 +76,6 @@ const formSchema = z.object({
   path: ["confirm"], // path of error
 });
 
-const editFormSchema = z.object({
-  id: z.number(),
-  firstName: z.string().min(2, {message: "First name must be at least 2 characters.",}),
-  lastName: z.string().min(2, {message: "Last name must be at least 2 characters.",}),
-  email: z.string().email({message: "Please enter a valid email",}),
-  username: z.string().min(4, {message: "Username must be at least 4 characters.",}).max(16, {message: "Username should not exceed 16 characters."}),
-});
  
 export type User = {
   id: string,
@@ -172,20 +170,47 @@ export const columns: ColumnDef<User>[] = [
       const user = row.original
 
       const navigate = useNavigate();
+      const [editUserForm, setEditUserForm] = useState({})
       const { toast } = useToast()
 
-      const handleDelete = async(id:string) => {
+      const handleEditUserSubmit = async(id: string) => {
         axios
-          .patch('/delete/user/'+id, {id})
+          .patch('/edit/user/'+ id, editUserForm)
           .then((response) => {
             console.log(response.data);
-            navigate(0)
+            toast({
+              title: "Updated Successfully",
+              description: response.data.message,
+            })
           })
           .catch((error) => {
             console.error(error);
           });
           console.log(id);
-      } 
+      }
+      const handleEditUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const fieldName = e.target.getAttribute("name");
+        const fieldValue = e.target.value;
+        const newFormData: any = { ...editUserForm };
+        fieldName ? newFormData[fieldName] = fieldValue : ""
+        setEditUserForm(newFormData)
+        console.log(editUserForm)
+      }
+
+      const handleDelete = async(id:string) => {
+        try {
+          const response = axios.patch('/delete/user/'+id)
+          console.log(response);
+          navigate(0);
+        } catch (error) {
+          console.log(error);
+        }
+        toast({
+          variant: "default",
+          title: "User has been deleted."
+        })
+      }
  
       return (
         <DropdownMenu>
@@ -197,79 +222,50 @@ export const columns: ColumnDef<User>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            {/* <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.id)}
-            >
-              Edit User Info
-            </DropdownMenuItem> */}
             <Dialog>
               <DialogTrigger className="hover:bg-slate-100 w-full px-2 py-1.5 text-sm text-left rounded-sm transition-colors">Edit User</DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Edit user</DialogTitle>
                 </DialogHeader>
-                {/* <Form {...form}>
-                  <form className="space-y-3 ">
-                    <div className="flex flex-wrap justify-between">
-                    <FormField
-                      control={form.control}
-                      name="firstName"
-                      render={({ field }) => (
-                        <FormItem className='w-1/2 px-1'>
-                          <FormLabel>First name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="First name" {...field}  defaultValue={user.firstName}/>
-                          </FormControl>
-                          <FormMessage className="font-normal text-xs"/>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="lastName"
-                      render={({ field }) => (
-                        <FormItem className='w-1/2 px-1'>
-                          <FormLabel>Last name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Last name" {...field} defaultValue={user.lastName}/>
-                          </FormControl>
-                          <FormMessage className="font-normal text-xs"/>
-                        </FormItem>
-                      )}
-                    />
+                <form  method="patch" onSubmit={()=>handleEditUserSubmit(user.id)}>
+                  <div className="flex gap-2 justify-between">
+                    <div className="w-2/4">
+                    <Label htmlFor="firstName">First Name: </Label>
+                    <Input onChange={handleEditUserChange} name="firstName" className="my-1" defaultValue={user.firstName}/>
                     </div>
 
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Email" {...field} type='email' defaultValue={user.email}/>
-                          </FormControl>
-                          <FormMessage className="font-normal text-xs"/>
-                        </FormItem>
-                      )}
-                    />
+                    <div className="w-2/4">
+                    <Label htmlFor="lastName">Last Name: </Label>
+                    <Input onChange={handleEditUserChange} name="lastName" className="my-1" defaultValue={user.lastName}/>
+                    </div>
+                 
+                  </div>
+                    <Label htmlFor="email">Email: </Label>
+                    <Input onChange={handleEditUserChange} name="email" className="my-1" defaultValue={user.email}/>
+                  <div className="flex gap-2 justify-between">
+                    <div className="w-1/2">
+                      <Label htmlFor="username">Username: </Label>
+                      <Input onChange={handleEditUserChange} name="username" className="my-1" defaultValue={user.username}/>
+                    </div>
+                    <div className="w-1/2">
+                      <Label htmlFor="role">Role: </Label>
+                      <Select name="role" defaultValue={user.role} onValueChange={(value:string )=>setEditUserForm({...editUserForm, role: value})}>
+                        <SelectTrigger className="w-[225px] my-1">
+                          <SelectValue placeholder="" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem className="font-medium" value="admin">Admin</SelectItem>
+                          <SelectItem className="font-medium" value="client">Client</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                  <Button className="my-4" variant={"default"} type="submit">Save changes</Button>
 
-                    <FormField
-                      control={form.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Username" {...field} defaultValue={user.username} disabled/>
-                          </FormControl>
-                          <FormMessage className="font-normal text-xs"/>
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" onClick={()=>onSubmit} className='w-full my-72'>Save changes</Button>
-                  </form>
-                </Form> */}
+                  </div>
+                </form>
               </DialogContent>
             </Dialog>
             <DropdownMenuItem>Change password</DropdownMenuItem>
@@ -349,7 +345,6 @@ const Users = () => {
           signal: controller.signal
         });
         setData(response.data)
-        console.log(response.data)
 
         isMounted && setData(response.data)
       } catch (error) {

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { products } from '@/test_data';
 import { Separator } from "@/components/ui/separator"
-import QuantityCounter from '../QuantityCounter';
+import { ProductQuantityCounter } from '../QuantityCounter';
 import { Button } from '../ui/button';
 import { ShoppingBag, Truck } from 'lucide-react';
 import { Rating } from '@smastrom/react-rating';
@@ -11,6 +11,7 @@ import { EmblaOptionsType } from 'embla-carousel-react';
 import ProductCarousel from './Carousel/ProductCarousel';
 import './Carousel/css/productCaroursel/embla.css'
 import useAxios from '@/hooks/useAxios';
+import CartContext from '@/contexts/CartContext';
 
 type ProductParams = {
   productId: string;
@@ -39,9 +40,7 @@ const ProductPage:React.FC = () => {
   console.log(data);
 
   const selectedProduct:any = data?.find((p:any)=>{return p.id === Number(productId)})  
-  const OPTIONS: EmblaOptionsType = {}
-  const SLIDE_COUNT = 3
-  const SLIDES = Array.from(Array(SLIDE_COUNT).keys())
+  
 
   const arrImages = selectedProduct?.images?  JSON.parse(selectedProduct?.images): [];
   const srcImages:string[] = []
@@ -53,15 +52,22 @@ const ProductPage:React.FC = () => {
     setImages(srcImages);
    },[data]);
 
+   const OPTIONS: EmblaOptionsType = {}
+  const SLIDE_COUNT = arrImages.length
+  const SLIDES = Array.from(Array(SLIDE_COUNT).keys())
+
 
     const handleIncrement = (e: React.FormEvent) => {
         e.preventDefault();
-        if(itemCount === products[Number(productId)-1].stocks){
-            setItemCount(products[Number(productId)-1].stocks);
+        const selectedProduct = data.find((product: { id: string | undefined; })=> product.id == productId)
+        console.log(selectedProduct);
+        
+        if(itemCount === selectedProduct.stocks){
+            setItemCount(selectedProduct.stocks);
             toast({
               variant: "destructive",
               title: "Uh oh! Something went wrong.",
-              description: "We only have "+ products[Number(productId)-1].stocks+ " of this product left.",
+              description: "We only have "+ selectedProduct.stocks+ " of this product left.",
             })
         } else {
         setItemCount(itemCount+1);
@@ -76,6 +82,8 @@ const ProductPage:React.FC = () => {
         setItemCount(itemCount-1);
         }
     }
+
+    const cart:any = useContext(CartContext);
   return (
     <>
       <div className="container pt-20">
@@ -101,14 +109,13 @@ const ProductPage:React.FC = () => {
                 </section>
               </main>
             </div>
-        
         </div>
         <div className='md:w-2/5 w-full h-4/6 px-5'>
           {data?.map(({id, name, description, price, ratings, stocks, quantitySold}:{id:number, name:string, description:string, price:number, ratings:number, stocks:number, quantitySold:number}) => (
             Number(productId) === id ? 
             <div className='container' key={id}>
               <p className='mb-2 text-4xl font-semibold'>{name}</p>
-              <p className='font-medium mb-2'>{description}</p>
+              <p className='text-slate-600 mb-2 max-w-prose'>{description}</p>
               <span className="flex items-center">
                 <Rating style={{ maxWidth: 100 }} value={ratings? ratings: 0} readOnly />
                 <p className='font-semibold mx-2'>({quantitySold})</p>
@@ -121,7 +128,7 @@ const ProductPage:React.FC = () => {
 
 
               <div className=" w-5/6 flex flex-wrap items-center justify-between">
-                <QuantityCounter itemCount={itemCount} handleIncrement={handleIncrement} handleDecrement={handleDecrement}/>
+                <ProductQuantityCounter itemCount={itemCount} handleIncrement={handleIncrement} handleDecrement={handleDecrement}/>
                 <span className='font-medium text-sm flex'>Only <p className='text-orange-400 mx-1'>{stocks} items left</p>  in stock!</span>
               </div>
               <div className="w-full py-3 flex flex-wrap items-center justify-start">
@@ -129,7 +136,7 @@ const ProductPage:React.FC = () => {
                 <Button 
                   className='w-44 h-11 rounded-3xl hover:bg-green-900 hover:text-white' 
                   variant={'outline'} 
-                  onClick={() => {toast({description: "Product(s)  has been added to cart",})}}>
+                  onClick={()=>cart.addToCart(id, itemCount)}>
                     Add to Cart
                 </Button>
               </div>

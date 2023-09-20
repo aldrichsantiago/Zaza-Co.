@@ -25,6 +25,7 @@ import Users from './components/admin/Users.tsx';
 import Settings from './components/admin/Settings.tsx';
 import PersistLogin from './components/PersistLogin.tsx';
 import Products from './components/admin/Products.tsx';
+import Checkout from './components/pages/Checkout.tsx';
 
 
 const router = createBrowserRouter([
@@ -68,6 +69,9 @@ const router = createBrowserRouter([
                 },{
                   path: "/wishlist",
                   element: <Wishlist/>
+                },{
+                  path: "/checkout",
+                  element: <Checkout/>
                 },
               ]
             },
