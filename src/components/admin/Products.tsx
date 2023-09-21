@@ -111,7 +111,7 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "description",
     header: "Description",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("description")}</div>
+      <div className="capitalize max-w-prose truncate">{row.getValue("description")}</div>
     ),
   },
   {
