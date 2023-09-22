@@ -19,6 +19,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Rating } from '@smastrom/react-rating'
+import { Separator } from '../ui/separator'
+import useAuth from '@/hooks/useAuth'
+import { UseAuthProps } from '@/contexts/AuthProvider'
+import useAxios from '@/hooks/useAxios'
 
 
 
@@ -26,60 +30,72 @@ import { Rating } from '@smastrom/react-rating'
 const Checkout: React.FC = () => {
   const cartFromLocalStorage = JSON.parse(localStorage.getItem("cart") || "[]")
   const [cart, setCart] = useState(cartFromLocalStorage)
-  const images = JSON.parse(cart[0].images)
-  console.log(images);
+  const { auth }:UseAuthProps = useAuth();
+  const [username, setUsername] = useState(auth.username)
+
+  console.log(username);
+
+
+  const { response }: any|null = useAxios({
+    url:`/user/username/${auth.username}`,
+    method: 'get'
+  })
+
+
+  let checkoutSubtotal = cart?.reduce((accumulator: any, object: { itemCountCart: number, price: number }) => {
+    return accumulator + (object?.itemCountCart * object?.price);
+  }, 0);
+
+  console.log(checkoutSubtotal);
+  
   
   
   return (
-    <ScrollArea  className=" w-full rounded-md p-4">
-      <div className='py-5 px-12 flex gap-5 justify-between flex-wrap'>
-        <div className="w-full md:w-3/5 flex flex-col gap-5">
-          <div className="w-full h-56 flex justify-between bg-slate-100 rounded-lg border">
-            <img src={`http://localhost:8000/uploads/${images[0]}`} alt="product1" className='w-1/4'/>
-            <div className="flex flex-col pr-12 py-5">
-              <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-                {cart[0].name}
-              </h2>
-              <p className="leading-7 [&:not(:first-child)]:mt-6 max-w-prose truncate text-slate-600">
-                {cart[0].description}
-              </p>
-              <Rating style={{ maxWidth: 100 }} value={cart[0].ratings} readOnly/>
-              <div className="w-full flex justify-between items-center">
-                <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight my-2">
-                  $ {cart[0].price.toFixed(2)}
-                </h3>
-                <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                  Qty. {cart[0].itemCountCart}
-                </h4>
+    
+    <>
+      <div className='py-5 px-12 flex flex-row gap-5 justify-between flex-wrap'>
+        <div className='w-3/5 flex flex-col gap-5'>
+        {cart?.map((product:any) => {
+          console.log(product);
+          const images = JSON.parse(product.images)
+
+          return(
+          <div className="w-full flex flex-col gap-5">
+            <div className="w-full h-56 flex justify-between bg-slate-50 rounded-lg border">
+              <img src={`http://localhost:8000/uploads/${images[0]}`} alt="product1" className='w-1/5 ml-8 m-3 rounded-3xl'/>
+              <div className="w-2/3 flex flex-col flex-wrap px-5 py-5">
+                <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+                  {product.name}
+                </h2>
+                <p className="leading-7 [&:not(:first-child)]:mt-6 w-1/2 truncate text-slate-600">
+                  {product.description}
+                </p>
+                <Rating style={{ maxWidth: 100 }} value={product.ratings} readOnly/>
+                <div className="w-2/3 flex justify-between items-center">
+                  <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight my-2">
+                    $ {product.price.toFixed(2)}
+                  </h3>
+                  <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+                    Qty. {product.itemCountCart}
+                  </h4>
+                </div>
               </div>
-              
             </div>
-            
           </div>
-
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Card Title</CardTitle>
-              <CardDescription>Card Description</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Card Content</p>
-            </CardContent>
-            <CardFooter>
-              <p>Card Footer</p>
-            </CardFooter>
-          </Card>
+        )})}
         </div>
+
+        
+        
         
         <div className="w-full md:w-2/6 h-full">
           <Card>
             <CardHeader>
               <CardTitle>Customer Information</CardTitle>
               <div className='flex flex-col gap-2 justify-center mt-12 pt-2'>
-                  <Input type="text" placeholder="Full name" />
+                  <Input type="text" placeholder="Full name" value={response? response[0]?.firstName + " " + response[0]?.lastName: ""} disabled/>
                   <div className="flex gap-2">
-                    <Input type="email" placeholder="Email" />
+                    <Input type="email" placeholder="Email" value={response? response[0]?.email : ""} disabled/>
                     <Input type="number" placeholder="Phone (e.g. 09xxx)" />
                   </div>
                   <div className="flex items-center space-x-2 mx-3 mb-5 justify-center">
@@ -101,7 +117,7 @@ const Checkout: React.FC = () => {
                   <TabsTrigger value="gcash"><img className='m-1 rounded-lg' src={Gcash} width={75}/></TabsTrigger>
                 </TabsList>
                 <TabsContent className="mt-5" value="visa">
-                  <div className="grid w-full items-center gap-4">
+                  <div>
                     <div className="flex flex-col space-y-1.5">
                       <Label htmlFor="cardNumber">Card Number</Label>
                       <Input id="cardNumber" placeholder="Card Number" />
@@ -110,7 +126,7 @@ const Checkout: React.FC = () => {
                       <Label htmlFor="expdate">Expiration Date</Label>
                       <div className="flex justify-between">
                         <Select>
-                          <SelectTrigger className="w-[180px]">
+                          <SelectTrigger className="w-full lg:w-[180px]">
                             <SelectValue placeholder="Month" />
                           </SelectTrigger>
                           <SelectContent>
@@ -130,7 +146,7 @@ const Checkout: React.FC = () => {
                         </Select>
 
                         <Select>
-                          <SelectTrigger className="w-[240px]">
+                          <SelectTrigger className="w-full lg:w-[240px]">
                             <SelectValue placeholder="Year" />
                           </SelectTrigger>
                           <SelectContent>
@@ -159,17 +175,17 @@ const Checkout: React.FC = () => {
 
                 </TabsContent>
                 <TabsContent className="mt-5" value="mastercard">
-                <div className="grid w-full items-center gap-4">
-                    <div className="flex flex-col space-y-1.5">
+                <div className='w-full'>
+                    <div className="flex flex-col space-y-1.5 flex-wrap">
                       <Label htmlFor="cardNumber">Card Number</Label>
                       <Input id="cardNumber" placeholder="Card Number" />
                     </div>
-                    <div className="flex flex-col space-y-1.5">
+                    <div className="flex flex-col space-y-1.5 flex-wrap">
                       <Label htmlFor="expdate">Expiration Date</Label>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between w-full">
                         <Select>
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Month" />
+                          <SelectTrigger className="w-full xl:w-[180px]">
+                            <SelectValue placeholder="Month"/>
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="01">01</SelectItem>
@@ -188,8 +204,8 @@ const Checkout: React.FC = () => {
                         </Select>
 
                         <Select>
-                          <SelectTrigger className="w-[240px]">
-                            <SelectValue placeholder="Year" />
+                          <SelectTrigger className="w-full xl:w-[240px]">
+                            <SelectValue placeholder="Year"/>
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="2022">2022</SelectItem>
@@ -252,6 +268,32 @@ const Checkout: React.FC = () => {
                 <Input placeholder='Country'/>
                 <Input placeholder='Postal Code'/>
               </div>
+              <div className="flex justify-between mt-6">
+                <h4 className="scroll-m-20 text-md font-semibold tracking-tight">
+                  Subtotal: 
+                </h4>
+                <h4 className="scroll-m-20 text-md font-semibold tracking-tight">
+                  ${checkoutSubtotal.toFixed(2)} 
+                </h4>
+              </div>
+              <div className="flex justify-between">
+                <h4 className="scroll-m-20 text-md font-semibold tracking-tight">
+                  Shipping: 
+                </h4>
+                <h4 className="scroll-m-20 text-md font-semibold tracking-tight">
+                  ${(checkoutSubtotal/8).toFixed(2)} 
+                </h4>
+              </div>
+              <Separator className='mt-3'/>
+
+              <div className="flex justify-between">
+                <h4 className="scroll-m-20 text-md font-semibold tracking-tight">
+                  Total: 
+                </h4>
+                <h4 className="scroll-m-20 text-md font-semibold tracking-tight">
+                  ${(checkoutSubtotal + (checkoutSubtotal/8)).toFixed(2)} 
+                </h4>
+              </div>
 
             </CardContent>
             <CardFooter>
@@ -261,7 +303,7 @@ const Checkout: React.FC = () => {
         </div>
           
       </div>
-    </ScrollArea>
+    </>
   )
 }
 

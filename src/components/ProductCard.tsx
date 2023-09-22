@@ -65,7 +65,7 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
           </TooltipProvider>
 
           
-          <Link className="w-full h-full absolute z-10 flex justify-center" to={`/products/${id}`}>
+          <Link className="w-full h-full absolute z-10 flex justify-center p-3" to={`/products/${id}`}>
             <img src={images? `${import.meta.env.VITE_API_URL}/uploads/${arrImages[0]}`: ""} alt="Image here" className="hover:scale-105 transition-transform max-w-full rounded-2xl"/>
           </Link>
         </CardContent>
