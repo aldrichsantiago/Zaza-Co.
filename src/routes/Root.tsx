@@ -27,7 +27,6 @@ function Root() {
     }
   }, [response]);
 
-  console.log(data);
   const addToCart = (id:number, ...args: number[]) => {
     let itemCount = args[0];
     console.log(itemCount);
