@@ -111,6 +111,7 @@ function Root() {
 
   const cartContextValues = {
     cartArray,
+    setCartArray,
     addToCart,
     handleIncrement,
     handleDecrement,

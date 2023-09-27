@@ -19,7 +19,6 @@ import Orders from './components/pages/Orders.tsx';
 import RequireAuth from './components/pages/RequireAuth.tsx';
 import Wishlist from './components/pages/Wishlist.tsx';
 import Dashboard from './components/admin/Dashboard.tsx';
-import Analytics from './components/admin/Products.tsx';
 import Logs from './components/admin/Logs.tsx';
 import Users from './components/admin/Users.tsx';
 import Settings from './components/admin/Settings.tsx';

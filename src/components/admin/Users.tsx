@@ -58,10 +58,9 @@ import axios from 'axios'
 import { useToast } from '../ui/use-toast'
 import { useNavigate } from 'react-router-dom' 
 import { DialogClose } from "@radix-ui/react-dialog"
-import { Textarea } from "../ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Label } from "@/components/ui/label"
-import { axiosPrivate } from "@/api/axios"
+import useRefreshToken from "@/hooks/useRefreshToken"
 
 
 const formSchema = z.object({
@@ -334,8 +333,6 @@ const Users = () => {
   }
 
   
-
-
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();

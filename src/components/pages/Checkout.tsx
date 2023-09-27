@@ -1,11 +1,10 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Visa from '../../assets/visa-logo.png'
 import Mastercard from '../../assets/mastercard-logo.jpg'
 import Maya from '../../assets/maya-logo.jpg'
 import Gcash from '../../assets/gcash-logo.png'
 import Paypal from '../../assets/paypal-logo.png'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -25,11 +24,16 @@ import { UseAuthProps } from '@/contexts/AuthProvider'
 import useAxios from '@/hooks/useAxios'
 import axios from '@/api/axios'
 import { useToast } from '../ui/use-toast'
+import { useNavigate } from 'react-router-dom'
+import CartContext from '@/contexts/CartContext'
 
 const Checkout: React.FC = () => {
   const cartFromLocalStorage = JSON.parse(localStorage.getItem("cart") || "[]")
   const [cart, setCart] = useState(cartFromLocalStorage)
   const productsArr:any = [];
+  const navigate = useNavigate();
+  const [message, setMessage] = useState();
+  const {setCartArray}:any = useContext(CartContext);
 
   let checkoutSubtotal = cart?.reduce((accumulator: any, object: { itemCountCart: number, price: number }) => {
     return accumulator + (object?.itemCountCart * object?.price);
@@ -46,7 +50,7 @@ const Checkout: React.FC = () => {
     shippingAmount: (checkoutSubtotal/8).toFixed(2),
     username: auth.username,
     paymentMethod: 'visa',
-    products: productsArr
+    productsArr: productsArr
   })
   const { toast } = useToast()
 
@@ -55,8 +59,9 @@ const Checkout: React.FC = () => {
     method: 'get'
   })
 
-  const handlePlaceOrder = async() => {
-    const { username, phone, paymentMethod, products, cardNumber, expMonth, expYear, ccv, paypalEmail, mayaPhone, gcashPhone, shippingAddress, addressLine1, city, state, country, zipCode } = paymentInfo;
+  const handlePlaceOrder = async(e: React.FormEvent) => {
+    e.preventDefault();
+    const { username, phone, paymentMethod, productsArr, cardNumber, expMonth, expYear, ccv, paypalEmail, mayaPhone, gcashPhone, shippingAddress, addressLine1, city, state, country, zipCode } = paymentInfo;
     if(!username){
       toast({
         title: "User not logged in",
@@ -65,7 +70,7 @@ const Checkout: React.FC = () => {
       return;
     }
     
-    if(!products){
+    if(!productsArr){
       toast({
         title: "Add some products to cart",
         variant: "destructive"
@@ -222,20 +227,27 @@ const Checkout: React.FC = () => {
       });
       return;
     }
-
     console.log(paymentInfo)
-    axios
-      .post('/create/order', paymentInfo)
-      .then((response) => {
-        console.log(response.data);
-        toast({
-          title: "Order is placed successfully",
-          description: response.data.message,
+    try {
+      const response = await axios.post('/create/order', paymentInfo, 
+        {
+          headers:{
+            'Content-Type': 'application/json'
+          }
         })
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+        console.log(response);
+        setMessage(response.data.message)
+        setCartArray([])
+    } catch (error) {
+      console.log(error);
+    }finally{
+      navigate("/orders")
+      // toast({
+      //   title: message,
+      //   variant: "default"
+      // });
+    }
+
   }
 
 
@@ -255,35 +267,37 @@ const Checkout: React.FC = () => {
     <>
       <div className='py-5 px-12 flex flex-row gap-5 justify-between flex-wrap'>
         <div className='w-3/5 flex flex-col gap-5'>
-        {cart?.map((product:any) => {
-          const images = JSON.parse(product.images)
-          return(
-          <div className="w-full flex flex-col gap-5" key={product.id}>
-            <div className="w-full h-56 flex justify-between bg-slate-50 rounded-lg border">
-              <img src={`http://localhost:8000/uploads/${images[0]}`} alt="product1" className='w-1/5 ml-8 m-3 rounded-3xl'/>
-              <div className="w-2/3 flex flex-col flex-wrap px-5 py-5">
-                <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-                  {product.name}
-                </h2>
-                <p className="leading-7 [&:not(:first-child)]:mt-6 w-1/2 truncate text-slate-600">
-                  {product.description}
-                </p>
-                <Rating style={{ maxWidth: 100 }} value={product.ratings} readOnly/>
-                <div className="w-2/3 flex justify-between items-center">
-                  <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight my-2">
-                    $ {product.price.toFixed(2)}
-                  </h3>
-                  <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                    Qty. {product.itemCountCart}
-                  </h4>
+          {cart?.map((product:any) => {
+            // const images = JSON.parse(product.images)
+            return(
+            <div className="w-full flex flex-col gap-5" key={product.id}>
+              <div className="w-full h-56 flex justify-between bg-slate-50 rounded-lg border">
+                <img src={`http://localhost:8000/uploads/${product.images[0]}`} alt="product1" className='w-1/5 ml-8 m-3 rounded-3xl'/>
+                <div className="w-2/3 flex flex-col flex-wrap px-5 py-5">
+                  <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+                    {product.name}
+                  </h2>
+                  <p className="leading-7 [&:not(:first-child)]:mt-6 w-1/2 truncate text-slate-600">
+                    {product.description}
+                  </p>
+                  <Rating style={{ maxWidth: 100 }} value={product.ratings} readOnly/>
+                  <div className="w-2/3 flex justify-between items-center">
+                    <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight my-2">
+                      $ {product.price.toFixed(2)}
+                    </h3>
+                    <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+                      Qty. {product.itemCountCart}
+                    </h4>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )})}
+          )})}
         </div>
 
         <div className="w-full md:w-2/6 h-full">
+          <form >
+
           <Card>
             <CardHeader>
               <CardTitle>Customer Information</CardTitle>
@@ -495,8 +509,8 @@ const Checkout: React.FC = () => {
               <Button className='w-full bg-amber-500 hover:bg-amber-600' onClick={handlePlaceOrder}>Place Order</Button>
             </CardFooter>
           </Card>
+          </form>
         </div>
-          
       </div>
     </>
   )

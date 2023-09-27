@@ -23,7 +23,7 @@ const ProductPage:React.FC = () => {
   const [itemCount, setItemCount] = useState<number>(1);
   const { toast } = useToast()
   const [data, setData]:any = useState([]);
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages]:any = useState([]);
   const { response }:any = useAxios({
     method: 'get',
     url: '/product/'+ productId,
@@ -37,23 +37,28 @@ const ProductPage:React.FC = () => {
     }
   }, [response]);
   
-  console.log(data);
 
-  const selectedProduct:any = data?.find((p:any)=>{return p.id === Number(productId)})  
+  const selectedProduct: any = response?.find((p:any)=>{return p.id === Number(productId)})  
+  console.log(selectedProduct);
+
+
+
   
+  // const imgArr = response[0].images
+  // const srcImg: string[] = []
 
-  const arrImages = selectedProduct?.images?  JSON.parse(selectedProduct?.images): [];
-  const srcImages:string[] = []
-  for(const img of arrImages){
-    srcImages.push(`${import.meta.env.VITE_API_URL}/uploads/${img}`)
-  }
- 
-  useEffect(()=>{
-    setImages(srcImages);
-   },[data]);
+  // for (const img of imgArr){
+  //   srcImg.push(`${import.meta.env.VITE_API_URL}/uploads/${img}`)
+  // }
+  // console.log(srcImg);
+  
+  // useEffect(()=>{
+  //   setImages(srcImg)
+  // },[response]);
 
-   const OPTIONS: EmblaOptionsType = {}
-  const SLIDE_COUNT = arrImages.length
+
+  const OPTIONS: EmblaOptionsType = {}
+  const SLIDE_COUNT = selectedProduct?.images.length
   const SLIDES = Array.from(Array(SLIDE_COUNT).keys())
 
 
@@ -105,7 +110,7 @@ const ProductPage:React.FC = () => {
               {/* <img src={images[0]} alt="Image goes here" className='w-3/5'/> */}
               <main className="sandbox">
                 <section className="sandbox__carousel">
-                  <ProductCarousel slides={SLIDES} options={OPTIONS} images={images}/>
+                  {response ? <ProductCarousel slides={SLIDES} options={OPTIONS} images={response[0].images}/> : ""}
                 </section>
               </main>
             </div>

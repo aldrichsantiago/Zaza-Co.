@@ -17,6 +17,10 @@ const ProductCarousel: React.FC<PropType> = (props) => {
     containScroll: 'keepSnaps',
     dragFree: true
   })
+  const newImgArr: string[] =[]
+  images.forEach(element => {
+    newImgArr.push(`${import.meta.env.VITE_API_URL}/uploads/${element}`)
+  });
 
   const onThumbClick = useCallback(
     (index: number) => {
@@ -50,7 +54,7 @@ const ProductCarousel: React.FC<PropType> = (props) => {
               </div>
               <img
                 className="embla__slide__img max-w-md"
-                src={productImageByIndex(index, images?images:[])}
+                src={productImageByIndex(index, images?newImgArr:[])}
                 alt="Your alt text"
               />
             </div>
@@ -66,7 +70,7 @@ const ProductCarousel: React.FC<PropType> = (props) => {
                 onClick={() => onThumbClick(index)}
                 selected={index === selectedIndex}
                 index={index}
-                imgSrc={productImageByIndex(index, images?images:[])}
+                imgSrc={productImageByIndex(index, images?newImgArr:[])}
                 key={index}
               />
             ))}
