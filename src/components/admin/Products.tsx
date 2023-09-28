@@ -141,7 +141,7 @@ export const columns: ColumnDef<Product>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("stocks")}</div>,
+    cell: ({ row }) => <div className="lowercase pl-6">{row.getValue("stocks")}</div>,
   },
   {
     accessorKey: "quantitySold",
@@ -156,7 +156,7 @@ export const columns: ColumnDef<Product>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("quantitySold")}</div>,
+    cell: ({ row }) => <div className="lowercase pl-6">{row.getValue("quantitySold")}</div>,
   },{
     id: "actions",
     header: "Actions",

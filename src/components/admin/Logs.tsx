@@ -1,59 +1,32 @@
 import { useEffect, useState } from "react"
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
+import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
- 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-  DialogDescription
-} from "@/components/ui/dialog"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Dialog, DialogContent, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { useToast } from '../ui/use-toast'
 import { useNavigate } from 'react-router-dom'
 import useAxiosPrivate from "@/hooks/useAxiosPrivate"
-import { Textarea } from "../ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import axios from "@/api/axios"
-import { DialogClose } from "@radix-ui/react-dialog"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { axiosPrivate } from "@/api/axios"
  
  
+export type Orders = {
+  orderId: number,
+  productId: number,
+  userId: number,
+  itemQuantity: number,
+  createdAt: string,
+  products: Product,
+  users: any,
+  orders: any,
+}
 export type Product = {
-  id: string,
+  id: number,
   name: string,
   description: string,
   price: number,
@@ -64,8 +37,9 @@ export type Product = {
 }
 
 
+
  
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<Orders>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -86,113 +60,95 @@ export const columns: ColumnDef<Product>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("id")}</div>
-    ),
-  },
-  {
-    accessorKey: "name",
+    accessorKey: "orderId",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          Order ID
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+    cell: ({ row }) => <div className="capitalize pl-6">{row.getValue("orderId")}</div>,
   },
   {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => (
-      <div className="capitalize max-w-prose truncate">{row.getValue("description")}</div>
-    ),
-  },
-  {
-    accessorKey: "category",
-    header: "Category",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("category")}</div>
-    ),
-  },
-  {
-    accessorKey: "price",
-    header: "Price",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("price")}</div>
-    ),
-  },
-  {
-    accessorKey: "stocks",
+    accessorKey: "userId",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Stocks
+          User ID
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("stocks")}</div>,
+    cell: ({ row }) => <div className="capitalize pl-6">{row.getValue("userId")}</div>,
   },
   {
-    accessorKey: "quantitySold",
+    accessorKey: "email",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Quantity Sold
+          Email
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("quantitySold")}</div>,
+    cell: ({ row }) => <div>{`${row.original.users.email}`}</div>,
+  },
+  {
+    accessorKey: "productId",
+    header: "Product ID",
+    cell: ({ row }) => (
+      
+      <div className="capitalize max-w-prose truncate">{row.getValue("productId")}</div>
+    ),
+  },
+  {
+    accessorKey: "productId",
+    header: "Product Name",
+    cell: ({ row }) => { 
+      console.log(row.original.products);
+      
+      return (
+      <div className="capitalize max-w-prose truncate">{`${row.original.products.name}`}</div>
+    )},
+  },
+  
+  {
+    accessorKey: "itemQuantity",
+    header: "ProductQuantity",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("itemQuantity")}</div>
+    ),
+  },
+  {
+    accessorKey: "Total",
+    header: "Total",
+    cell: ({ row }) => (
+      <div className="capitalize">{`$${(row.original.orders.subtotal)+(row.original.orders.shippingAmount)}`}</div>
+    ),
   },{
     id: "actions",
     header: "Actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const product = row.original
+      const order = row.original
       const navigate = useNavigate();
       const { toast } = useToast();
-      const [editProductForm, setEditProductForm] = useState({});
+      const [statusForm, setStatusForm] = useState({});
 
-      const handleDelete = async(id:string) => {
-        axios
-          .patch('/delete/product/'+id, {id})
-          .then((response) => {
-            console.log(response.data);
-            navigate(0)
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-          console.log(id);
-      }
-
-      const handleEditProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        const fieldName = e.target.getAttribute("name");
-        const fieldValue = e.target.value;
-        const newFormData: any = { ...editProductForm };
-        fieldName ? newFormData[fieldName] = fieldValue : ""
-        setEditProductForm(newFormData)
-        console.log(editProductForm)
-      }
-
-      const handleEditProductSubmit = async(id:string) => {
-        axios
-          .patch('/edit/product/'+ id, editProductForm)
+      const handleStatusSubmit = async(id:number) => {
+        axiosPrivate
+          .patch('order/edit/status/'+ id, statusForm)
           .then((response) => {
             console.log(response.data);
             navigate(0);
@@ -217,65 +173,29 @@ export const columns: ColumnDef<Product>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <Dialog>
-              <DialogTrigger className="hover:bg-slate-100 w-full p-1.5 text-sm text-left rounded-sm transition-colors">Edit Product Information</DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Edit Product Information</DialogTitle>
-                </DialogHeader>
-                <form  method="patch" onSubmit={()=>handleEditProductSubmit(product.id)}>
-                  <Label htmlFor="name">Name: </Label>
-                  <Input onChange={handleEditProductChange} name="name" className="my-1" defaultValue={product.name}/>
-                  <Label htmlFor="description">Description: </Label>
-                  <Textarea onChange={(e: React.ChangeEvent<HTMLTextAreaElement> )=>setEditProductForm({...editProductForm, description: e.target.value})} name="description" className="my-1" defaultValue={product.description}/>
-                  <div className="flex gap-2 justify-between">
-                    <div>
-                      <Label htmlFor="price">Price: </Label>
-                      <Input onChange={handleEditProductChange} name="price" type="number" pattern="^[1-9]\d+$" className="my-1" min={0} max={99999} defaultValue={product.price}/>
-                    </div>
-                    <div>
-                      <Label htmlFor="stocks">Stocks: </Label>
-                      <Input onChange={handleEditProductChange} name="stocks" type="number" pattern="^[1-9]\d+$" className="my-1" min={0} max={99999} defaultValue={product.stocks}/>
-                    </div>
-                      <div>
-                        <Label htmlFor="category">Category: </Label>
-                        <Select name="category" defaultValue={product.category} onValueChange={(value:string )=>setEditProductForm({...editProductForm, category: value})}>
-                          <SelectTrigger className="w-[185px] my-1 font-medium">
-                            <SelectValue placeholder="" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem className="font-medium" value="accessories">Accessories</SelectItem>
-                            <SelectItem className="font-medium" value="health-and-fitness">Health & Fitness</SelectItem>
-                            <SelectItem className="font-medium" value="electronics">Electronics</SelectItem>
-                            <SelectItem className="font-medium" value="furnitures">Furnitures</SelectItem>
-                            <SelectItem className="font-medium" value="clothing">Clothing</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                  </div>
-                  <div className="flex justify-end">
-                  <Button className="my-4" variant={"default"} type="submit">Save changes</Button>
-
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
+            
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Change Product Images</DropdownMenuItem>
             <Dialog>
-              <DialogTrigger className="hover:bg-red-500 hover:text-white w-full p-1.5 text-sm text-left rounded-sm transition-colors">Delete Product</DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Are you sure you want to delete this product?</DialogTitle>
-                </DialogHeader>
-                <DialogDescription>
-                  This action cannot be undone
-                </DialogDescription>
+              <DialogTrigger className="hover:bg-slate-200 w-full p-1.5 text-sm text-left rounded-sm transition-colors">Change Status</DialogTrigger>
+              <DialogContent className="flex flex-col">
+                <Label>Order Status</Label>
+              <Select defaultValue={order.orders.status} onValueChange={(value:string)=>{setStatusForm({status: value})}}>
+                <SelectTrigger className="w-[280px] m-1">
+                  <SelectValue placeholder="Select a fruit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="to_pack">To Pack</SelectItem>
+                    <SelectItem value="in_logistics">In Logistics</SelectItem>
+                    <SelectItem value="shipped">Shipped</SelectItem>
+                    <SelectItem value="out_for_delivery">Out For Delivery</SelectItem>
+                    <SelectItem value="delivered">Delivered</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
                 <DialogFooter>
-                  <DialogClose>
-                    <Button aria-label="Close" variant={"outline"}>Cancel</Button>
-                  </DialogClose>
-                  <Button onClick={()=>handleDelete(product.id)} variant={"destructive"}>Delete</Button>
+                  <Button variant={"default"} onClick={()=>handleStatusSubmit(order.orderId)}>Save</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -286,14 +206,6 @@ export const columns: ColumnDef<Product>[] = [
   },
 ]
 
-interface AddProduct {
-  name?: string
-  description?: string
-  price?: number
-  stocks?: number
-  category?: 'electronics' | 'health-and-fitness' | 'Furnitures' | 'accessories' | 'clothing' | string
-  images?: string[]
-}
 
 const Logs = () => {
 
@@ -303,16 +215,13 @@ const Logs = () => {
   const [rowSelection, setRowSelection] = useState({})
   const [data, setData] = useState([])
   const axiosPrivate = useAxiosPrivate();
-  const navigate = useNavigate();
-  const { toast } = useToast()
-
 
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
-    const getProducts = async() => {
+    const getOrders = async() => {
       try {
-        const response: any = await axiosPrivate.get(`/products`, { 
+        const response: any = await axiosPrivate.get(`/orders/all`, { 
           signal: controller.signal
         });
         setData(response.data)
@@ -323,7 +232,7 @@ const Logs = () => {
         console.log(error);
       }
     }
-    getProducts();
+    getOrders();
 
     return () => {
       isMounted = false;
