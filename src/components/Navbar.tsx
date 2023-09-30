@@ -123,7 +123,7 @@ const Navbar:React.FC = () => {
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem onClick={()=>navigate("/orders")}><Package width={20}/> &nbsp; Orders</DropdownMenuItem>
                                                 <DropdownMenuItem onClick={()=>navigate("/wishlist")}><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>
-                                                <DropdownMenuItem><Settings width={20}/> &nbsp; Settings</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={()=>navigate("/settings")}><Settings width={20}/> &nbsp; Settings</DropdownMenuItem>
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem onClick={Logout}><LogOut width={20}/> &nbsp; Logout</DropdownMenuItem>
                                             </DropdownMenuContent>
@@ -246,7 +246,7 @@ const Navbar:React.FC = () => {
                                 }
                                 <DropdownMenuItem onClick={()=>navigate("/orders")}><Package width={20}/> &nbsp; Orders</DropdownMenuItem>
                                 <DropdownMenuItem onClick={()=>navigate("/wishlist")}><Heart width={20}/> &nbsp; My Wishlist</DropdownMenuItem>
-                                <DropdownMenuItem><Settings width={20}/> &nbsp; Settings</DropdownMenuItem>
+                                <DropdownMenuItem onClick={()=>navigate("/settings")}><Settings width={20}/> &nbsp; Settings</DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={Logout}><LogOut width={20}/> &nbsp; Logout</DropdownMenuItem>
                             </DropdownMenuContent>

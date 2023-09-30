@@ -15,7 +15,7 @@ const Home: React.FC = () => {
   const SLIDE_COUNT = 3
   const SLIDES = Array.from(Array(SLIDE_COUNT).keys())
 
-  const { response, loading, error } = useAxios({
+  const { response } = useAxios({
     method: 'get',
     url: '/products',
     headers: JSON.stringify({ accept: '*/*' }),

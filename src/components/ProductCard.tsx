@@ -17,8 +17,12 @@ import {
 import { Link } from "react-router-dom"
 import { Rating } from '@smastrom/react-rating';
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import CartContext from "@/contexts/CartContext"
+import useAuth from "@/hooks/useAuth"
+import { UseAuthProps } from "@/contexts/AuthProvider"
+import axios from "@/api/axios"
+import { useToast } from "./ui/use-toast"
 
 interface Product {
   id: number
@@ -27,26 +31,48 @@ interface Product {
   price: number
   ratings?: number
   quantitySold?: number
-  images: string
+  images: string[]
   category?: string 
   disp?: boolean
 }
 
 const ProductCard = ({ id, name, description, price, images, quantitySold, ratings, disp }: Product) => {
   const navigate = useNavigate();
-  let isAuth: boolean = false;
-  const cart:any = useContext(CartContext);
+  const { toast } = useToast();
+  const [message, setMessage] = useState<string>("")
+  const { auth }: UseAuthProps = useAuth();
+  const cart: any = useContext(CartContext);
 
-
-  const addToWishlist = () => {
-    if (isAuth) {
-      return;
+  const addToWishlist = async(id:number) => {
+    if (auth) {
+      try {
+        console.log(auth.wishlist);
+        if(auth){
+          const res = await axios.patch("/wishlist/user/" + auth.username + "/" + id, id)
+          console.log(id);
+          toast({
+            variant: "default",
+            title: res.data.message
+          })
+          setMessage(res.data.message)
+          
+        }
+        
+      } catch (error) {
+        console.log(error);
+        return;
+      }
     } else{
       navigate("/login");
     }
   }
 
-  // const arrImages = JSON.parse(images)
+  useEffect(()=>{
+  },[message]);
+
+  const wishlistIds: number[] = auth?.wishlist;
+  const idExists = wishlistIds.find(w => w === id);
+
   return (
     <>
         <Card className="w-[300px] h-[400px] m-3 flex flex-col items-center border-none shadow-none">
@@ -54,9 +80,17 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <span className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-red-500 hover:text-white">
-                  <Heart size={20} onClick={addToWishlist}/>
+                {
+                  idExists? 
+                  <span className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
+                    <Heart size={20} onClick={()=>addToWishlist(id)}/>
                   </span>
+                  :
+                  <span className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
+                    <Heart size={20} onClick={()=>addToWishlist(id)}/>
+                  </span>
+                }
+               
               </TooltipTrigger>
               <TooltipContent side="right" align="end" sideOffset={270}>
                   <p className="w-24 h-5 block z-50">Add to Wishlist</p>

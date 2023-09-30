@@ -43,7 +43,7 @@ const Login: React.FC = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, values, {headers: {"Content-Type": 'application/json'}, withCredentials: true})
-      setAuth? setAuth({accessToken: response?.data.token, roles: [response?.data.role], username: response?.data.username}):""
+      setAuth? setAuth({accessToken: response?.data.token, roles: [response?.data.role], username: response?.data.username, cart: response.data.cart, wishlist: response.data.wishlist}):""
 
       toast({
         description: "Logged in successfully",

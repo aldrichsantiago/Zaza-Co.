@@ -5,6 +5,11 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useContext } from "react";
 import CartContext from "@/contexts/CartContext";
 import { Button } from "./ui/button";
+import { UseAuthProps } from "@/contexts/AuthProvider";
+import useAuth from "@/hooks/useAuth";
+import axios from "@/api/axios";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "./ui/use-toast";
 
 
 export interface CartCardProps {
@@ -21,9 +26,31 @@ export interface CartCardProps {
 
 
 const CartProductCard = ({ id, name, price, images, itemCountCart, handleDecrement, handleIncrement }: CartCardProps) => {
-  // const arrImages = JSON.parse(images)
-  
+  const { auth }: UseAuthProps = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast()
   const cart:any = useContext(CartContext);
+  
+  const addToWishlist = async(id:number) => {
+    if (auth) {
+      try {
+        console.log(auth.wishlist);
+        if(auth){
+          const res = await axios.post("/wishlist/user/" + auth.username + "/" + id, id)
+          console.log(id);
+          toast({
+            variant: "default",
+            title: res.data.message
+          })
+        }
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+    } else{
+      navigate("/login");
+    }
+  }
 
   return (
     <>
@@ -51,7 +78,7 @@ const CartProductCard = ({ id, name, price, images, itemCountCart, handleDecreme
               </DialogFooter>
             </DialogContent>
           </Dialog>
-            <span className="flex justify-center items-center w-7 h-7 rounded-full bg-slate-300 hover:bg-slate-400 hover:cursor-pointer active:text-white"><Heart width={18}/></span>
+            <span onClick={()=>addToWishlist(id)} className="flex justify-center items-center w-7 h-7 rounded-full bg-slate-300 hover:bg-slate-400 hover:cursor-pointer active:text-white"><Heart width={18}/></span>
           </span>
         </div>
       </div>

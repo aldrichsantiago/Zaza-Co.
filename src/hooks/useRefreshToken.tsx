@@ -23,7 +23,9 @@ const useRefreshToken = () => {
                 ...prev,
                 roles: [res.data.role],
                 username: res.data.username,
-                accessToken: res.data.accessToken
+                accessToken: res.data.accessToken,
+                cart: res.data.cart, 
+                wishlist: res.data.wishlist 
             }
         }) 
         : ()=>{console.log("useRefreshToken Error")}

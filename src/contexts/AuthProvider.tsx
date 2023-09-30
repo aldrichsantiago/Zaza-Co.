@@ -11,6 +11,8 @@ export interface UseAuthProps {
 
 export const AuthProvider = ({ children }:PropsWithChildren ) => {
     const [auth, setAuth] = useState<UseAuthProps>({})
+    console.log(auth);
+    
     return(
         <AuthContext.Provider value={{ auth, setAuth }}>
             {children}

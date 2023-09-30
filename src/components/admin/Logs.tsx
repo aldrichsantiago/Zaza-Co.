@@ -13,17 +13,23 @@ import { useNavigate } from 'react-router-dom'
 import useAxiosPrivate from "@/hooks/useAxiosPrivate"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { axiosPrivate } from "@/api/axios"
+import { Badge } from "../ui/badge"
+import moment from 'moment'
  
  
 export type Orders = {
   orderId: number,
   productId: number,
   userId: number,
+  status: 'to_pack'| 'in_logistics'| 'shipped'| 'out_for_delivery'| 'delivered'| 'cancelled',
   itemQuantity: number,
+  shippingAmount: number,
+  subtotal: number,
+  email: string,
   createdAt: string,
+  shippingAddress: string,
+  paymentMethod: string,
   products: Product,
-  users: any,
-  orders: any,
 }
 export type Product = {
   id: number,
@@ -74,21 +80,7 @@ export const columns: ColumnDef<Orders>[] = [
     },
     cell: ({ row }) => <div className="capitalize pl-6">{row.getValue("orderId")}</div>,
   },
-  {
-    accessorKey: "userId",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          User ID
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="capitalize pl-6">{row.getValue("userId")}</div>,
-  },
+
   {
     accessorKey: "email",
     header: ({ column }) => {
@@ -102,41 +94,83 @@ export const columns: ColumnDef<Orders>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div>{`${row.original.users.email}`}</div>,
+    cell: ({ row }) => <div>{`${row.original.email}`}</div>,
   },
   {
-    accessorKey: "productId",
-    header: "Product ID",
+    accessorKey: "shippingAddress",
+    header: "Address",
     cell: ({ row }) => (
-      
-      <div className="capitalize max-w-prose truncate">{row.getValue("productId")}</div>
+      <div className="capitalize max-w-prose truncate">{`${(row.original.shippingAddress)}`}</div>
     ),
   },
   {
-    accessorKey: "productId",
-    header: "Product Name",
-    cell: ({ row }) => { 
-      console.log(row.original.products);
-      
-      return (
-      <div className="capitalize max-w-prose truncate">{`${row.original.products.name}`}</div>
-    )},
+    accessorKey: "Status",
+    header: "Status",
+    cell: ({ row }) => {
+      let badge = <></>
+
+      switch (row.original.status) {
+        case "to_pack":
+          badge = <Badge className="bg-yellow-500 text-white" variant="outline">To Pack</Badge>;
+          break;
+        case "shipped":
+          badge = <Badge className="bg-blue-600 text-white" variant="outline">Shipped</Badge>;
+          break;
+        case "in_logistics":
+          badge = <Badge className="bg-sky-300 text-white" variant="outline">Logistics</Badge>;
+          break;
+        case "out_for_delivery":
+          badge = <Badge className="bg-green-400 text-white" variant="outline">Out for Delivery</Badge>;
+          break;
+        case "delivered":
+          badge = <Badge className="bg-green-600 text-white" variant="outline">Delivered</Badge>;
+          break;
+        case "cancelled":
+          badge = <Badge variant="destructive">Cancelled</Badge>;
+          break;
+        default:
+          break;
+      }
+      return(
+        badge
+      )
+    },
   },
-  
   {
-    accessorKey: "itemQuantity",
-    header: "ProductQuantity",
+    accessorKey: "paymentMethod",
+    header: "Payment Method",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("itemQuantity")}</div>
+      <div className="uppercase pl-6">{`${(row.original.paymentMethod)}`}</div>
     ),
   },
   {
     accessorKey: "Total",
     header: "Total",
     cell: ({ row }) => (
-      <div className="capitalize">{`$${(row.original.orders.subtotal)+(row.original.orders.shippingAmount)}`}</div>
+      <div className="capitalize">{`$${(row.original.subtotal)+(row.original.shippingAmount)}`}</div>
     ),
-  },{
+  },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Order Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const formattedDate = moment(row.original.createdAt).format(' MM/DD/YYYY');
+
+      return(
+        <div>{`${formattedDate}`}</div>
+      )},
+  },
+  {
     id: "actions",
     header: "Actions",
     enableHiding: false,
@@ -179,7 +213,7 @@ export const columns: ColumnDef<Orders>[] = [
               <DialogTrigger className="hover:bg-slate-200 w-full p-1.5 text-sm text-left rounded-sm transition-colors">Change Status</DialogTrigger>
               <DialogContent className="flex flex-col">
                 <Label>Order Status</Label>
-              <Select defaultValue={order.orders.status} onValueChange={(value:string)=>{setStatusForm({status: value})}}>
+              <Select defaultValue={order.status} onValueChange={(value:string)=>{setStatusForm({status: value})}}>
                 <SelectTrigger className="w-[280px] m-1">
                   <SelectValue placeholder="Select a fruit" />
                 </SelectTrigger>
@@ -221,7 +255,7 @@ const Logs = () => {
     const controller = new AbortController();
     const getOrders = async() => {
       try {
-        const response: any = await axiosPrivate.get(`/orders/all`, { 
+        const response: any = await axiosPrivate.get(`/orders/unique`, { 
           signal: controller.signal
         });
         setData(response.data)
@@ -263,7 +297,7 @@ const Logs = () => {
     <div className="container py-24">
       <div className="flex justify-between border-b">
         <h2 className="scroll-m-20  text-3xl font-semibold tracking-tight transition-colors first:mt-0 mb-8">
-          Products
+          Orders
         </h2>
         
       </div>
@@ -271,8 +305,8 @@ const Logs = () => {
         <div className="w-full">
             <div className="flex items-center py-4">
                 <Input
-                placeholder="Filter names..."
-                value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+                placeholder="Filter id..."
+                value={(table.getColumn("orderId")?.getFilterValue() as string) ?? ""}
                 onChange={(event) =>
                     table.getColumn("name")?.setFilterValue(event.target.value)
                 }

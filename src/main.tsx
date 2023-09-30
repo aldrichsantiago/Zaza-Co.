@@ -21,7 +21,7 @@ import Wishlist from './components/pages/Wishlist.tsx';
 import Dashboard from './components/admin/Dashboard.tsx';
 import Logs from './components/admin/Logs.tsx';
 import Users from './components/admin/Users.tsx';
-import Settings from './components/admin/Settings.tsx';
+import Settings from './components/pages/Settings.tsx';
 import PersistLogin from './components/PersistLogin.tsx';
 import Products from './components/admin/Products.tsx';
 import Checkout from './components/pages/Checkout.tsx';
@@ -71,6 +71,9 @@ const router = createBrowserRouter([
                 },{
                   path: "/checkout",
                   element: <Checkout/>
+                },{
+                  path: "/settings",
+                  element: <Settings/>
                 },
               ]
             },
@@ -100,7 +103,7 @@ const router = createBrowserRouter([
                   element: <Products/>,
                 },
                 {
-                  path: "logs",
+                  path: "orders",
                   element: <Logs/>,
                 },
                 {

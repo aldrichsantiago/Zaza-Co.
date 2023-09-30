@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { products } from '@/test_data';
 import { Separator } from "@/components/ui/separator"
 import { ProductQuantityCounter } from '../QuantityCounter';
 import { Button } from '../ui/button';
@@ -23,7 +22,6 @@ const ProductPage:React.FC = () => {
   const [itemCount, setItemCount] = useState<number>(1);
   const { toast } = useToast()
   const [data, setData]:any = useState([]);
-  const [images, setImages]:any = useState([]);
   const { response }:any = useAxios({
     method: 'get',
     url: '/product/'+ productId,
@@ -39,22 +37,6 @@ const ProductPage:React.FC = () => {
   
 
   const selectedProduct: any = response?.find((p:any)=>{return p.id === Number(productId)})  
-  console.log(selectedProduct);
-
-
-
-  
-  // const imgArr = response[0].images
-  // const srcImg: string[] = []
-
-  // for (const img of imgArr){
-  //   srcImg.push(`${import.meta.env.VITE_API_URL}/uploads/${img}`)
-  // }
-  // console.log(srcImg);
-  
-  // useEffect(()=>{
-  //   setImages(srcImg)
-  // },[response]);
 
 
   const OPTIONS: EmblaOptionsType = {}
@@ -65,7 +47,6 @@ const ProductPage:React.FC = () => {
     const handleIncrement = (e: React.FormEvent) => {
         e.preventDefault();
         const selectedProduct = data.find((product: { id: string | undefined; })=> product.id == productId)
-        console.log(selectedProduct);
         
         if(itemCount === selectedProduct.stocks){
             setItemCount(selectedProduct.stocks);
