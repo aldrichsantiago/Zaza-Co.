@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, ChevronDown, User2, Settings, LogOut, Heart, ShoppingCart, Package, LogIn, UserPlus, Menu   } from "lucide-react"
+import { Search, ChevronDown, User2, Settings, LogOut, Heart, ShoppingCart, Package, LogIn, UserPlus, Menu, Lock   } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -32,6 +32,7 @@ import useRefreshToken from "@/hooks/useRefreshToken"
 import useAuth from "@/hooks/useAuth"
 import { UseAuthProps } from "@/contexts/AuthProvider"
 import { DialogClose } from "@radix-ui/react-dialog"
+import useAxios from "@/hooks/useAxios"
 
 
 const Navbar:React.FC = () => {
@@ -43,7 +44,20 @@ const Navbar:React.FC = () => {
     let subtotal = 0;
     let cartCount = cart.cartArray.reduce((accumulator: any, object: { itemCountCart: any }) => {
         return accumulator + object?.itemCountCart;
-      }, 0);
+    }, 0);
+    const [data, setData] = useState<{ avatarImage:string }[]>([]);
+    const { response } = useAxios({
+    method: 'get',
+    url: '/user/username/' + auth.username,
+    headers: JSON.stringify({ accept: '*/*' }),
+    });
+
+    useEffect(() => {
+        if (response !== null) {
+            setData(response);
+        }
+      }, [response]);
+      console.log(data);
 
     const Logout = () => {
         try {
@@ -112,7 +126,7 @@ const Navbar:React.FC = () => {
                                     <DropdownMenu>
                                         <DropdownMenuTrigger name='avatar-button'>
                                             <Avatar className='mb-1 w-8 h-8'>
-                                                <AvatarImage src="https://github.com/shadcn.png" />
+                                                <AvatarImage src={`${import.meta.env.VITE_API_URL}/uploads/${data[0]?.avatarImage}`} />
                                                 <AvatarFallback><User2 /></AvatarFallback>
                                             </Avatar>
                                         </DropdownMenuTrigger>
@@ -229,7 +243,7 @@ const Navbar:React.FC = () => {
                     <DropdownMenu>
                         <DropdownMenuTrigger name='avatar-button'>
                             <Avatar className='mb-1 w-8 h-8'>
-                                <AvatarImage src="https://github.com/shadcn.png" />
+                                <AvatarImage src={`${import.meta.env.VITE_API_URL}/uploads/${data[0]?.avatarImage}`} className="max-w-fit"/>
                                 <AvatarFallback><User2 /></AvatarFallback>
                             </Avatar>
                         </DropdownMenuTrigger>
@@ -240,7 +254,7 @@ const Navbar:React.FC = () => {
                                 <DropdownMenuSeparator />
                                 {
                                     auth.roles[0] === "admin" ? 
-                                <DropdownMenuItem onClick={()=>navigate("/admin")}><Package width={20}/> &nbsp; ADMIN PANEL</DropdownMenuItem>
+                                <DropdownMenuItem onClick={()=>navigate("/admin/dashboard")}><Lock width={20}/> &nbsp; Admin Dashboard</DropdownMenuItem>
                                     :
                                 ""
                                 }

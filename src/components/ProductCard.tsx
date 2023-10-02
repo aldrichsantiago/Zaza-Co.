@@ -71,7 +71,7 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
   },[message]);
 
   const wishlistIds: number[] = auth?.wishlist;
-  const idExists = wishlistIds.find(w => w === id);
+  const idExists = wishlistIds?.find(w => w === id);
 
   return (
     <>

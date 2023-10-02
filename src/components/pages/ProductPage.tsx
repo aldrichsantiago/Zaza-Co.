@@ -70,18 +70,28 @@ const ProductPage:React.FC = () => {
     }
 
     const cart:any = useContext(CartContext);
+
+    console.log(data)
   return (
     <>
       <div className="container pt-20">
       <p className='text-slate-500'>
-        {data?.map(({category, name}:any)=>{
+        {/* {data?.map(({category, name}:any) => {
         <>
           <Link to={`/category/${category.toLowerCase()}`} className='text-black hover:underline'>
             {category.toUpperCase()}
           </Link> / {name} 
         </>
-          
-        })}
+        })} */}
+
+        {data ? 
+        <>
+          <Link to={`/category/${data[0]?.category.toLowerCase()}`} className='text-black hover:underline'>
+            {data[0]?.category.toUpperCase()}
+          </Link> / {data[0]?.name}
+        </>
+        :
+        <></>}
       </p>
 
       </div>

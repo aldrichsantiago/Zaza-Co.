@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -15,7 +15,11 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { toast } from "@/components/ui/use-toast"
 import { Input } from "@/components/ui/input"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
+import useAuth from '@/hooks/useAuth'
+import { UseAuthProps } from '@/contexts/AuthProvider'
+import useAxios from '@/hooks/useAxios'
+import axios from '@/api/axios'
+import { useNavigate } from 'react-router-dom'
 
  
 const FormSchema = z.object({
@@ -24,6 +28,35 @@ const FormSchema = z.object({
 })
 
 const Settings: React.FC = () => {
+    const navigate = useNavigate();
+
+    const { auth }: UseAuthProps = useAuth();
+    const [data, setData] = useState<{
+        avatarImage: string
+        firstName: string
+        lastName: string
+        email: string
+    }[]>([]);
+
+    const [userForm, setUserForm] = useState<{username: string}>({ 
+        username: auth.username,
+    });
+    const [file, setFile]: any = useState();
+
+    const { response } = useAxios({
+      method: 'get',
+      url: '/user/username/' + auth.username,
+      headers: JSON.stringify({ accept: '*/*' }),
+      
+    });
+  
+    useEffect(() => {
+      if (response !== null) {
+          setData(response);
+      }
+    }, [response]);
+    console.log(data);
+    
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -42,6 +75,32 @@ const Settings: React.FC = () => {
           ),
         })
       }
+
+    const handleUserFormSubmit = async(e:React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('data', JSON.stringify(userForm))
+
+        formData.append("avatar", file)
+        console.log(userForm);
+        console.log(formData);
+        
+        axios.post("/upload/avatar", formData)
+        .then(res => toast({title: "Profile Updated"}))
+        .catch(e => console.log(e))
+        navigate(0)
+        
+    }
+
+    const handleUserFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const fieldName = e.target.getAttribute("name");
+        const fieldValue = e.target.value;
+        const newFormData: any = { ...userForm };
+        fieldName ? newFormData[fieldName] = fieldValue : ""
+        setUserForm(newFormData)
+        console.log(userForm)
+    }
 
   return (
     <div className='container py-12'>
@@ -103,26 +162,33 @@ const Settings: React.FC = () => {
                 </Form>
             </div>
             <div className="border p-6 rounded-lg shadow-md w-full md:w-1/3 h-max md:h-96 flex flex-col items-center">
-                <form action={`${import.meta.env.VITE_API_URL}`} method="post">
+                <form action={`${import.meta.env.VITE_API_URL}/upload/avatar`} method="post" encType='multipart/form-data' onSubmit={handleUserFormSubmit}>
                     <div className="grid w-full max-w-sm items-center gap-1.5 my-6 grid-cols-3 mx-2 justify-center">
                     <div className="w-[100px]">
-                        <AspectRatio ratio={4/3}>
-                            <img src="..." alt="Image" className="rounded-md object-cover" />
-                        </AspectRatio>
+                        
+                        <img 
+                        src={`${import.meta.env.VITE_API_URL}/uploads/` + data[0]?.avatarImage}  
+                        alt="Image" 
+                        className="rounded-full object-cover bg-slate-200 w-24 h-24"/>
                     </div>
-                        <Input id="picture" type="file" className='col-span-2'/>
+                        <Input 
+                        id="avatar" 
+                        type="file" 
+                        className='col-span-2' 
+                        name='avatar' 
+                        onChange={ (e) => { setFile(e.target.files? e.target.files[0]: "") } }
+                        />
                     </div>
                     <div className="grid w-full max-w-sm items-center gap-1.5 grid-cols-2 m-2">
-                        <Input id="firstName" type="text" placeholder='First Name'/>
-                        <Input id="lastName" type="text" placeholder='Last Name'/>
+                        <Input id="firstName" pattern="^[^0-9]+$" name="firstName" type="text" placeholder='First Name' defaultValue={data[0]?.firstName} onChange={handleUserFormChange}/>
+                        <Input id="lastName" pattern="^[^0-9]+$" name="lastName" type="text" placeholder='Last Name' defaultValue={data[0]?.lastName} onChange={handleUserFormChange}/>
                     </div>
                     <div className="grid w-full max-w-sm items-center gap-1.5 m-2">
-                        <Input id="email" type="text" placeholder='Email'/>
+                        <Input id="email" name="email" type="email" placeholder='Email' defaultValue={data[0]?.email} onChange={handleUserFormChange}/>
                     </div>
 
                     <div className='w-full mx-2 mt-8'>
                         <Button type="submit">Submit</Button>
-
                     </div>
                 </form>
             </div>
