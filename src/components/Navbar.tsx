@@ -40,12 +40,13 @@ const Navbar:React.FC = () => {
     const cart:any = useContext(CartContext);
     const navigate = useNavigate();
     const {toast} = useToast();
-    const refresh = useRefreshToken();
+    useRefreshToken();
     let subtotal = 0;
     let cartCount = cart.cartArray.reduce((accumulator: any, object: { itemCountCart: any }) => {
         return accumulator + object?.itemCountCart;
     }, 0);
     const [data, setData] = useState<{ avatarImage:string }[]>([]);
+    const [search, setSearch] = useState<string>();
     const { response } = useAxios({
     method: 'get',
     url: '/user/username/' + auth.username,
@@ -53,12 +54,23 @@ const Navbar:React.FC = () => {
     });
 
     useEffect(() => {
-        if (response !== null) {
-            setData(response);
-        }
-      }, [response]);
-      console.log(data);
+    if (response !== null) {
+        setData(response);
+    }
+    }, [response]);
 
+    useEffect(() => {
+        const getSearch = setTimeout(()=>{
+            axios.get(`${import.meta.env.VITE_API_URL}/search?search=${search}`)
+            .then((res)=>{ console.log(res) })
+            .catch((error)=>{ console.log(error) })
+            console.log("this ran");
+            
+        }, 2000)
+        return () => clearTimeout(getSearch)
+    }, [search]);
+
+    
     const Logout = () => {
         try {
             axios.delete(`${import.meta.env.VITE_API_URL}/logout`)
@@ -77,6 +89,8 @@ const Navbar:React.FC = () => {
             console.log(error);
         }
     }
+    console.log(search);
+    
 
   return (
     <>
@@ -165,8 +179,8 @@ const Navbar:React.FC = () => {
                                 <SheetTitle>
                                 <div className="flex sm:hidden">
                                     <form className="flex w-full max-w-sm items-center justify-center space-x-2 focus:border-none">
-                                        <Input type="text" placeholder="Search Product" className='w-fit text-sm font-medium border-x'/>
-                                        <Button type="button" className='w-fit w-100 h-9 bg-green-900 hover:bg-green-950' name='search'><Search width={15} height={15}/></Button>
+                                        <Input type="search" onChange={(e)=>setSearch(e.target.value)} name="search" placeholder="Search Product" className='w-fit text-sm font-medium border-x'/>
+                                        <Button type="submit" className='w-fit w-100 h-9 bg-green-900 hover:bg-green-950'><Search width={15} height={15}/></Button>
                                     </form>
                                 </div>
                                 </SheetTitle>
@@ -234,8 +248,8 @@ const Navbar:React.FC = () => {
                 </div>
                 <div className="hidden sm:flex">
                     <form className="flex w-full max-w-sm items-center space-x-2 focus:border-none">
-                        <Input type="text" placeholder="Search Product" className='rounded-3xl w-fit text-sm font-medium border-x'/>
-                        <Button type="button" className='w-fit w-100 h-9 rounded-3xl bg-green-900 hover:bg-green-950' name='search'><Search width={15} height={15}/></Button>
+                        <Input type="search" onChange={(e)=>setSearch(e.target.value)} name="search" placeholder="Search Product" className='rounded-3xl w-fit text-sm font-medium border-x'/>
+                        <Button type="submit" className='w-fit w-100 h-9 rounded-3xl bg-green-900 hover:bg-green-950'><Search width={15} height={15}/></Button>
                     </form>
                 </div>
                 <div className=' hidden sm:flex items-center justify-center'>
