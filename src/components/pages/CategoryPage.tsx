@@ -34,14 +34,15 @@ const CategoryPage: React.FC = () => {
 
 
     return (
-        <div className='container w-full'>
-            <p className='mt-10'>{categoryName?.toUpperCase()}</p>
+        <div className='container w-full pt-12'>
+            
 
             <main className="sandbox">
                 <section className="sandbox__carousel">
                 <EmblaCarousel slides={SLIDES} options={OPTIONS} />
                 </section>
             </main>
+            <h1 className="text-4xl font-sans font-medium mt-12 mb-3 ml-8 capitalize">{categoryName === "health-and-fitness" ? "Health & Fitness" : categoryName}</h1>
 
             <div className="flex flex-wrap justify-center mb-10">
                 {data?.map(({id, name, description, price, ratings, images, quantitySold, category})=> (

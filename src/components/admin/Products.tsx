@@ -58,7 +58,7 @@ export type Product = {
   description: string,
   price: number,
   stocks: number,
-  category: "admin" | "client",
+  category: 'electronics' | 'health-and-fitness' | 'furnitures' | 'accessories' | 'clothing',
   quantitySold: number,
   isDeleted: boolean,
 }
@@ -241,7 +241,7 @@ export const columns: ColumnDef<Product>[] = [
                         <Label htmlFor="category">Category: </Label>
                         <Select name="category" defaultValue={product.category} onValueChange={(value:string )=>setEditProductForm({...editProductForm, category: value})}>
                           <SelectTrigger className="w-[185px] my-1 font-medium">
-                            <SelectValue placeholder="" />
+                            <SelectValue placeholder={product.category} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem className="font-medium" value="accessories">Accessories</SelectItem>
@@ -352,7 +352,7 @@ const Products = () => {
     const formData = new FormData();
 
     for (const file of selectedFiles) {
-      formData.append('file', file);
+      formData.append('images', file);
     }
     formData.append('data', JSON.stringify(addProductForm))
    
@@ -434,7 +434,7 @@ const Products = () => {
             <DialogHeader>
               <DialogTitle>Add a product</DialogTitle>
             </DialogHeader>
-            <form action="http://localhost:8000/upload" method="post" encType='multipart/form-data' onSubmit={handleUpload}>
+            <form action={`${import.meta.env.VITE_API_URL}/upload`} method="post" encType='multipart/form-data' onSubmit={handleUpload}>
               <Label htmlFor="name">Name: </Label>
               <Input onChange={handleAddProductChange} name="name" className="my-1"/>
               <Label htmlFor="description">Description: </Label>

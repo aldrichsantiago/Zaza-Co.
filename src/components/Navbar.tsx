@@ -178,8 +178,8 @@ const Navbar:React.FC = () => {
 
                                 <SheetTitle>
                                 <div className="flex sm:hidden">
-                                    <form className="flex w-full max-w-sm items-center justify-center space-x-2 focus:border-none">
-                                        <Input type="search" onChange={(e)=>setSearch(e.target.value)} name="search" placeholder="Search Product" className='w-fit text-sm font-medium border-x'/>
+                                    <form noValidate className="flex w-full max-w-sm items-center justify-center space-x-2 focus:border-none">
+                                        <Input type="search" onFocus={(e)=>console.log("onFocus",e)} onChange={(e)=>setSearch(e.target.value)} name="search" placeholder="Search Product" className='w-fit text-sm font-medium border-x'/>
                                         <Button type="submit" className='w-fit w-100 h-9 bg-green-900 hover:bg-green-950'><Search width={15} height={15}/></Button>
                                     </form>
                                 </div>
@@ -247,8 +247,8 @@ const Navbar:React.FC = () => {
                     </Button>
                 </div>
                 <div className="hidden sm:flex">
-                    <form className="flex w-full max-w-sm items-center space-x-2 focus:border-none">
-                        <Input type="search" onChange={(e)=>setSearch(e.target.value)} name="search" placeholder="Search Product" className='rounded-3xl w-fit text-sm font-medium border-x'/>
+                    <form noValidate className="flex w-full max-w-sm items-center space-x-2 focus:border-none">
+                        <Input type="search" onFocus={()=>console.log("onFocus")} onChange={(e)=>setSearch(e.target.value)} name="search" placeholder="Search Product" className='rounded-3xl w-fit text-sm font-medium border-x'/>
                         <Button type="submit" className='w-fit w-100 h-9 rounded-3xl bg-green-900 hover:bg-green-950'><Search width={15} height={15}/></Button>
                     </form>
                 </div>

@@ -10,7 +10,7 @@ const DealsPage:React.FC = () => {
     
   return (
     <>
-        <div className='container w-full'>
+        <div className='container w-full pt-12'>
 
         <main className="sandbox">
           <section className="sandbox__carousel">

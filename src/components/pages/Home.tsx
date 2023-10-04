@@ -27,8 +27,6 @@ const Home: React.FC = () => {
         setData(response);
     }
   }, [response]);
-  
-
 
   return (
     <>

@@ -9,7 +9,7 @@ const NewProductsPage:React.FC = () => {
   const SLIDES = Array.from(Array(SLIDE_COUNT).keys())
     
   return (
-    <div className='container w-full'>
+    <div className='container w-full pt-12'>
       <main className="sandbox">
         <section className="sandbox__carousel">
           <EmblaCarousel slides={SLIDES} options={OPTIONS} />
