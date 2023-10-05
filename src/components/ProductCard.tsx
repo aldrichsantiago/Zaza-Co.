@@ -83,11 +83,11 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
                 {
                   idExists? 
                   <span className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
-                    <Heart size={20} onClick={()=>addToWishlist(id)}/>
+                    <Heart size={20} onClick={()=>{addToWishlist(id) }}/>
                   </span>
                   :
                   <span className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
-                    <Heart size={20} onClick={()=>addToWishlist(id)}/>
+                    <Heart size={20} onClick={()=>{addToWishlist(id) }}/>
                   </span>
                 }
                
@@ -136,7 +136,7 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
 
 
             <span className="mt-5 flex items-center font-semibold">
-            <Rating style={{ maxWidth: 100 }} value={ratings? ratings: 0} readOnly/>
+            <Rating style={{ maxWidth: 100 }} value={ratings? ratings: 0} readOnly />
             <p className="mx-3">({quantitySold})</p>
             </span>
         </CardHeader>

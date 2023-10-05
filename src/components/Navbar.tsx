@@ -33,6 +33,7 @@ import useAuth from "@/hooks/useAuth"
 import { UseAuthProps } from "@/contexts/AuthProvider"
 import { DialogClose } from "@radix-ui/react-dialog"
 import useAxios from "@/hooks/useAxios"
+import { Rating } from "@smastrom/react-rating"
 
 
 const Navbar:React.FC = () => {
@@ -47,6 +48,8 @@ const Navbar:React.FC = () => {
     }, 0);
     const [data, setData] = useState<{ avatarImage:string }[]>([]);
     const [search, setSearch] = useState<string>();
+    const [searchResults, setSearchResults] = useState<[]>();
+    const [searchModal, setSearchModal] = useState<boolean>(false);
     const { response } = useAxios({
     method: 'get',
     url: '/user/username/' + auth.username,
@@ -60,13 +63,15 @@ const Navbar:React.FC = () => {
     }, [response]);
 
     useEffect(() => {
+        if (!search) {
+            return;
+        }
         const getSearch = setTimeout(()=>{
             axios.get(`${import.meta.env.VITE_API_URL}/search?search=${search}`)
-            .then((res)=>{ console.log(res) })
+            .then((res)=>{ setSearchResults(res.data[0]) })
             .catch((error)=>{ console.log(error) })
-            console.log("this ran");
             
-        }, 2000)
+        }, 500)
         return () => clearTimeout(getSearch)
     }, [search]);
 
@@ -248,10 +253,35 @@ const Navbar:React.FC = () => {
                 </div>
                 <div className="hidden sm:flex">
                     <form noValidate className="flex w-full max-w-sm items-center space-x-2 focus:border-none">
-                        <Input type="search" onFocus={()=>console.log("onFocus")} onChange={(e)=>setSearch(e.target.value)} name="search" placeholder="Search Product" className='rounded-3xl w-fit text-sm font-medium border-x'/>
+                        <Input autoComplete="off" type="search" onBlur={()=>{setTimeout(()=>setSearchModal(false),200)}} onFocus={()=>setSearchModal(true)} onChange={(e)=>setSearch(e.target.value)} name="search" placeholder="Search Product" className='rounded-3xl w-fit text-sm font-medium border-x'/>
                         <Button type="submit" className='w-fit w-100 h-9 rounded-3xl bg-green-900 hover:bg-green-950'><Search width={15} height={15}/></Button>
+                        {
+                        searchModal ? 
+                            <div className="w-[300px] bg-slate-100 absolute top-20 rounded-xl  z-10">
+                                {searchResults?.map(({id, name, price, images, ratings}: any) => (
+                                    <div className="w-full h-24 p-3 my-3 flex cursor-pointer z-10 hover:bg-green-600 rounded-md" key={id} onClick={()=>navigate(`/products/${id}`)}>
+                                        <img src={`${import.meta.env.VITE_API_URL}/uploads/${images[0]}`} alt="images" width={70} className="rounded-md mr-3"/>
+                                        <div className="flex flex-col w-full">
+                                            <p className="font-medium">{name}</p>
+                                            <div className="flex justify-between pr-6">
+                                                <Rating style={{ maxWidth: 80 }} value={ratings? ratings: 0} readOnly/>
+                                                <p className="font-normal">${price}</p>
+
+                                            </div>
+                                        </div>
+                                        
+                                        
+                                    </div>
+                                ))}
+                                
+                            </div>
+                        :
+                            ""
+                        }
+                    
                     </form>
-                </div>
+                    
+                </div>                
                 <div className=' hidden sm:flex items-center justify-center'>
                     <div className='my-1 mx-4'>
                     <DropdownMenu>
@@ -353,7 +383,10 @@ const Navbar:React.FC = () => {
                     </div>
                 </div>
             </div>
+            
         </div>
+        
+        
     </>
 
   )

@@ -86,9 +86,9 @@ const ProductPage:React.FC = () => {
 
         {data ? 
         <>
-          <Link to={`/category/${data[0]?.category.toLowerCase()}`} className='text-black hover:underline'>
-            {data[0]?.category.toUpperCase()}
-          </Link> / {data[0]?.name}
+          <Link to={`/category/${data[0]?.category.toLowerCase()}`} className='text-black hover:underline font-medium'>
+            {data[0]?.category.toUpperCase()} / 
+          </Link> {data[0]?.name}
         </>
         :
         <></>}
@@ -142,7 +142,7 @@ const ProductPage:React.FC = () => {
                 <div className='container w-full py-3 h-auto my-0.5 rounded-sm border'>
                   <div className="flex">
                     <Truck className='text-orange-300'/>
-                    <p className='ml-2'>Free Delivery</p>
+                    <p className='ml-2'>Available Delivery</p>
                   </div>
                   <p className='text-sm my-0.5'><Link to={`#`} className='underline'>Enter your Postal code for Delivery Availability</Link></p>
                 </div>
