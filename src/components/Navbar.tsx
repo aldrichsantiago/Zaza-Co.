@@ -67,7 +67,7 @@ const Navbar:React.FC = () => {
             return;
         }
         const getSearch = setTimeout(()=>{
-            axios.get(`${import.meta.env.VITE_API_URL}/search?search=${search}`)
+            axios.get(`${import.meta.env.VITE_API_URL}/search/suggestions?search=${search}`)
             .then((res)=>{ setSearchResults(res.data[0]) })
             .catch((error)=>{ console.log(error) })
             
@@ -183,9 +183,43 @@ const Navbar:React.FC = () => {
 
                                 <SheetTitle>
                                 <div className="flex sm:hidden">
-                                    <form noValidate className="flex w-full max-w-sm items-center justify-center space-x-2 focus:border-none">
-                                        <Input type="search" onFocus={(e)=>console.log("onFocus",e)} onChange={(e)=>setSearch(e.target.value)} name="search" placeholder="Search Product" className='w-fit text-sm font-medium border-x'/>
-                                        <Button type="submit" className='w-fit w-100 h-9 bg-green-900 hover:bg-green-950'><Search width={15} height={15}/></Button>
+                                    <form autoComplete="off" className="flex w-full max-w-sm items-center justify-center space-x-2 focus:border-none">
+                                        <Input type="search"
+                                        onBlur={()=>{setTimeout(()=>setSearchModal(false),200)}}
+                                        onFocus={(e)=>console.log("onFocus",e)} 
+                                        onChange={(e)=>setSearch(e.target.value)} 
+                                        name="search" placeholder="Search Product" 
+                                        className='w-fit text-sm font-medium border-x'
+                                        />
+                                        <Button type="submit" 
+                                        className='w-fit w-100 h-9 bg-green-900 hover:bg-green-950'
+                                        >
+                                            <Search width={15} height={15}/>
+                                        </Button>
+
+                                        {
+                                            searchModal ? 
+                                                <div className="w-[300px] bg-slate-100 absolute top-20 rounded-xl  z-10">
+                                                    {searchResults?.map(({id, name, price, images, ratings}: any) => (
+                                                        <div className="w-full h-24 p-3 my-3 flex cursor-pointer z-10 hover:bg-green-600 rounded-md" key={id} onClick={()=>navigate(`/products/${id}`)}>
+                                                            <img src={`${import.meta.env.VITE_API_URL}/uploads/${images[0]}`} alt="images" width={70} className="rounded-md mr-3"/>
+                                                            <div className="flex flex-col w-full">
+                                                                <p className="font-medium">{name}</p>
+                                                                <div className="flex justify-between pr-6">
+                                                                    <Rating style={{ maxWidth: 80 }} value={ratings? ratings: 0} readOnly/>
+                                                                    <p className="font-normal">${price}</p>
+
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            
+                                                        </div>
+                                                    ))}
+                                                    
+                                                </div>
+                                            :
+                                                ""
+                                        }
                                     </form>
                                 </div>
                                 </SheetTitle>
@@ -252,9 +286,22 @@ const Navbar:React.FC = () => {
                     </Button>
                 </div>
                 <div className="hidden sm:flex">
-                    <form noValidate className="flex w-full max-w-sm items-center space-x-2 focus:border-none">
-                        <Input autoComplete="off" type="search" onBlur={()=>{setTimeout(()=>setSearchModal(false),200)}} onFocus={()=>setSearchModal(true)} onChange={(e)=>setSearch(e.target.value)} name="search" placeholder="Search Product" className='rounded-3xl w-fit text-sm font-medium border-x'/>
-                        <Button type="submit" className='w-fit w-100 h-9 rounded-3xl bg-green-900 hover:bg-green-950'><Search width={15} height={15}/></Button>
+                    <form action={`http://localhost:5173/search`} noValidate className="flex w-full max-w-sm items-center space-x-2 focus:border-none">
+                        <Input 
+                        autoComplete="off" 
+                        type="search" 
+                        onBlur={()=>{setTimeout(()=>setSearchModal(false),200)}} 
+                        onFocus={()=>setSearchModal(true)} onChange={(e)=>setSearch(e.target.value)} 
+                        name="search" 
+                        placeholder="Search Product" 
+                        className='rounded-3xl w-fit text-sm font-medium border-x'
+                        />
+
+                        <Button 
+                        type="submit" 
+                        className='w-fit w-100 h-9 rounded-3xl bg-green-900 hover:bg-green-950'>
+                            <Search width={15} height={15}/>
+                        </Button>
                         {
                         searchModal ? 
                             <div className="w-[300px] bg-slate-100 absolute top-20 rounded-xl  z-10">

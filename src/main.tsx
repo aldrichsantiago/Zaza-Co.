@@ -25,6 +25,7 @@ import Settings from './components/pages/Settings.tsx';
 import PersistLogin from './components/PersistLogin.tsx';
 import Products from './components/admin/Products.tsx';
 import Checkout from './components/pages/Checkout.tsx';
+import SearchPage from './components/pages/SearchPage.tsx';
 
 
 const router = createBrowserRouter([
@@ -58,6 +59,9 @@ const router = createBrowserRouter([
             },{
               path: "/new-products",
               element: <NewProductsPage/>
+            },{
+              path: "/search",
+              element: <SearchPage/>
             },{
               path: "",
               element: <RequireAuth allowedRoles={["client", "admin"]}/>,
