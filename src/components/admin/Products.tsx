@@ -1,4 +1,4 @@
-import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react"
+import { JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, Cross, MoreHorizontal, X } from "lucide-react"
+import { ArrowUpDown, ChevronDown, MoreHorizontal, X } from "lucide-react"
  
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -19,7 +19,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -61,6 +60,7 @@ export type Product = {
   category: 'electronics' | 'health-and-fitness' | 'furnitures' | 'accessories' | 'clothing',
   quantitySold: number,
   isDeleted: boolean,
+  images: string[]
 }
 
 
@@ -166,6 +166,27 @@ export const columns: ColumnDef<Product>[] = [
       const navigate = useNavigate();
       const { toast } = useToast();
       const [editProductForm, setEditProductForm] = useState({});
+      const [productImages, setProductImages] = useState(product.images);
+      const [selectedFiles, setSelectedFiles]: any[] = useState([])
+
+      const deleteImage = async(imageName: string) => {
+        const newImageArr = productImages.filter((img) => img !== imageName);
+        console.log(newImageArr);
+        setProductImages(newImageArr)
+      }
+
+      const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files: any  = e.target.files;
+        setSelectedFiles([...files]);
+        console.log(selectedFiles);
+      };
+    
+      const handleFileCancel = (index: number) => {
+        const files = selectedFiles.splice(index, 1)
+        setSelectedFiles([...selectedFiles]);
+        console.log([...files]);
+        console.log(selectedFiles,index);
+      };
 
       const handleDelete = async(id:string) => {
         axios
@@ -205,6 +226,38 @@ export const columns: ColumnDef<Product>[] = [
             console.error(error);
           });
           console.log(id);
+      }
+      const handleEditProductImagesSubmit = async(id:string) => {
+
+        if (productImages.length >= 3) {
+          toast({
+            title: "Only 3 images of products are allowed",
+            variant: "destructive"
+          })
+          return;
+        } 
+        const formData = new FormData();
+
+        for (const file of selectedFiles) {
+          formData.append('images', file);
+        }
+        formData.append('data', JSON.stringify({images: productImages}))
+
+
+        axios
+        .patch('/edit/images/'+id, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .then((response) => {
+          toast({title: response.data});
+          setSelectedFiles([]);
+        })
+        .catch((error) => {
+          console.error(error);
+          toast({title: 'File upload failed.'});
+        });
       }
  
       return (
@@ -255,13 +308,56 @@ export const columns: ColumnDef<Product>[] = [
                   </div>
                   <div className="flex justify-end">
                   <Button className="my-4" variant={"default"} type="submit">Save changes</Button>
-
                   </div>
                 </form>
               </DialogContent>
             </Dialog>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Change Product Images</DropdownMenuItem>
+            
+            <Dialog>
+              <DialogTrigger className="hover:bg-slate-100 w-full p-1.5 text-sm text-left rounded-sm transition-colors cursor-pointer" onClick={()=>setProductImages(product.images)}>Change Product Photos</DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Change Product Photos</DialogTitle>
+                </DialogHeader>
+                <form  method="patch" onSubmit={()=>handleEditProductImagesSubmit(product.id)} encType="multipart/form-data">
+                  <div className="flex gap-3 justify-between border-2 p-6 flex-wrap ">
+                    {productImages.map((img, index) => (
+                      <div className="w-[120px] relative flex flex-wrap items-center justify-center" key={index}>
+                        <span onClick={()=>deleteImage(img)} className="rounded-full w-7 h-7 hover:bg-red-500 hover:text-white transition-colors bg-slate-200 absolute -right-2 -top-3 flex items-center justify-center cursor-pointer"><X/></span>
+                        <img src={`${import.meta.env.VITE_API_URL}/uploads/${img}`} alt="Image" />
+                      </div>
+                    ))}
+                    
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="w-[250px]">
+                      <Input onChange={handleFileChange} id="picture" type="file" multiple accept="image/jpeg, image/png, image/jpg" name="images"/>
+                    </div>
+                    <Button className="my-4" variant={"default"} type="submit">Save changes</Button>
+                  </div>
+                  <div>
+                    {selectedFiles.length > 0 && (
+                      <div>
+                        <h2>Selected Files:</h2>
+                        <ul>
+                          {selectedFiles.map((file: { name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined }, index: number ) => (
+                            <li key={index} 
+                              className="flex justify-between">
+                                {file.name} 
+                                <X type="button" 
+                                onClick={()=>{handleFileCancel(index)}} 
+                                className="text-slate-400 hover:text-red-500 cursor-pointer"/>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
+
             <Dialog>
               <DialogTrigger className="hover:bg-red-500 hover:text-white w-full p-1.5 text-sm text-left rounded-sm transition-colors">Delete Product</DialogTrigger>
               <DialogContent>
@@ -286,14 +382,6 @@ export const columns: ColumnDef<Product>[] = [
   },
 ]
 
-// const formSchema = z.object({
-//   name: z.string().min(2, {message: "Product name must be at least 2 characters.",}),
-//   description: z.string().min(1, {message: "Description is required",}),
-//   price: z.number({required_error: "Price is required", invalid_type_error: "Price must be a number"}),
-//   category: z.enum(['electronics', 'health-and-fitness', 'Furnitures', 'accessories', 'clothing']),
-//   images: z.string().array().nonempty(),
-//   stocks: z.number({required_error: "Stocks is required", invalid_type_error: "Stocks must be a number"}),
-// })
 interface AddProduct {
   name?: string
   description?: string
@@ -304,7 +392,6 @@ interface AddProduct {
 }
 
 
-
 const Products = () => {
 
   const [sorting, setSorting] = useState<SortingState>([])
@@ -313,11 +400,9 @@ const Products = () => {
   const [rowSelection, setRowSelection] = useState({})
   const [data, setData] = useState([])
   const axiosPrivate = useAxiosPrivate();
-  const navigate = useNavigate();
   const { toast } = useToast()
   const [addProductForm, setAddProductForm] = useState<AddProduct>();
   const [selectedFiles, setSelectedFiles]: any = useState([]);
-  const [message, setMessage] = useState('');
 
   const handleAddProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -333,18 +418,14 @@ const Products = () => {
     const files: any = e.target.files;
     setSelectedFiles([...files]);
     console.log(files);
-    
   };
+
   const handleFileCancel = (index: number) => {
     const files = selectedFiles.splice(index, 1)
     setSelectedFiles([...selectedFiles]);
     console.log([...files]);
-    
     console.log(selectedFiles,index);
-    
   };
-
-
 
 
   const handleUpload = async() => {
@@ -368,12 +449,12 @@ const Products = () => {
         },
       })
       .then((response) => {
-        setMessage(response.data);
+        toast({title: response.data});
         setSelectedFiles([]);
       })
       .catch((error) => {
         console.error(error);
-        setMessage('File upload failed.');
+        toast({title: 'File upload failed.'});
       });
   };
 
