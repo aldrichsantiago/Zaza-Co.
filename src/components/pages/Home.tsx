@@ -6,20 +6,43 @@ import './Carousel/css/sanbox.css'
 import './Carousel/css/embla.css'
 
 import useAxios from '@/hooks/useAxios';
+import { useNavigate } from 'react-router-dom'
+import { useToast } from '../ui/use-toast'
+import { UseAuthProps } from '@/contexts/AuthProvider'
+import useAuth from '@/hooks/useAuth'
+import axios from '@/api/axios'
 
 const Home: React.FC = () => {
   const [data, setData] = useState([]);
-
-
   const OPTIONS: EmblaOptionsType = { loop: true }
   const SLIDE_COUNT = 3
   const SLIDES = Array.from(Array(SLIDE_COUNT).keys())
+
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { auth }:UseAuthProps = useAuth();
+
+  const addToWishlist = async(id:number) => {
+    if (auth) {
+      try {
+        const res = await axios.patch("/wishlist/user/" + auth.username + "/" + id, id);
+        toast({ title: res.data.message });
+      } catch (error) {
+
+        console.log(error);
+        toast({ title: JSON.stringify(error) })
+        return;
+
+      }
+    } else{
+      navigate("/login");
+    }
+  }
 
   const { response } = useAxios({
     method: 'get',
     url: '/products',
     headers: JSON.stringify({ accept: '*/*' }),
-    
   });
 
   useEffect(() => {
@@ -27,6 +50,7 @@ const Home: React.FC = () => {
         setData(response);
     }
   }, [response]);
+
 
   return (
     <>
@@ -46,7 +70,9 @@ const Home: React.FC = () => {
              price={price} 
              ratings={ratings} 
              images={images}
-             quantitySold={quantitySold}/>
+             quantitySold={quantitySold}
+             addToWishlist={addToWishlist}
+             />
           ))}
 
         </div>

@@ -16,15 +16,13 @@ import {
 } from "@/components/ui/tooltip"
 import { Link } from "react-router-dom"
 import { Rating } from '@smastrom/react-rating';
-import { useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react"
+import { useContext } from "react"
 import CartContext from "@/contexts/CartContext"
 import useAuth from "@/hooks/useAuth"
 import { UseAuthProps } from "@/contexts/AuthProvider"
-import axios from "@/api/axios"
-import { useToast } from "./ui/use-toast"
 
-interface Product {
+
+export interface Product {
   id: number
   name: string
   description: string
@@ -34,42 +32,13 @@ interface Product {
   images: string[]
   category?: string 
   disp?: boolean
+  addToWishlist: (id: number) => void
 }
 
-const ProductCard = ({ id, name, description, price, images, quantitySold, ratings, disp }: Product) => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [message, setMessage] = useState<string>("")
+const ProductCard = ({ id, name, description, price, images, quantitySold, ratings, disp, addToWishlist }: Product) => {
+
   const { auth }: UseAuthProps = useAuth();
   const cart: any = useContext(CartContext);
-
-  const addToWishlist = async(id:number) => {
-    if (auth) {
-      try {
-        console.log(auth.wishlist);
-        if(auth){
-          const res = await axios.patch("/wishlist/user/" + auth.username + "/" + id, id)
-          console.log(id);
-          toast({
-            variant: "default",
-            title: res.data.message
-          })
-          setMessage(res.data.message)
-          
-        }
-        
-      } catch (error) {
-        console.log(error);
-        return;
-      }
-    } else{
-      navigate("/login");
-    }
-  }
-
-  useEffect(()=>{
-  },[message]);
-
   const wishlistIds: number[] = auth?.wishlist;
   const idExists = wishlistIds?.find(w => w === id);
 
@@ -83,11 +52,11 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
                 {
                   idExists? 
                   <span className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
-                    <Heart size={20} onClick={()=>{addToWishlist(id) }}/>
+                    <Heart size={20} onClick={()=>{addToWishlist(id)}}/>
                   </span>
                   :
                   <span className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
-                    <Heart size={20} onClick={()=>{addToWishlist(id) }}/>
+                    <Heart size={20} onClick={()=>{addToWishlist(id)}}/>
                   </span>
                 }
                

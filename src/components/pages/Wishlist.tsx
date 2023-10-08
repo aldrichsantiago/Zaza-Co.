@@ -1,69 +1,70 @@
 import useRefreshToken from "@/hooks/useRefreshToken";
 import { FC, useEffect, useState } from "react"
 import ProductCard from '../ProductCard'
-import useAxios from "@/hooks/useAxios";
 import useAuth from "@/hooks/useAuth";
 import { UseAuthProps } from "@/contexts/AuthProvider";
-import { useNavigate } from "react-router-dom";
 import axios from "@/api/axios";
-import { AxiosResponse } from "axios";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "../ui/use-toast";
+interface WishlistProductsInterface {
+  id: number
+  name: string
+  description: string
+  price: number
+  ratings: number
+  images: string[]
+  quantitySold: number
+}
 
-  interface WishlistProductsInterface {
-    id: number
-    name: string
-    description: string
-    price: number
-    ratings: number
-    images: string[]
-    quantitySold: number
-  }
 
 const Wishlist:FC = () => {
   const { auth }:UseAuthProps = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [data, setData] = useState([]);
-  const wishlistIds: number[] = auth?.wishlist;
-  const wishlistProducts:any = [];
-
+  const [wishlistArray, setWishlistArray] = useState(data)
   useRefreshToken();
-  const { response  } = useAxios({
-    method: 'post',
-    url: '/wishlist/products',
-    headers: JSON.stringify({ accept: '*/*', wishlist: auth?.wishlist }),
-    body: JSON.stringify({
-      wishlist: JSON.stringify(auth?.wishlist),
-      id: "asjdflkj"
-    }),
-  });
+
 
   useEffect(() => {
-    axios.post('/wishlist/products', {wishlist: auth?.wishlist})
-    .then((res)=> setData(res.data[0]))
+    axios.get('/products/wishlist/user/'+auth.username,)
+    .then((res) => {
+      setData(res.data[0]);
+      setWishlistArray(res.data[0])
+      console.log(res.data[0]);
+    })
     .catch((e)=>console.log(e))
-    // if (response !== null) {
-    //   setData(r);
-    // }
-  }, [auth.wishlist]);
-
-  
-  console.log(auth?.wishlist);
-  console.log(response);
-
-  // for (const w of wishlistIds) {
-  //   const product = data.find((p:{id:number}) => p.id === w);
-  //   if (product === undefined) {
-  //     return;
-  //   } else {
-  //     wishlistProducts.push(product)
-  //   }
-  // }
+  }, [auth]);
 
 
   
+  const addToWishlist = async(id:number) => {
+    if (auth) {
+      try {
+        const wishlistProduct = wishlistArray.find((p: { id: number; }) => p.id === id)
+        if (wishlistProduct) {
+          setWishlistArray(wishlistArray.filter((p: { id: number; }) => p.id !== id));
+        }
+        const res = await axios.patch("/wishlist/user/" + auth.username + "/" + id, id);
+        toast({ title: res.data.message });
+
+      } catch (error) {
+
+        console.log(error);
+        toast({ title: JSON.stringify(error) })
+        return;
+
+      }
+    } else{
+      navigate("/login");
+    }
+  }
+
   return (
     <div className="container py-12 w-full">
         <h1 className="font-medium text-2xl">My Wishlist</h1>
         <div className="flex flex-wrap justify-between">
-        {data?.map(({id, name, description, price, ratings, images, quantitySold}:WishlistProductsInterface)=> (
+        {wishlistArray?.map(({id, name, description, price, ratings, images, quantitySold}:WishlistProductsInterface)=> (
             <ProductCard key={id}
             id={id} 
             name={name} 
@@ -72,6 +73,7 @@ const Wishlist:FC = () => {
             ratings={ratings} 
             images={images}
             quantitySold={quantitySold}
+            addToWishlist={addToWishlist}
           />
         ))}
         </div>

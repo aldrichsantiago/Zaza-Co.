@@ -81,6 +81,7 @@ const Navbar:React.FC = () => {
             axios.delete(`${import.meta.env.VITE_API_URL}/logout`)
             .then(() => {
                 navigate("/login");
+                localStorage.setItem('wishlist', JSON.stringify([]))
                 navigate(0);
             })
             .catch (error => {

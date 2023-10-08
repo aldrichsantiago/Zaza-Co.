@@ -34,17 +34,14 @@ const CartProductCard = ({ id, name, price, images, itemCountCart, handleDecreme
   const addToWishlist = async(id:number) => {
     if (auth) {
       try {
-        console.log(auth.wishlist);
         if(auth){
           const res = await axios.post("/wishlist/user/" + auth.username + "/" + id, id)
           console.log(id);
-          toast({
-            variant: "default",
-            title: res.data.message
-          })
+          toast({ title: res.data.message })
         }
       } catch (error) {
         console.log(error);
+        toast({ title: JSON.stringify(error) })
         return;
       }
     } else{

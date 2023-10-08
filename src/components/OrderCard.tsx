@@ -9,6 +9,11 @@ import { Plane } from "lucide-react";
 import ProductCard from "./ProductCard"
 import useAxios from "@/hooks/useAxios"
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useToast } from "./ui/use-toast"
+import { UseAuthProps } from "@/contexts/AuthProvider"
+import useAuth from "@/hooks/useAuth"
+import axios from "@/api/axios"
 
 // TYPES
 type StatusTypes = {
@@ -27,12 +32,32 @@ const OrderCard = ({ orders }:any) => {
     headers: JSON.stringify({ accept: '*/*' }),
   })
   const [data, setData] = useState([]);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { auth }:UseAuthProps = useAuth();
 
-    useEffect(() => {
-      if (response !== null) {
-        setData(response);
+  const addToWishlist = async(id:number) => {
+    if (auth) {
+      try {
+        const res = await axios.patch("/wishlist/user/" + auth.username + "/" + id, id);
+        toast({ title: res.data.message });
+      } catch (error) {
+
+        console.log(error);
+        toast({ title: JSON.stringify(error) })
+        return;
+
       }
-    }, [response]);
+    } else{
+      navigate("/login");
+    }
+  }
+
+  useEffect(() => {
+    if (response !== null) {
+      setData(response);
+    }
+  }, [response]);
 
 
   let products: any = []
@@ -103,7 +128,8 @@ const OrderCard = ({ orders }:any) => {
                         ratings={ratings} 
                         images={images}
                         quantitySold={quantitySold}
-                        disp={true}/>
+                        disp={true}
+                        addToWishlist={addToWishlist}/>
                       ))}
                       </div>
                     </ScrollArea>

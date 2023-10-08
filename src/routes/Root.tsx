@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import CartContext from "@/contexts/CartContext"
 import useAxios from "@/hooks/useAxios"
+import { WishlistProvider } from "@/contexts/WishlistProvider"
 
 
 
@@ -122,10 +123,12 @@ function Root() {
   return (
     <>
       <CartContext.Provider value={cartContextValues}>
-        <Navbar/>
-        <Outlet/>
-        <Footer/>
-        <Toaster />
+        <WishlistProvider>
+          <Navbar/>
+          <Outlet/>
+          <Footer/>
+          <Toaster />
+        </WishlistProvider>
       </CartContext.Provider>      
     </>
   )

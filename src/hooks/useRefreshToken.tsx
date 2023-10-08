@@ -8,7 +8,7 @@ import { UseAuthProps } from "@/contexts/AuthProvider";
 
 const useRefreshToken = () => {
 
-    const { setAuth }:UseAuthProps = useAuth();
+    const { setAuth }: UseAuthProps = useAuth();
 
     const refresh = async() => {
         const res: AxiosResponse = await axios.get(`${import.meta.env.VITE_API_URL}/token`, { 
