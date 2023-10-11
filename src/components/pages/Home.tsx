@@ -23,7 +23,7 @@ const Home: React.FC = () => {
   const { auth }:UseAuthProps = useAuth();
 
   const addToWishlist = async(id:number) => {
-    if (auth) {
+    if (auth.username) {
       try {
         const res = await axios.patch("/wishlist/user/" + auth.username + "/" + id, id);
         toast({ title: res.data.message });

@@ -2,30 +2,14 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, ChevronDown, User2, Settings, LogOut, Heart, ShoppingCart, Package, LogIn, UserPlus, Menu, Lock   } from "lucide-react"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Link, useNavigate } from 'react-router-dom'
 import CartProductCard, { CartCardProps } from './CartProductCard'
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { Separator } from "./ui/separator"
-import CartContext from "@/contexts/CartContext"
 import axios from "axios"
 import { useToast } from "@/components/ui/use-toast"
 import useRefreshToken from "@/hooks/useRefreshToken"
@@ -34,16 +18,20 @@ import { UseAuthProps } from "@/contexts/AuthProvider"
 import { DialogClose } from "@radix-ui/react-dialog"
 import useAxios from "@/hooks/useAxios"
 import { Rating } from "@smastrom/react-rating"
+import useCart from "@/hooks/useCart"
+import { UseCartProps } from "@/contexts/CartProvider"
 
 
 const Navbar:React.FC = () => {
     const { auth }: UseAuthProps = useAuth();
-    const cart:any = useContext(CartContext);
+    const { cart }: UseCartProps = useCart();
     const navigate = useNavigate();
     const {toast} = useToast();
     useRefreshToken();
-    let subtotal = 0;
-    let cartCount = cart.cartArray.reduce((accumulator: any, object: { itemCountCart: any }) => {
+    let subtotal = cart?.reduce((accumulator: any, element: { price: number, itemCountCart: number }) => {
+        return accumulator + (element?.price * element?.itemCountCart);                                  
+    }, 0);
+    let cartCount = cart?.reduce((accumulator: any, object: { itemCountCart: any }) => {
         return accumulator + object?.itemCountCart;
     }, 0);
     const [data, setData] = useState<{ avatarImage:string }[]>([]);
@@ -55,11 +43,12 @@ const Navbar:React.FC = () => {
     url: '/user/username/' + auth.username,
     headers: JSON.stringify({ accept: '*/*' }),
     });
-
+    console.log(subtotal);
+    
     useEffect(() => {
-    if (response !== null) {
-        setData(response);
-    }
+        if (response !== null) {
+            setData(response);
+        }
     }, [response]);
 
     useEffect(() => {
@@ -81,7 +70,6 @@ const Navbar:React.FC = () => {
             axios.delete(`${import.meta.env.VITE_API_URL}/logout`)
             .then(() => {
                 navigate("/login");
-                localStorage.setItem('wishlist', JSON.stringify([]))
                 navigate(0);
             })
             .catch (error => {
@@ -95,8 +83,23 @@ const Navbar:React.FC = () => {
             console.log(error);
         }
     }
-    console.log(search);
+
+    const addToWishlist = async(id:number) => {
+        if (auth.username) {
+          try {
+            const res = await axios.patch("/wishlist/user/" + auth.username + "/" + id, id);
+            toast({ title: res.data.message });
+          } catch (error) {
     
+            console.log(error);
+            toast({ title: JSON.stringify(error) })
+            return;
+    
+          }
+        } else{
+          navigate("/login");
+        }
+      }
 
   return (
     <>
@@ -128,8 +131,6 @@ const Navbar:React.FC = () => {
                 </div>
             </div>
         </div>
-
-
         <div className='bg-white shadow-lg sticky top-0 z-30'>
             <div className="container py-6 flex justify-between items-center flex-wrap">
                 <div>
@@ -176,7 +177,7 @@ const Navbar:React.FC = () => {
                                 </div>
                                 <div className='my-1 mx-4'>
                                     <div className="w-full relative">
-                                        <span className="bg-red-600 w-4 h-4 text-xs font-mono font-bold rounded-full flex justify-center items-center absolute -right-2 -top-1 text-white">{cart.cartArray.length}</span>
+                                        <span className="bg-red-600 w-4 h-4 text-xs font-mono font-bold rounded-full flex justify-center items-center absolute -right-2 -top-1 text-white">{cart?.length}</span>
                                         <ShoppingCart width={24} height={24} className=' rounded-md hover:bg-slate-100'/>
                                     </div>
                                 </div>
@@ -373,7 +374,7 @@ const Navbar:React.FC = () => {
                     <Sheet>
                         <SheetTrigger>
                             <div className="w-full relative">
-                                { cart.cartArray.length !== 0 ? 
+                                { cart?.length !== 0 ? 
                                 <span className="bg-red-600 w-4 h-4 text-xs font-mono font-bold rounded-full flex justify-center items-center absolute -right-2 -top-1 text-white">{cartCount}</span>
                                  : "" }
                             
@@ -386,7 +387,7 @@ const Navbar:React.FC = () => {
                             <SheetTitle>Shopping Cart ({cartCount})</SheetTitle>
                             </SheetHeader>
                             <ScrollArea className="h-[600px] w-full rounded-md border-none p-4">
-                                {cart.cartArray.map(({id, name, price, images, ratings, itemCountCart, handleIncrement, handleDecrement}: CartCardProps) => (
+                                {cart?.map(({id, name, price, images, ratings, itemCountCart, handleIncrement, handleDecrement}: CartCardProps) => (
                                     <CartProductCard 
                                     key={id}
                                     id={id}
@@ -396,34 +397,34 @@ const Navbar:React.FC = () => {
                                     ratings={ratings}
                                     itemCountCart={itemCountCart}
                                     handleIncrement={handleIncrement}
-                                    handleDecrement={handleDecrement}/>
+                                    handleDecrement={handleDecrement}
+                                    addToWishlist={addToWishlist}/>
                                         
                                 ))}
                             </ScrollArea>
                             <div>
                                 <div className="flex justify-between">
                                     <h2 className="m-3">Subtotal: </h2>
-                                    <h2 className="m-3 font-extrabold">{cart.cartArray?.forEach((element: { price: number, itemCountCart: number }) => {
-                                         subtotal += element.price * element.itemCountCart                                         
-                                    })} ${subtotal.toFixed(2)}</h2>
+                                    <h2 className="m-3 font-extrabold"> ${subtotal?.toFixed(2)}</h2>
                                 </div>
                                 <div className="flex justify-between">
                                     <h2 className="m-3">Shipping: </h2>
-                                    <h2 className="m-3 font-extrabold"> ${(subtotal/8).toFixed(2)}</h2>
+                                    <h2 className="m-3 font-extrabold"> ${(subtotal/8)?.toFixed(2)}</h2>
                                 </div>
                                 <Separator/>
                                 <div className="flex justify-between">
                                     <h2 className="m-3">Total: </h2>
-                                    <h2 className="m-3 font-extrabold">${(subtotal+subtotal/8).toFixed(2)}</h2>
+                                    <h2 className="m-3 font-extrabold">${(subtotal+subtotal/8)?.toFixed(2)}</h2>
                                     
                                 </div>
                                 
                             </div>
                             <div className='container flex justify-between py-4'>
-                                <Button variant="outline" className='rounded-3xl w-50'>Cancel</Button>
                                 <DialogClose>
-                                <Button className='rounded-3xl w-50' onClick={()=>navigate("/checkout")}>Checkout</Button>
-
+                                    <Button variant="outline" className='rounded-3xl w-50'>Cancel</Button>
+                                </DialogClose>
+                                <DialogClose>
+                                    <Button className='rounded-3xl w-50' onClick={()=>navigate("/checkout")}>Checkout</Button>
                                 </DialogClose>
                             </div>
                         </SheetContent>

@@ -15,11 +15,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Link } from "react-router-dom"
-import { Rating } from '@smastrom/react-rating';
-import { useContext } from "react"
-import CartContext from "@/contexts/CartContext"
+import { Rating } from '@smastrom/react-rating'
 import useAuth from "@/hooks/useAuth"
 import { UseAuthProps } from "@/contexts/AuthProvider"
+import { UseCartProps } from "@/contexts/CartProvider"
+import useCart from "@/hooks/useCart"
 
 
 export interface Product {
@@ -31,14 +31,15 @@ export interface Product {
   quantitySold?: number
   images: string[]
   category?: string 
-  disp?: boolean
+  disp?: boolean 
+  itemCountCart?: number
   addToWishlist: (id: number) => void
 }
 
 const ProductCard = ({ id, name, description, price, images, quantitySold, ratings, disp, addToWishlist }: Product) => {
 
   const { auth }: UseAuthProps = useAuth();
-  const cart: any = useContext(CartContext);
+  const { addToCart }: UseCartProps = useCart();
   const wishlistIds: number[] = auth?.wishlist;
   const idExists = wishlistIds?.find(w => w === id);
 
@@ -110,13 +111,12 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
             </span>
         </CardHeader>
         { disp?
-
         ""
         :
         <CardFooter className="w-full p-2">
             <Button variant="outline" 
             className="rounded-3xl hover:bg-green-900 hover:text-white"
-            onClick={()=>cart.addToCart(id)}>Add to cart</Button>
+            onClick={()=>addToCart?addToCart(id):""}>Add to cart</Button>
         </CardFooter>
         }
         

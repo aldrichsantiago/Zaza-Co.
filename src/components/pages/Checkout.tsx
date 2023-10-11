@@ -1,10 +1,10 @@
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import Visa from '../../assets/visa-logo.png'
 import Mastercard from '../../assets/mastercard-logo.jpg'
 import Maya from '../../assets/maya-logo.jpg'
 import Gcash from '../../assets/gcash-logo.png'
 import Paypal from '../../assets/paypal-logo.png'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -25,15 +25,15 @@ import useAxios from '@/hooks/useAxios'
 import axios from '@/api/axios'
 import { useToast } from '../ui/use-toast'
 import { useNavigate } from 'react-router-dom'
-import CartContext from '@/contexts/CartContext'
+import { UseCartProps } from '@/contexts/CartProvider'
+import useCart from '@/hooks/useCart'
 
 const Checkout: React.FC = () => {
   const cartFromLocalStorage = JSON.parse(localStorage.getItem("cart") || "[]")
-  const [cart, setCart] = useState(cartFromLocalStorage)
+  const [cart, setCartArray] = useState(cartFromLocalStorage)
   const productsArr:any = [];
   const navigate = useNavigate();
-  const [message, setMessage] = useState();
-  const {setCartArray}:any = useContext(CartContext);
+  const {setCart}:UseCartProps = useCart();
 
   let checkoutSubtotal = cart?.reduce((accumulator: any, object: { itemCountCart: number, price: number }) => {
     return accumulator + (object?.itemCountCart * object?.price);
@@ -236,16 +236,13 @@ const Checkout: React.FC = () => {
           }
         })
         console.log(response);
-        setMessage(response.data.message)
+        setCart? setCart([]) : "";
         setCartArray([])
     } catch (error) {
       console.log(error);
     }finally{
       navigate("/orders")
-      // toast({
-      //   title: message,
-      //   variant: "default"
-      // });
+
     }
 
   }

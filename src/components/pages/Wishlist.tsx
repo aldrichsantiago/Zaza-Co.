@@ -59,12 +59,22 @@ const Wishlist:FC = () => {
       navigate("/login");
     }
   }
+  console.log(wishlistArray);
+  
 
   return (
     <div className="container py-12 w-full">
-        <h1 className="font-medium text-2xl">My Wishlist</h1>
-        <div className="flex flex-wrap justify-between">
-        {wishlistArray?.map(({id, name, description, price, ratings, images, quantitySold}:WishlistProductsInterface)=> (
+        <h1 className="font-medium text-2xl">💖 My Wishlist</h1>
+        <div className="flex flex-wrap justify-center">
+        {
+          wishlistArray.length === 0 ?
+
+            <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+              No Products on your wishlist
+            </h1>
+          :
+
+          wishlistArray?.map(({id, name, description, price, ratings, images, quantitySold}:WishlistProductsInterface)=> (
             <ProductCard key={id}
             id={id} 
             name={name} 
@@ -75,7 +85,22 @@ const Wishlist:FC = () => {
             quantitySold={quantitySold}
             addToWishlist={addToWishlist}
           />
-        ))}
+        ))
+
+        }
+
+        {/* {wishlistArray?.map(({id, name, description, price, ratings, images, quantitySold}:WishlistProductsInterface)=> (
+            <ProductCard key={id}
+            id={id} 
+            name={name} 
+            description={description} 
+            price={price} 
+            ratings={ratings} 
+            images={images}
+            quantitySold={quantitySold}
+            addToWishlist={addToWishlist}
+          />
+        ))} */}
         </div>
     </div>
   )

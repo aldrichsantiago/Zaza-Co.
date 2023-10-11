@@ -11,6 +11,8 @@ import ProductCarousel from './Carousel/ProductCarousel';
 import './Carousel/css/productCaroursel/embla.css'
 import useAxios from '@/hooks/useAxios';
 import CartContext from '@/contexts/CartContext';
+import useCart from '@/hooks/useCart';
+import { UseCartProps } from '@/contexts/CartProvider';
 
 type ProductParams = {
   productId: string;
@@ -69,7 +71,7 @@ const ProductPage:React.FC = () => {
         }
     }
 
-    const cart:any = useContext(CartContext);
+    const { addToCart }: UseCartProps = useCart();
 
     console.log(data)
   return (
@@ -132,7 +134,7 @@ const ProductPage:React.FC = () => {
                 <Button 
                   className='w-44 h-11 rounded-3xl hover:bg-green-900 hover:text-white' 
                   variant={'outline'} 
-                  onClick={()=>cart.addToCart(id, itemCount)}>
+                  onClick={()=>addToCart?addToCart(id, itemCount):""}>
                     Add to Cart
                 </Button>
               </div>

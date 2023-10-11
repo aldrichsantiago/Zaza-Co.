@@ -2,14 +2,9 @@ import QuantityCounter from "./QuantityCounter"
 import { Heart, Trash } from 'lucide-react';
 import { Separator } from "./ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { useContext } from "react";
-import CartContext from "@/contexts/CartContext";
 import { Button } from "./ui/button";
-import { UseAuthProps } from "@/contexts/AuthProvider";
-import useAuth from "@/hooks/useAuth";
-import axios from "@/api/axios";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "./ui/use-toast";
+import useCart from "@/hooks/useCart";
+import { UseCartProps } from "@/contexts/CartProvider";
 
 
 export interface CartCardProps {
@@ -22,32 +17,12 @@ export interface CartCardProps {
     itemCountCart: number
     handleIncrement: (e:  React.FormEvent)=> void;
     handleDecrement: (e:  React.FormEvent)=> void;
+    addToWishlist: (id: number) => void;
 }
 
 
-const CartProductCard = ({ id, name, price, images, itemCountCart, handleDecrement, handleIncrement }: CartCardProps) => {
-  const { auth }: UseAuthProps = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast()
-  const cart:any = useContext(CartContext);
-  
-  const addToWishlist = async(id:number) => {
-    if (auth) {
-      try {
-        if(auth){
-          const res = await axios.post("/wishlist/user/" + auth.username + "/" + id, id)
-          console.log(id);
-          toast({ title: res.data.message })
-        }
-      } catch (error) {
-        console.log(error);
-        toast({ title: JSON.stringify(error) })
-        return;
-      }
-    } else{
-      navigate("/login");
-    }
-  }
+const CartProductCard = ({ id, name, price, images, itemCountCart, handleDecrement, handleIncrement, addToWishlist }: CartCardProps) => {
+  const { removeFromCart }: UseCartProps = useCart();
 
   return (
     <>
@@ -71,7 +46,11 @@ const CartProductCard = ({ id, name, price, images, itemCountCart, handleDecreme
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <Button onClick={()=>cart.removeFromCart(id)} variant={"destructive"}>Remove</Button>
+                {removeFromCart?
+                <Button onClick={()=>removeFromCart(id)} variant={"destructive"}>Remove</Button>
+                : ""
+                }
+                
               </DialogFooter>
             </DialogContent>
           </Dialog>
