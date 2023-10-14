@@ -107,13 +107,7 @@ export const columns: ColumnDef<Product>[] = [
     },
     cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
-  {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => (
-      <div className="capitalize max-w-prose truncate">{row.getValue("description")}</div>
-    ),
-  },
+
   {
     accessorKey: "category",
     header: "Category",
@@ -151,12 +145,26 @@ export const columns: ColumnDef<Product>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Quantity Sold
+          Sold
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => <div className="lowercase pl-6">{row.getValue("quantitySold")}</div>,
+  },{
+    accessorKey: "ratings",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Ratings
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => <div className="lowercase pl-6">{row.getValue("ratings")}</div>,
   },{
     id: "actions",
     header: "Actions",
@@ -401,6 +409,7 @@ const Products = () => {
   const [data, setData] = useState([])
   const axiosPrivate = useAxiosPrivate();
   const { toast } = useToast()
+  const navigate = useNavigate()
   const [addProductForm, setAddProductForm] = useState<AddProduct>();
   const [selectedFiles, setSelectedFiles]: any = useState([]);
 
@@ -431,31 +440,32 @@ const Products = () => {
   const handleUpload = async() => {
     // const formData = {...addProductForm, images:[...selectedFiles]};
     const formData = new FormData();
+    formData.append('data', JSON.stringify(addProductForm))
 
     for (const file of selectedFiles) {
       formData.append('images', file);
     }
-    formData.append('data', JSON.stringify(addProductForm))
    
     console.log(addProductForm);
     console.log(selectedFiles);
     console.log(formData);
     
 
-    axios
+    await axios
       .post('/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       })
       .then((response) => {
-        toast({title: response.data});
+        console.log({title: response.data});
         setSelectedFiles([]);
       })
       .catch((error) => {
         console.error(error);
         toast({title: 'File upload failed.'});
       });
+      navigate(0)
   };
 
   useEffect(() => {
