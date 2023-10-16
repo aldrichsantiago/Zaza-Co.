@@ -1,16 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Separator } from "@/components/ui/separator"
 import { ProductQuantityCounter } from '../QuantityCounter';
 import { Button } from '../ui/button';
-import { ShoppingBag, Truck } from 'lucide-react';
+import { ChevronRight, ShoppingBag, Truck } from 'lucide-react';
 import { Rating } from '@smastrom/react-rating';
 import { useToast } from "@/components/ui/use-toast"
 import { EmblaOptionsType } from 'embla-carousel-react';
 import ProductCarousel from './Carousel/ProductCarousel';
 import './Carousel/css/productCaroursel/embla.css'
 import useAxios from '@/hooks/useAxios';
-import CartContext from '@/contexts/CartContext';
 import useCart from '@/hooks/useCart';
 import { UseCartProps } from '@/contexts/CartProvider';
 
@@ -23,6 +22,7 @@ const ProductPage:React.FC = () => {
   const { productId } = useParams<ProductParams>();
   const [itemCount, setItemCount] = useState<number>(1);
   const { toast } = useToast()
+  const navigate = useNavigate()
   const [data, setData]:any = useState([]);
   const { response }:any = useAxios({
     method: 'get',
@@ -78,20 +78,17 @@ const ProductPage:React.FC = () => {
     <>
       <div className="container pt-20">
       <p className='text-slate-500'>
-        {/* {data?.map(({category, name}:any) => {
-        <>
-          <Link to={`/category/${category.toLowerCase()}`} className='text-black hover:underline'>
-            {category.toUpperCase()}
-          </Link> / {name} 
-        </>
-        })} */}
-
         {data ? 
-        <>
+        <div className='flex items-center'>
           <Link to={`/category/${data[0]?.category.toLowerCase()}`} className='text-black hover:underline font-medium'>
-            {data[0]?.category.toUpperCase()} / 
-          </Link> {data[0]?.name}
-        </>
+            {data[0]?.category.toUpperCase()} 
+          </Link><ChevronRight className='ml-1 h-4'/> 
+          <p>
+          {data[0]?.name}
+          </p>
+            
+            
+        </div>
         :
         <></>}
       </p>
@@ -130,7 +127,10 @@ const ProductPage:React.FC = () => {
                 <span className='font-medium text-sm flex'>Only <p className='text-orange-400 mx-1'>{stocks} items left</p>  in stock!</span>
               </div>
               <div className="w-full py-3 flex flex-wrap items-center justify-start">
-                <Button className='w-44 h-11 sm:mr-3 my-2 mr-0 rounded-3xl bg-green-900 hover:bg-green-950 hover:text-white'>Buy Now</Button>
+                <Button className='w-44 h-11 sm:mr-3 my-2 mr-0 rounded-3xl bg-green-900 hover:bg-green-950 hover:text-white' 
+                onClick={()=>{
+                  navigate(`/buy-now/${id}/${itemCount}`);
+                }}>Buy Now</Button>
                 <Button 
                   className='w-44 h-11 rounded-3xl hover:bg-green-900 hover:text-white' 
                   variant={'outline'} 

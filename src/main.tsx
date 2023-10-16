@@ -26,6 +26,7 @@ import PersistLogin from './components/PersistLogin.tsx';
 import Products from './components/admin/Products.tsx';
 import Checkout from './components/pages/Checkout.tsx';
 import SearchPage from './components/pages/SearchPage.tsx';
+import BuyNow from './components/pages/BuyNow.tsx';
 
 
 const router = createBrowserRouter([
@@ -75,6 +76,9 @@ const router = createBrowserRouter([
                 },{
                   path: "/checkout",
                   element: <Checkout/>
+                },{
+                  path: "/buy-now/:productId/:itemQuantity",
+                  element: <BuyNow/>
                 },{
                   path: "/settings",
                   element: <Settings/>

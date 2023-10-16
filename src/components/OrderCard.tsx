@@ -8,12 +8,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Plane } from "lucide-react";
 import ProductCard from "./ProductCard"
 import useAxios from "@/hooks/useAxios"
-import { useEffect, useState } from "react"
+import { FormEvent, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "./ui/use-toast"
 import { UseAuthProps } from "@/contexts/AuthProvider"
 import useAuth from "@/hooks/useAuth"
 import axios from "@/api/axios"
+import OrderProductCard from "./OrderProductCard"
 
 // TYPES
 type StatusTypes = {
@@ -119,17 +120,14 @@ const OrderCard = ({ orders }:any) => {
                     <div className="flex flex-col space-y-1.5">
                     <ScrollArea className="h-[400px] w-full rounded-md border p-4 horizontal" data-orientation="horizontal" type="hover">
                       <div className="flex flex-wrap justify-around">
-                        {products?.map(({id, name, description, price, ratings, images, quantitySold}:any)=> (
-                        <ProductCard key={id}
+                        {products?.map(({id, name, description, price, images}:any)=> (
+                        <OrderProductCard key={id}
                         id={id} 
                         name={name} 
                         description={description} 
                         price={price} 
-                        ratings={ratings} 
-                        images={images}
-                        quantitySold={quantitySold}
-                        disp={true}
-                        addToWishlist={addToWishlist}/>
+                         
+                        images={images}/>
                       ))}
                       </div>
                     </ScrollArea>

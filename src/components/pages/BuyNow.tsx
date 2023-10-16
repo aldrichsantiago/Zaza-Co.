@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Visa from '../../assets/visa-logo.png'
 import Mastercard from '../../assets/mastercard-logo.jpg'
 import Maya from '../../assets/maya-logo.jpg'
@@ -24,20 +24,25 @@ import { UseAuthProps } from '@/contexts/AuthProvider'
 import useAxios from '@/hooks/useAxios'
 import axios from '@/api/axios'
 import { useToast } from '../ui/use-toast'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const BuyNow: React.FC = () => {
   const productsArr:any = [];
   const navigate = useNavigate();
-
-  let checkoutSubtotal = cart?.reduce((accumulator: any, object: { itemCountCart: number, price: number }) => {
-    return accumulator + (object?.itemCountCart * object?.price);
-  }, 0);
-
-  cart?.forEach((product:any) => {
-    const eachProduct = {productId: product.id, productQuantity: product.itemCountCart}
-    productsArr.push(eachProduct)
-  })
+  const [product, setProduct]: any = useState()
+  let { productId, itemQuantity } = useParams();
+  
+  
+  useEffect(()=>{
+    axios.get(`product/${productId}`)
+    .then(res => setProduct({...res.data[0], itemCountCart: itemQuantity}))
+    .catch(e => console.log(e))
+  }, [])
+  
+  console.log(product);
+  let checkoutSubtotal = product?.itemCountCart * product?.price;
+  const eachProduct = {productId: product?.id, productQuantity: product?.itemCountCart}
+  productsArr.push(eachProduct)
 
   const { auth }:UseAuthProps = useAuth();
   const [paymentInfo, setPaymentInfo]: any = useState({
@@ -193,32 +198,28 @@ const BuyNow: React.FC = () => {
     <>
       <div className='py-5 px-12 flex flex-row gap-5 justify-between flex-wrap'>
         <div className='w-3/5 flex flex-col gap-5'>
-          {cart?.map((product:any) => {
-            // const images = JSON.parse(product.images)
-            return(
-            <div className="w-full flex flex-col gap-5" key={product.id}>
+            <div className="w-full flex flex-col gap-5" key={product?.id}>
               <div className="w-full h-56 flex justify-between bg-slate-50 rounded-lg border">
-                <img src={`http://localhost:8000/uploads/${product.images[0]}`} alt="product1" className='w-1/5 ml-8 m-3 rounded-3xl'/>
+                <img src={`http://localhost:8000/uploads/${product?.images[0]}`} alt="product1" className='w-1/5 ml-8 m-3 rounded-3xl'/>
                 <div className="w-2/3 flex flex-col flex-wrap px-5 py-5">
                   <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-                    {product.name}
+                    {product?.name}
                   </h2>
                   <p className="leading-7 [&:not(:first-child)]:mt-6 w-1/2 truncate text-slate-600">
-                    {product.description}
+                    {product?.description}
                   </p>
-                  <Rating style={{ maxWidth: 100 }} value={product.ratings} readOnly/>
+                  <Rating style={{ maxWidth: 100 }} value={product?.ratings} readOnly/>
                   <div className="w-2/3 flex justify-between items-center">
                     <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight my-2">
-                      $ {product.price.toFixed(2)}
+                      $ {product?.price.toFixed(2)}
                     </h3>
                     <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                      Qty. {product.itemCountCart}
+                      Qty. {product?.itemCountCart}
                     </h4>
                   </div>
                 </div>
               </div>
             </div>
-          )})}
         </div>
 
         <div className="w-full md:w-2/6 h-full">

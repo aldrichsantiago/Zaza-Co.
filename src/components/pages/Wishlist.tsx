@@ -69,7 +69,7 @@ const Wishlist:FC = () => {
         {
           wishlistArray.length === 0 ?
 
-            <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+            <h1 className=" my-44 scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
               No Products on your wishlist
             </h1>
           :

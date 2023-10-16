@@ -41,24 +41,28 @@ const Orders = () => {
     <>
       <div className="container">
         <p className="leading-7 [&:not(:first-child)]:mt-6 font-medium text-slate-700 mx-8 my-4">My Account / Orders</p>
-      </div>
-        {loading ? (
-          <p>loading...</p>
-        ) : (
-          unique?.map(({orders, orderId}:any) => {
-            
-            return(
-            <div key={orderId}>
-              <OrderCard orders={orders}/>
-            </div>
-            )
-            
-
-          })
-        )}
+      
+        {
+          loading ? (
+            <p>loading...</p>
+          ) 
+          : unique.length !== 0 ?
+          (
+            unique?.map(({orders, orderId}:any) => {
+              return(
+              <div key={orderId}>
+                <OrderCard orders={orders}/>
+              </div>
+              )
+            })
+          ):
+          <h1 className="p-6 my-48 text-center scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+              No Orders
+          </h1>
+        }
         
 
-
+      </div>
     </>
   )
 }

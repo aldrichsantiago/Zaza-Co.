@@ -3,14 +3,8 @@ import EmblaCarousel from './Carousel/EmblaCarousel'
 import { EmblaOptionsType } from 'embla-carousel-react'
 import './Carousel/css/sanbox.css'
 import './Carousel/css/embla.css'
-
 import useAxios from '@/hooks/useAxios';
-import { useNavigate } from 'react-router-dom'
-import { useToast } from '../ui/use-toast'
-import { UseAuthProps } from '@/contexts/AuthProvider'
-import useAuth from '@/hooks/useAuth'
-import axios from '@/api/axios'
-import CardList, { DataProps } from '../CardList'
+import CardList from '../CardList'
 
 const Home: React.FC = () => {
   const [data, setData]: any= useState([]);
