@@ -4,16 +4,9 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-
 import { Plane } from "lucide-react";
-import ProductCard from "./ProductCard"
 import useAxios from "@/hooks/useAxios"
-import { FormEvent, useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { useToast } from "./ui/use-toast"
-import { UseAuthProps } from "@/contexts/AuthProvider"
-import useAuth from "@/hooks/useAuth"
-import axios from "@/api/axios"
+import { useEffect, useState } from "react"
 import OrderProductCard from "./OrderProductCard"
 
 // TYPES
@@ -33,26 +26,6 @@ const OrderCard = ({ orders }:any) => {
     headers: JSON.stringify({ accept: '*/*' }),
   })
   const [data, setData] = useState([]);
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const { auth }:UseAuthProps = useAuth();
-
-  const addToWishlist = async(id:number) => {
-    if (auth) {
-      try {
-        const res = await axios.patch("/wishlist/user/" + auth.username + "/" + id, id);
-        toast({ title: res.data.message });
-      } catch (error) {
-
-        console.log(error);
-        toast({ title: JSON.stringify(error) })
-        return;
-
-      }
-    } else{
-      navigate("/login");
-    }
-  }
 
   useEffect(() => {
     if (response !== null) {
@@ -61,16 +34,33 @@ const OrderCard = ({ orders }:any) => {
   }, [response]);
 
 
-  let products: any = []
+  let products: {isReviewed: any}[] = []
 
-  for(const elem of data){
+  for(const e of data){
+    const elem: any  = e;
     for(const key in elem){
       if (key === "products"){
         products.push(elem[key]);
+        let reviewed = false;
+        let rating = 0;
+        let orderId;
+        for(const key in elem){
+          if (key === "isReviewed"){
+            reviewed = elem[key]
+          }
+          if (key === "userRating"){
+            rating = elem[key]
+          }
+          if (key === "orderId"){
+            orderId = elem[key]
+          }
+        }
+        elem[key]['isReviewed'] = reviewed;
+        elem[key]['userRating'] = rating;
+        elem[key]['orderId'] = orderId;
       }
     }
   }
-  console.log(products);
 
   const localDate = new Date(orders?.createdAt).toLocaleString("en-US", {
     dateStyle: "full",
@@ -86,7 +76,6 @@ const OrderCard = ({ orders }:any) => {
     delivered: 'Your package is already delivered',
     cancelled: 'Your package is unforunately cancelled',
   }
-
 
   return (
     <div className="container py-10 w-full">
@@ -120,14 +109,18 @@ const OrderCard = ({ orders }:any) => {
                     <div className="flex flex-col space-y-1.5">
                     <ScrollArea className="h-[400px] w-full rounded-md border p-4 horizontal" data-orientation="horizontal" type="hover">
                       <div className="flex flex-wrap justify-around">
-                        {products?.map(({id, name, description, price, images}:any)=> (
+                        {products?.map(({id, name, description, price, images, ratings, isReviewed, userRating, orderId}:any, )=> (
                         <OrderProductCard key={id}
                         id={id} 
                         name={name} 
                         description={description} 
                         price={price} 
-                         
-                        images={images}/>
+                        images={images}
+                        ratings={ratings}
+                        isReviewed={isReviewed}
+                        userRating={userRating}
+                        orderId={orderId}
+                        />
                       ))}
                       </div>
                     </ScrollArea>

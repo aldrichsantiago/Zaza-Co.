@@ -42,9 +42,7 @@ const Navbar:React.FC = () => {
     method: 'get',
     url: '/user/username/' + auth.username,
     headers: JSON.stringify({ accept: '*/*' }),
-    });
-    console.log(subtotal);
-    
+    });    
     useEffect(() => {
         if (response !== null) {
             setData(response);
@@ -202,13 +200,12 @@ const Navbar:React.FC = () => {
                                         {
                                             searchModal ? 
                                                 <div className="w-[300px] bg-slate-100 absolute top-20 rounded-xl  z-10">
-                                                    {searchResults?.map(({id, name, price, images, ratings}: any) => (
+                                                    {searchResults?.map(({id, name, price, images}: any) => (
                                                         <div className="w-full h-24 p-3 my-3 flex cursor-pointer z-10 hover:bg-green-600 rounded-md" key={id} onClick={()=>navigate(`/products/${id}`)}>
                                                             <img src={`${import.meta.env.VITE_API_URL}/uploads/${images[0]}`} alt="images" width={70} className="rounded-md mr-3"/>
                                                             <div className="flex flex-col w-full">
                                                                 <p className="font-medium">{name}</p>
                                                                 <div className="flex justify-between pr-6">
-                                                                    <Rating style={{ maxWidth: 80 }} value={ratings? ratings: 0} readOnly/>
                                                                     <p className="font-normal">${price}</p>
 
                                                                 </div>
@@ -313,7 +310,6 @@ const Navbar:React.FC = () => {
                                         <div className="flex flex-col w-full">
                                             <p className="font-medium">{name}</p>
                                             <div className="flex justify-between pr-6">
-                                                <Rating style={{ maxWidth: 80 }} value={ratings? ratings: 0} readOnly/>
                                                 <p className="font-normal">${price}</p>
 
                                             </div>

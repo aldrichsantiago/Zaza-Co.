@@ -35,7 +35,6 @@ const Orders = () => {
   
     return false;
   });
-  console.log(unique);
   
   return (
     <>

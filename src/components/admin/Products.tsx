@@ -525,11 +525,11 @@ const Products = () => {
             <DialogHeader>
               <DialogTitle>Add a product</DialogTitle>
             </DialogHeader>
-            <form action={`${import.meta.env.VITE_API_URL}/upload`} method="post" encType='multipart/form-data' onSubmit={handleUpload}>
+            <form action={`${import.meta.env.VITE_API_URL}/upload`} method="post" encType='multipart/form-data' onSubmit={handleUpload} id="addProductForm">
               <Label htmlFor="name">Name: </Label>
               <Input onChange={handleAddProductChange} name="name" className="my-1"/>
               <Label htmlFor="description">Description: </Label>
-              <Textarea name="description" className="my-1"/>
+              <Textarea name="description" className="my-1" form="addProductForm" onChange={(e: React.ChangeEvent<HTMLTextAreaElement> )=>setAddProductForm({...addProductForm, description: e.target.value})}/>
               <div className="flex gap-2 justify-between">
                 <div>
                   <Label htmlFor="price">Price: </Label>

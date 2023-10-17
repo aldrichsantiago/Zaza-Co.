@@ -12,6 +12,7 @@ import './Carousel/css/productCaroursel/embla.css'
 import useAxios from '@/hooks/useAxios';
 import useCart from '@/hooks/useCart';
 import { UseCartProps } from '@/contexts/CartProvider';
+import axios from '@/api/axios';
 
 type ProductParams = {
   productId: string;
@@ -24,6 +25,14 @@ const ProductPage:React.FC = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
   const [data, setData]:any = useState([]);
+  const [noOfReviewers, setNoOfReviewers] = useState(0);
+
+  useEffect(()=>{
+    axios.get(`/ratings/products/${productId}`)
+    .then(res => setNoOfReviewers(res.data[0].count))
+    .catch(e => console.log(e))
+  },[]);
+
   const { response }:any = useAxios({
     method: 'get',
     url: '/product/'+ productId,
@@ -77,7 +86,7 @@ const ProductPage:React.FC = () => {
   return (
     <>
       <div className="container pt-20">
-      <p className='text-slate-500'>
+      <div className='text-slate-500'>
         {data ? 
         <div className='flex items-center'>
           <Link to={`/category/${data[0]?.category.toLowerCase()}`} className='text-black hover:underline font-medium'>
@@ -91,7 +100,7 @@ const ProductPage:React.FC = () => {
         </div>
         :
         <></>}
-      </p>
+      </div>
 
       </div>
       <div className='h-screen pt-10 container flex flex-wrap mb-[300px] sm:mb-[100px]'>
@@ -112,7 +121,7 @@ const ProductPage:React.FC = () => {
               <p className='mb-2 text-4xl font-semibold'>{name}</p>
               <p className='text-slate-600 mb-2 max-w-prose'>{description}</p>
               <span className="flex items-center">
-                <Rating style={{ maxWidth: 100 }} value={ratings? ratings: 0} readOnly />
+                <Rating style={{ maxWidth: 100 }} value={ratings? ratings/noOfReviewers: 0} readOnly />
                 <p className='font-semibold mx-2'>({quantitySold})</p>
               </span>
               

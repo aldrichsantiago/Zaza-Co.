@@ -14,12 +14,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Rating } from '@smastrom/react-rating'
 import useAuth from "@/hooks/useAuth"
 import { UseAuthProps } from "@/contexts/AuthProvider"
 import { UseCartProps } from "@/contexts/CartProvider"
 import useCart from "@/hooks/useCart"
+import axios from "@/api/axios"
+import { useEffect, useState } from "react"
 
 
 export interface Product {
@@ -42,6 +44,15 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
   const { addToCart }: UseCartProps = useCart();
   const wishlistIds: number[] = auth?.wishlist;
   const idExists = wishlistIds?.find(w => w === id);
+  const [noOfReviewers, setNoOfReviewers] = useState(0);
+
+  useEffect(()=>{
+    axios.get(`/ratings/products/${id}`)
+    .then(res => setNoOfReviewers(res.data[0].count))
+    .catch(e => console.log(e))
+  },[]);
+
+  
 
   return (
     <>
@@ -106,7 +117,7 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
 
 
             <span className="mt-5 flex items-center font-semibold">
-            <Rating style={{ maxWidth: 100 }} value={ratings? ratings: 0} readOnly />
+            <Rating style={{ maxWidth: 100 }} value={ratings? ratings/noOfReviewers: 0} readOnly />
             <p className="mx-3">({quantitySold})</p>
             </span>
         </CardHeader>

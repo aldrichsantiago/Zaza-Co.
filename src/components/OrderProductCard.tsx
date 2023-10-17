@@ -1,5 +1,12 @@
-import { Button } from "@/components/ui/button"
-import { Heart } from "lucide-react"
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   Card,
   CardContent,
@@ -14,7 +21,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { Button } from "./ui/button"
+import { DialogClose } from "@radix-ui/react-dialog"
+import { Rating } from "@smastrom/react-rating"
+import { useEffect, useState } from "react"
+import axios from "@/api/axios"
 
 export interface Product {
   id: number
@@ -27,10 +39,25 @@ export interface Product {
   category?: string 
   disp?: boolean 
   itemCountCart?: number
+  isReviewed?: boolean
+  userRating: number
+  orderId: number
   addToWishlist?: (id: number) => void
 }
 
-const OrderProductCard = ({ id, name, description, price, images }: Product) => {
+const OrderProductCard = ({ id, name, description, price, images, isReviewed, userRating, orderId }: Product) => {
+  const [rating, setRating] = useState(0);
+  const navigate = useNavigate();
+
+  const saveRating = () => {
+    axios.patch(`/ratings/orders/${orderId}/products/${id}`, {rating})
+    .then(res => console.log(res.data))
+    .catch(e => console.log(e))
+
+    navigate(0)
+  }
+
+
 
   return (
     <>
@@ -69,10 +96,31 @@ const OrderProductCard = ({ id, name, description, price, images }: Product) => 
             </CardDescription>
         </CardHeader>
         {
-
+          isReviewed ?
+          <div className="w-full px-3 flex justify-start">
+            <Rating style={{ maxWidth: 190 }} value={userRating} readOnly/>
+          </div>
+          :
+          <Dialog>
+            <DialogTrigger className="bg-green-900 hover:bg-green-950 py-2 px-8 rounded-sm font-medium text-white transition-colors">Review</DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="mb-5">Rate this Product : {name}</DialogTitle>
+                <DialogDescription className="flex justify-center">
+                  <Rating style={{ maxWidth: 200 }} value={rating} onChange={(value: number)=>{console.log(value); setRating(value)}}/>
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-wrap gap-3 justify-between">
+                <DialogClose>
+                  <Button type={"button"} variant={"outline"} className="px-6">Close</Button>
+                </DialogClose>
+                <Button variant={"default"} className="px-6" onClick={saveRating}>Rate</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         }
         <CardFooter className="flex items-start w-full p-2 mt-2">
-            <Button className="bg-green-900 px-12">Review</Button>
+
         </CardFooter>
         </Card>
 
