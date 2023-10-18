@@ -31,6 +31,7 @@ export interface Product {
   price: number
   ratings?: number
   quantitySold?: number
+  stocks?: number
   images: string[]
   category?: string 
   disp?: boolean 
@@ -63,12 +64,12 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
               <TooltipTrigger>
                 {
                   idExists? 
-                  <span className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
-                    <Heart size={20} onClick={()=>{addToWishlist(id)}}/>
+                  <span onClick={()=>{addToWishlist(id)}} className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
+                    <Heart size={20}/>
                   </span>
                   :
-                  <span className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
-                    <Heart size={20} onClick={()=>{addToWishlist(id)}}/>
+                  <span onClick={()=>{addToWishlist(id)}} className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
+                    <Heart size={20}/>
                   </span>
                 }
                

@@ -1,6 +1,8 @@
 import { PropsWithChildren, createContext, useEffect, useState } from 'react'
 import { useToast } from '@/components/ui/use-toast';
 import useAxios from '@/hooks/useAxios';
+import { Product } from '@/components/ProductCard';
+import axios from '@/api/axios';
 
 const CartContext = createContext({});
 
@@ -18,6 +20,7 @@ const cartFromLocalStorage = JSON.parse(localStorage.getItem("cart") || "[]");
 
 export const CartProvider = ({ children }:PropsWithChildren ) => {
     const [cart, setCart] = useState<any[]>(cartFromLocalStorage)
+    const [contextCart, setContextCart] = useState<any[]>([])
     const { toast } = useToast()
     const { response } = useAxios({
         method: 'get',
@@ -33,40 +36,70 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
     }, [response]);
     
 
-    const addToCart = (id:number, ...args: number[]) => {
+    const addToCart = async(id:number, ...args: number[]) => {
         let itemCount = args[0];
         
-        const selectedProduct: any = data.find(product => product.id == id);
+        // const selectedProduct: any = data.find(product => product.id == id);
         const cartProduct = cart.find((product: { id: number }) => product.id == id);
-    
-    
-        if(selectedProduct.id === id){
-          if ( cartProduct?.id  === id ) {
-            if (cartProduct.stocks > cartProduct.itemCountCart){
-              if(itemCount){
-                if(cartProduct.stocks < cartProduct.itemCountCart + itemCount){
-                  cartProduct.itemCountCart = cartProduct.stocks;
-                  toast({variant: "destructive", description: "You've achieve the maximum amount of this product!",})
-                } else {
-                cartProduct.itemCountCart += itemCount;
-                }
+        const res = await axios.get(`product/${id}`)
+        console.log(res.data[0]);
+
+        console.log(cart);
+        console.log(cartProduct);
+        if (cartProduct?.id === res.data[0].id) {
+          let cartFiltered = cart.filter((prod)=> prod.id !== id)
+          if (cartProduct.stocks > cartProduct.itemCountCart){
+            if(itemCount){
+              if(cartProduct.stocks < cartProduct.itemCountCart + itemCount){
+                setCart([...cartFiltered, {...cartProduct, itemCountCart: cartProduct.stocks}])
+                toast({variant: "destructive", description: "You've achieve the maximum amount of this product!",})
               } else {
-                cartProduct.itemCountCart += 1;
+                setCart([...cartFiltered, {...cartProduct, itemCountCart: cartProduct.itemCountCart+itemCount }])
+                toast({description: "Product(s)  has been added to cart",})
               }
-              toast({description: "Product(s)  has been added to cart",})
             } else {
-              cartProduct.itemCountCart = cartProduct.stocks;
-              toast({variant: "destructive", description: "You've achieve the maximum amount of this product!",})
+              setCart([...cartFiltered, {...cartProduct, itemCountCart: cartProduct.itemCountCart+=1}])
+              toast({description: "Product(s)  has been added to cart",})
             }
-            setCart([...cart])
-          }else {
-            if(itemCount) {
-              setCart([...cart, {...selectedProduct, itemCountCart:itemCount}])
-            }else {
-              setCart([...cart, {...selectedProduct, itemCountCart:1}])
-            }
+          } else {
+            toast({variant: "destructive", description: "You've achieve the maximum amount of this product!",})
           }
+          console.log(cartFiltered);
+        } else {
+          console.log("this ran");
+          setCart([...cart, {...res.data[0], itemCountCart:1}])
         }
+
+        // if(selectedProduct.id === id){
+        //   if ( cartProduct?.id  === id ) {
+        //     if (cartProduct.stocks > cartProduct.itemCountCart){
+        //       if(itemCount){
+        //         if(cartProduct.stocks < cartProduct.itemCountCart + itemCount){
+        //           cartProduct.itemCountCart = cartProduct.stocks;
+        //           toast({variant: "destructive", description: "You've achieve the maximum amount of this product!",})
+        //         } else {
+        //         cartProduct.itemCountCart += itemCount;
+        //         }
+        //       } else {
+        //         cartProduct.itemCountCart += 1;
+        //       }
+        //       toast({description: "Product(s)  has been added to cart",})
+        //     } else {
+        //       cartProduct.itemCountCart = cartProduct.stocks;
+        //       toast({variant: "destructive", description: "You've achieve the maximum amount of this product!",})
+        //     }
+        //     setCart([...cart])
+        //   }else {
+        //     if(itemCount) {
+        //       setCart([...cart, {...selectedProduct, itemCountCart:itemCount}])
+        //     }else {
+        //       setCart([...cart, {...selectedProduct, itemCountCart:1}])
+        //     }
+        //   }
+        // }
+
+
+
       }
 
 
