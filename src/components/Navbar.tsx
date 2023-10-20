@@ -77,6 +77,8 @@ const Navbar:React.FC = () => {
                 description: "You've logged out",
                 variant: "destructive"
             });
+            localStorage.setItem('cart', JSON.stringify([]))
+
         } catch (error) {   
             console.log(error);
         }

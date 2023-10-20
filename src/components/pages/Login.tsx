@@ -43,14 +43,7 @@ const Login: React.FC = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, values, {headers: {"Content-Type": 'application/json'}, withCredentials: true})
-      let cart = response.data.cart;
-      let localStorageCart = [];
-      for await (const product of cart){
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/${product.id}`)
-        localStorageCart.push({...res.data[0], itemCountCart: product.itemCount})
-      }
-      console.log(localStorageCart);
-      console.log(cart);
+      
 
       setAuth? setAuth({
         accessToken: response?.data.token, 
@@ -67,6 +60,19 @@ const Login: React.FC = () => {
         variant: "default",
         duration: 1500 
       })
+
+
+      let cart = response.data.cart;
+      let localStorageCart = [];
+      for (const product of cart){
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/product/${product.id}`)
+        localStorageCart.push({...res.data[0], itemCountCart: product.itemCountCart})
+      }
+      console.log(localStorageCart);
+      console.log(cart);
+
+      localStorage.setItem('cart', JSON.stringify(localStorageCart))
+
       console.log({accessToken: response.data.token, roles: response?.data?.role, username: response?.data.username})
       console.log(auth)
       if (response?.data?.role === "admin"){
