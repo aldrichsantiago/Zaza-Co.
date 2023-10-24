@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, ChevronDown, User2, Settings, LogOut, Heart, ShoppingCart, Package, LogIn, UserPlus, Menu, Lock   } from "lucide-react"
@@ -17,14 +16,13 @@ import useAuth from "@/hooks/useAuth"
 import { UseAuthProps } from "@/contexts/AuthProvider"
 import { DialogClose } from "@radix-ui/react-dialog"
 import useAxios from "@/hooks/useAxios"
-import { Rating } from "@smastrom/react-rating"
 import useCart from "@/hooks/useCart"
 import { UseCartProps } from "@/contexts/CartProvider"
 
 
 const Navbar:React.FC = () => {
-    const { auth }: UseAuthProps = useAuth();
-    const { cart }: UseCartProps = useCart();
+    const { auth, setAuth }: UseAuthProps = useAuth();
+    const { cart, setCart }: UseCartProps = useCart();
     const navigate = useNavigate();
     const {toast} = useToast();
     useRefreshToken();
@@ -68,7 +66,10 @@ const Navbar:React.FC = () => {
             axios.delete(`${import.meta.env.VITE_API_URL}/logout`)
             .then(() => {
                 navigate("/login");
-                navigate(0);
+                setAuth? setAuth({}) : ""
+                setCart? setCart([]) : ""
+                localStorage.setItem('cart', JSON.stringify([]))
+
             })
             .catch (error => {
                 console.log(error.response.data.message)

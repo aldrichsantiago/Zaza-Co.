@@ -69,7 +69,7 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
               }
             } else {
 
-              const cartToPost = {cart: [...contextCartFiltered, {id: cartProduct.id, itemCountCart: cartProduct.itemCountCart+=1}]}
+              const cartToPost = {cart: [...contextCartFiltered, {id: cartProduct.id, itemCountCart: cartProduct.itemCountCart+1}]}
               axios.post(`/username/${auth.username}/cart`, cartToPost)
               .then(res=> console.log(res.data.message))
               .catch(e=> console.error(e))
