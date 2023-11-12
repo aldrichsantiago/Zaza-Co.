@@ -177,10 +177,69 @@ const Navbar:React.FC = () => {
                                     </DropdownMenu>
                                 </div>
                                 <div className='my-1 mx-4'>
-                                    <div className="w-full relative">
-                                        <span className="bg-red-600 w-4 h-4 text-xs font-mono font-bold rounded-full flex justify-center items-center absolute -right-2 -top-1 text-white">{cart?.length}</span>
+                                    {/* <div className="w-full relative">
+                                        <span className="bg-red-600 w-4 h-4 text-xs font-mono font-bold rounded-full flex justify-center items-center absolute -right-2 -top-1 text-white">{cartCount}</span>
                                         <ShoppingCart width={24} height={24} className=' rounded-md hover:bg-slate-100'/>
-                                    </div>
+                                    </div> */}
+
+                                <Sheet>
+                                    <SheetTrigger>
+                                        <div className="w-full relative">
+                                            { cart?.length !== 0 ? 
+                                            <span className="bg-red-600 w-4 h-4 text-xs font-mono font-bold rounded-full flex justify-center items-center absolute -right-2 -top-1 text-white">{cartCount}</span>
+                                            : "" }
+                                        
+                                            <ShoppingCart width={24} height={24} className=' rounded-md hover:bg-slate-100'/>
+                                        </div>
+                                        
+                                    </SheetTrigger>
+                                    <SheetContent className="md:w-[1000px]">
+                                        <SheetHeader className='mb-8'>
+                                        <SheetTitle>Shopping Cart ({cartCount})</SheetTitle>
+                                        </SheetHeader>
+                                        <ScrollArea className="h-[600px] w-full rounded-md border-none p-4">
+                                            {cart?.map(({id, name, price, images, ratings, itemCountCart, handleIncrement, handleDecrement}: CartCardProps) => (
+                                                <CartProductCard 
+                                                key={id}
+                                                id={id}
+                                                name={name}
+                                                price={price}
+                                                images={images}
+                                                ratings={ratings}
+                                                itemCountCart={itemCountCart}
+                                                handleIncrement={handleIncrement}
+                                                handleDecrement={handleDecrement}
+                                                addToWishlist={addToWishlist}/>
+                                                    
+                                            ))}
+                                        </ScrollArea>
+                                        <div>
+                                            <div className="flex justify-between">
+                                                <h2 className="m-3">Subtotal: </h2>
+                                                <h2 className="m-3 font-extrabold"> ${subtotal?.toFixed(2)}</h2>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <h2 className="m-3">Shipping: </h2>
+                                                <h2 className="m-3 font-extrabold"> ${(subtotal/8)?.toFixed(2)}</h2>
+                                            </div>
+                                            <Separator/>
+                                            <div className="flex justify-between">
+                                                <h2 className="m-3">Total: </h2>
+                                                <h2 className="m-3 font-extrabold">${(subtotal+subtotal/8)?.toFixed(2)}</h2>
+                                                
+                                            </div>
+                                            
+                                        </div>
+                                        <div className='container flex justify-between py-4'>
+                                            <DialogClose>
+                                                <Button variant="outline" className='rounded-3xl w-50'>Cancel</Button>
+                                            </DialogClose>
+                                            <DialogClose>
+                                                <Button className='rounded-3xl w-50' onClick={()=>navigate("/checkout")}>Checkout</Button>
+                                            </DialogClose>
+                                        </div>
+                                    </SheetContent>
+                                </Sheet>
                                 </div>
                             </div>
 
@@ -377,7 +436,7 @@ const Navbar:React.FC = () => {
                                 <span className="bg-red-600 w-4 h-4 text-xs font-mono font-bold rounded-full flex justify-center items-center absolute -right-2 -top-1 text-white">{cartCount}</span>
                                  : "" }
                             
-                            <ShoppingCart width={24} height={24} className=' rounded-md hover:bg-slate-100'/>
+                                <ShoppingCart width={24} height={24} className=' rounded-md hover:bg-slate-100'/>
                             </div>
                             
                         </SheetTrigger>

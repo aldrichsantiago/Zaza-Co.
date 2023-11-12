@@ -555,7 +555,6 @@ const Products = () => {
                     </Select>
                   </div>
               </div>
-
               <div className="flex gap-2">
                 <div className="grid w-full max-w-sm items-center gap-1.5 my-1">
                   <Label htmlFor="images">Picture</Label>
@@ -579,11 +578,9 @@ const Products = () => {
                     )}
                   </div>
                 </div>
-
               </div>
               <Button type="submit">Submit</Button>
             </form>
-            
             <DialogFooter>
             </DialogFooter>
           </DialogContent>

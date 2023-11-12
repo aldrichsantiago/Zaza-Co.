@@ -2,7 +2,8 @@ import React from 'react'
 import { LayoutDashboard, Settings, Users, ScrollText, ShoppingBasket, LogOut, LogOutIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../ui/use-toast';
-import axios from '@/api/axios';
+import axios from "axios"
+
 import { UseAuthProps } from '@/contexts/AuthProvider';
 import useAuth from '@/hooks/useAuth';
 import useCart from '@/hooks/useCart';
@@ -19,22 +20,31 @@ const Sidebar: React.FC = () => {
         try {
             axios.delete(`${import.meta.env.VITE_API_URL}/logout`)
             .then(() => {
-                navigate("/login");
+                localStorage.setItem('cart', JSON.stringify([]))
                 setAuth? setAuth({}) : ""
                 setCart? setCart([]) : ""
-                localStorage.setItem('cart', JSON.stringify([]))
+                navigate("/login");
+                toast({
+                    description: "You've logged out",
+                    variant: "destructive"
+                });
+
 
             })
+            
             .catch (error => {
                 console.log(error.response.data.message)
             });
+            localStorage.setItem('cart', JSON.stringify([]))
+            setAuth? setAuth({}) : ""
+            setCart? setCart([]) : ""
+            navigate("/login");
             toast({
                 description: "You've logged out",
                 variant: "destructive"
             });
-            setAuth? setAuth({}) : ""
-            setCart? setCart([]) : ""
-            localStorage.setItem('cart', JSON.stringify([]))
+
+            
 
 
         } catch (error) {   

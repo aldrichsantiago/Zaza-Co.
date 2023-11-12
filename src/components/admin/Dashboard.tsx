@@ -1,7 +1,53 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Separator } from '../ui/separator'
 import axios from '@/api/axios'
 import { useNavigate } from 'react-router-dom'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+import { faker } from '@faker-js/faker';
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+export const options = {
+  responsive: true,
+  plugins: {
+    // legend: {
+    //   position: 'top' as const,
+    // },
+    // title: {
+    //   display: true,
+    //   text: 'October',
+    // },
+  },
+};
+
+const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+
+export const chartData = {
+  labels,
+  datasets: [
+
+    {
+      label: "Profits",
+      data: labels.map(() => faker.datatype.number({ min: 0, max: 100 })),
+      backgroundColor: 'rgba(53, 162, 235, 0.5)',
+    },
+  ],
+};
 
 
 const DashboardCard = ({title, data, link}:{title:string, data:string, link:string}) => {
@@ -53,6 +99,11 @@ const Dashboard = () => {
           <DashboardCard title={"🛍️ Products"} data={data?data[1]?.productCount:""} link={`/admin/products`}/>
           <DashboardCard title={"👤 Users"} data={data?data[2]?.userCount:""} link={`/admin/users`}/>
         </div> 
+
+        <div className="w-3/4 px-3 py-6 flex flex-wrap gap-6 justify-between">
+          <Bar options={options} data={chartData} />
+        </div> 
+
       </div> 
       )
     

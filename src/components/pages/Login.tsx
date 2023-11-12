@@ -10,6 +10,13 @@ import { useNavigate } from 'react-router-dom'
 import { useToast } from "@/components/ui/use-toast"
 import useAuth from '@/hooks/useAuth'
 import { UseAuthProps } from '@/contexts/AuthProvider'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Info } from 'lucide-react'
 
 
 const formSchema = z.object({
@@ -105,8 +112,23 @@ const Login: React.FC = () => {
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
-                  <div>
-                    <h1 className='text-3xl font-medium'>Login to your account</h1>
+                  <div className='flex flex-wrap items-center'>
+                    <h1 className='mr-3 text-3xl font-medium'>Login to your account</h1>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className='scroll-m-20 text-xl font-semibold tracking-tight'>Sample Users</p>
+                          <p>username: admin</p>
+                          <p>password: admin</p>
+                          <p>---------------------</p>
+                          <p>username: sample</p>
+                          <p>password: sample</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
 
                     <FormField

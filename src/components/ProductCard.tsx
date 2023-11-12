@@ -14,7 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { Rating } from '@smastrom/react-rating'
 import useAuth from "@/hooks/useAuth"
 import { UseAuthProps } from "@/contexts/AuthProvider"
@@ -54,13 +54,12 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
   },[]);
 
   
-
   return (
     <>
         <Card className="w-[300px] h-[400px] m-3 flex flex-col items-center border-none shadow-none">
         <CardContent className="w-full h-full p-0 rounded-xl relative hover:cursor-pointer">
           <TooltipProvider>
-            <Tooltip>
+            <Tooltip delayDuration={300}>
               <TooltipTrigger>
                 {
                   idExists? 
@@ -79,14 +78,11 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-
-          
           <Link className="w-full h-full absolute z-10 flex justify-center p-3" to={`/products/${id}`}>
             <img src={images? `${import.meta.env.VITE_API_URL}/uploads/${images[0]}`: ""} alt="Image here" className="hover:scale-105 transition-transform max-w-full rounded-2xl"/>
           </Link>
         </CardContent>
         <CardHeader className="w-full p-3">
-
             <CardTitle className="my-1 flex justify-between text-xl hover:cursor-pointer">
               <TooltipProvider>
                 <Tooltip>
@@ -110,13 +106,8 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
                     <p>{description}</p>
                   </TooltipContent>
                 </Tooltip>
-                
               </TooltipProvider>
-                
             </CardDescription>
-            
-
-
             <span className="mt-5 flex items-center font-semibold">
             <Rating style={{ maxWidth: 100 }} value={ratings? ratings/noOfReviewers: 0} readOnly />
             <p className="mx-3">({quantitySold})</p>
