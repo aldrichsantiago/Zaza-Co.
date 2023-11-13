@@ -36,7 +36,7 @@ export interface Product {
   category?: string 
   disp?: boolean 
   itemCountCart?: number
-  addToWishlist: (id: number) => void
+  addToWishlist?: (id: number) => void
 }
 
 const ProductCard = ({ id, name, description, price, images, quantitySold, ratings, disp, addToWishlist }: Product) => {
@@ -63,11 +63,11 @@ const ProductCard = ({ id, name, description, price, images, quantitySold, ratin
               <TooltipTrigger>
                 {
                   idExists? 
-                  <span onClick={()=>{addToWishlist(id)}} className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
+                  <span onClick={()=>{addToWishlist? addToWishlist(id):''}} className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
                     <Heart size={20}/>
                   </span>
                   :
-                  <span onClick={()=>{addToWishlist(id)}} className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
+                  <span onClick={()=>{addToWishlist? addToWishlist(id):''}} className="bg-slate-100 w-10 h-10 absolute z-20 top-5 right-5 flex items-center justify-center rounded-3xl cursor-pointer hover:bg-slate-200 hover:text-black transition-colors">
                     <Heart size={20}/>
                   </span>
                 }
