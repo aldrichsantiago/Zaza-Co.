@@ -25,7 +25,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { Button } from "./ui/button"
 import { DialogClose } from "@radix-ui/react-dialog"
 import { Rating } from "@smastrom/react-rating"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import axios from "@/api/axios"
 
 export interface Product {

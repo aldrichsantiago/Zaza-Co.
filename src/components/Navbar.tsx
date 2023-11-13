@@ -366,7 +366,7 @@ const Navbar:React.FC = () => {
                         {
                         searchModal ? 
                             <div className="w-[300px] bg-slate-100 absolute top-20 rounded-xl  z-10">
-                                {searchResults?.map(({id, name, price, images, ratings}: any) => (
+                                {searchResults?.map(({id, name, price, images}: any) => (
                                     <div className="w-full h-24 p-3 my-3 flex cursor-pointer z-10 hover:bg-green-600 rounded-md" key={id} onClick={()=>navigate(`/products/${id}`)}>
                                         <img src={`${import.meta.env.VITE_API_URL}/uploads/${images[0]}`} alt="images" width={70} className="rounded-md mr-3"/>
                                         <div className="flex flex-col w-full">

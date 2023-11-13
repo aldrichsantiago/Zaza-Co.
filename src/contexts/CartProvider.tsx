@@ -21,7 +21,7 @@ const cartFromLocalStorage = JSON.parse(localStorage.getItem("cart") || "[]");
 
 export const CartProvider = ({ children }:PropsWithChildren ) => {
     const [cart, setCart] = useState<any[]>(cartFromLocalStorage)
-    const { auth, setAuth }: UseAuthProps = useAuth();
+    const { auth }: UseAuthProps = useAuth();
     const { toast } = useToast()
     
 

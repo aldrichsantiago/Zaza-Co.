@@ -1,13 +1,10 @@
-import { UseAuthProps } from '@/contexts/AuthProvider';
-import useAuth from '@/hooks/useAuth';
 import useAxios from '@/hooks/useAxios';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../ProductCard';
 
 const SearchPage = () => {
     const [data, setData] = useState([])
-    const { auth }: UseAuthProps = useAuth()
     const [searchParams, setSearchParams] = useSearchParams()
     const searchProduct = searchParams.get('search')
 
@@ -23,6 +20,7 @@ const SearchPage = () => {
         }
         }, [response]);
 
+        console.log(setSearchParams)
   return (
     <div className='container pt-12'>
         <div className="flex items-center">
@@ -37,13 +35,15 @@ const SearchPage = () => {
         <div className="flex flex-wrap justify-center">
           {data?.map(({id, name, description, price, ratings, images, quantitySold})=> (
             <ProductCard key={id}
-             id={id} 
-             name={name} 
-             description={description} 
-             price={price} 
-             ratings={ratings} 
-             images={images}
-             quantitySold={quantitySold}/>
+            id={id}
+            name={name}
+            description={description}
+            price={price}
+            ratings={ratings}
+            images={images}
+            quantitySold={quantitySold} addToWishlist={function (_id: number): void {
+              throw new Error('Function not implemented.');
+            } }/>
           ))}
 
         </div>

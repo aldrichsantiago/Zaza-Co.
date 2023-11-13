@@ -86,7 +86,7 @@ const Settings: React.FC = () => {
         console.log(formData);
         
         axios.post("/upload/avatar", formData)
-        .then(res => toast({title: "Profile Updated"}))
+        .then(res => toast({title: "Profile Updated", description:res.data.message}))
         .catch(e => console.log(e))
         navigate(0)
         

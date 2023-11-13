@@ -1,5 +1,5 @@
 import React from 'react'
-import { LayoutDashboard, Settings, Users, ScrollText, ShoppingBasket, LogOut, LogOutIcon } from 'lucide-react';
+import { LayoutDashboard, Settings, Users, ScrollText, ShoppingBasket, LogOutIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../ui/use-toast';
 import axios from "axios"
