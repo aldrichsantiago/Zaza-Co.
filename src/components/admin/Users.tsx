@@ -56,7 +56,6 @@ import {
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
 import { useToast } from '../ui/use-toast'
-import { useNavigate } from 'react-router-dom' 
 import { DialogClose } from "@radix-ui/react-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Label } from "@/components/ui/label"
@@ -166,8 +165,6 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const user = row.original
-
-      const navigate = useNavigate();
       const [editUserForm, setEditUserForm] = useState({})
       const { toast } = useToast()
 
@@ -200,7 +197,7 @@ export const columns: ColumnDef<User>[] = [
         try {
           const response = axios.patch('/delete/user/'+id)
           console.log(response);
-          navigate(0);
+          window.location.reload()
         } catch (error) {
           console.log(error);
         }
@@ -300,7 +297,6 @@ const Users = () => {
   const [rowSelection, setRowSelection] = useState({})
   const [data, setData] = useState([])
   const axiosPrivate = useAxiosPrivate();
-  const navigate = useNavigate();
   const { toast } = useToast()
 
   // 1. Define your form.
@@ -316,7 +312,7 @@ const Users = () => {
   function onSubmit(values: z.infer<typeof formSchema>) {
     axios.post(`${import.meta.env.VITE_API_URL}/register`, values)
      .then(()=>{
-      navigate(0);
+      window.location.reload()
       toast({
         description: "You've successfully created an account",
       })

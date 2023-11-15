@@ -21,7 +21,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { Button } from "./ui/button"
 import { DialogClose } from "@radix-ui/react-dialog"
 import { Rating } from "@smastrom/react-rating"
@@ -47,14 +47,13 @@ export interface Product {
 
 const OrderProductCard = ({ id, name, description, price, images, isReviewed, userRating, orderId }: Product) => {
   const [rating, setRating] = useState(0);
-  const navigate = useNavigate();
 
   const saveRating = () => {
     axios.patch(`/ratings/orders/${orderId}/products/${id}`, {rating})
     .then(res => console.log(res.data))
     .catch(e => console.log(e))
 
-    navigate(0)
+    window.location.reload()
   }
 
 

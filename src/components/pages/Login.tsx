@@ -49,7 +49,7 @@ const Login: React.FC = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, values, {headers: {"Content-Type": 'application/json'}, withCredentials: true})
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, values, {withCredentials: true, headers: {"Content-Type": 'application/json'}})
       
 
       setAuth? setAuth({

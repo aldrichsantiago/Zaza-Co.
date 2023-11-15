@@ -9,7 +9,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { useToast } from '../ui/use-toast'
-import { useNavigate } from 'react-router-dom'
 import useAxiosPrivate from "@/hooks/useAxiosPrivate"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { axiosPrivate } from "@/api/axios"
@@ -176,7 +175,6 @@ export const columns: ColumnDef<Orders>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const order = row.original
-      const navigate = useNavigate();
       const { toast } = useToast();
       const [statusForm, setStatusForm] = useState({});
 
@@ -185,7 +183,7 @@ export const columns: ColumnDef<Orders>[] = [
           .patch('order/edit/status/'+ id, statusForm)
           .then((response) => {
             console.log(response.data);
-            navigate(0);
+            window.location.reload()
             toast({
               title: "Updated Successfully",
               description: response.data.message,

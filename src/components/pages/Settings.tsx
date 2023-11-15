@@ -19,7 +19,6 @@ import useAuth from '@/hooks/useAuth'
 import { UseAuthProps } from '@/contexts/AuthProvider'
 import useAxios from '@/hooks/useAxios'
 import axios from '@/api/axios'
-import { useNavigate } from 'react-router-dom'
 
  
 const FormSchema = z.object({
@@ -28,7 +27,6 @@ const FormSchema = z.object({
 })
 
 const Settings: React.FC = () => {
-    const navigate = useNavigate();
 
     const { auth }: UseAuthProps = useAuth();
     const [data, setData] = useState<{
@@ -88,7 +86,7 @@ const Settings: React.FC = () => {
         axios.post("/upload/avatar", formData)
         .then(res => toast({title: "Profile Updated", description:res.data.message}))
         .catch(e => console.log(e))
-        navigate(0)
+        window.location.reload()
         
     }
 

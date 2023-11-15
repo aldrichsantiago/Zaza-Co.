@@ -43,7 +43,6 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { useToast } from '../ui/use-toast'
-import { useNavigate } from 'react-router-dom'
 import useAxiosPrivate from "@/hooks/useAxiosPrivate"
 import { Textarea } from "../ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
@@ -171,7 +170,6 @@ export const columns: ColumnDef<Product>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const product = row.original
-      const navigate = useNavigate();
       const { toast } = useToast();
       const [editProductForm, setEditProductForm] = useState({});
       const [productImages, setProductImages] = useState(product.images);
@@ -201,7 +199,7 @@ export const columns: ColumnDef<Product>[] = [
           .patch('/delete/product/'+id, {id})
           .then((response) => {
             console.log(response.data);
-            navigate(0)
+            window.location.reload()
           })
           .catch((error) => {
             console.error(error);
@@ -224,7 +222,7 @@ export const columns: ColumnDef<Product>[] = [
           .patch('/edit/product/'+ id, editProductForm)
           .then((response) => {
             console.log(response.data);
-            navigate(0);
+            window.location.reload()
             toast({
               title: "Updated Successfully",
               description: response.data.message,
@@ -409,7 +407,6 @@ const Products = () => {
   const [data, setData] = useState([])
   const axiosPrivate = useAxiosPrivate();
   const { toast } = useToast()
-  const navigate = useNavigate()
   const [addProductForm, setAddProductForm] = useState<AddProduct>();
   const [selectedFiles, setSelectedFiles]: any = useState([]);
 
@@ -465,7 +462,7 @@ const Products = () => {
         console.error(error);
         toast({title: 'File upload failed.'});
       });
-      navigate(0)
+      window.location.reload()
   };
 
   useEffect(() => {
