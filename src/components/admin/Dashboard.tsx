@@ -94,7 +94,7 @@ const Dashboard = () => {
         <Separator className='my-6'/>
 
         <div className="px-3 py-6 flex flex-wrap gap-6 justify-between">
-          <DashboardCard title={"💵 Profits"} data={data?"$"+ data[3]?.totalSales:""} link=''/>
+          <DashboardCard title={"💵 Profits"} data={(data?"$"+ data[3]?.totalSales:"")||"0"} link=''/>
           <DashboardCard title={"📈 Orders"} data={data?data[0]?.orderCount:""} link={`/admin/orders`}/>
           <DashboardCard title={"🛍️ Products"} data={data?data[1]?.productCount:""} link={`/admin/products`}/>
           <DashboardCard title={"👤 Users"} data={data?data[2]?.userCount:""} link={`/admin/users`}/>

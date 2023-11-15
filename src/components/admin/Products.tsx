@@ -48,6 +48,7 @@ import { Textarea } from "../ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import axios from "@/api/axios"
 import { DialogClose } from "@radix-ui/react-dialog"
+import { useNavigate } from "react-router-dom"
  
  
 export type Product = {
@@ -170,6 +171,7 @@ export const columns: ColumnDef<Product>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const product = row.original
+      const navigate = useNavigate()
       const { toast } = useToast();
       const [editProductForm, setEditProductForm] = useState({});
       const [productImages, setProductImages] = useState(product.images);
@@ -222,7 +224,7 @@ export const columns: ColumnDef<Product>[] = [
           .patch('/edit/product/'+ id, editProductForm)
           .then((response) => {
             console.log(response.data);
-            window.location.reload()
+            navigate(0)
             toast({
               title: "Updated Successfully",
               description: response.data.message,
@@ -407,6 +409,7 @@ const Products = () => {
   const [data, setData] = useState([])
   const axiosPrivate = useAxiosPrivate();
   const { toast } = useToast()
+  const navigate = useNavigate()
   const [addProductForm, setAddProductForm] = useState<AddProduct>();
   const [selectedFiles, setSelectedFiles]: any = useState([]);
 
@@ -462,7 +465,7 @@ const Products = () => {
         console.error(error);
         toast({title: 'File upload failed.'});
       });
-      window.location.reload()
+      navigate(0)
   };
 
   useEffect(() => {
@@ -522,7 +525,7 @@ const Products = () => {
             <DialogHeader>
               <DialogTitle>Add a product</DialogTitle>
             </DialogHeader>
-            <form action={`${import.meta.env.VITE_API_URL}/upload`} method="post" encType='multipart/form-data' onSubmit={handleUpload} id="addProductForm">
+            <form action={`${import.meta.env.VITE_API_URL}/upload`} method="POST" encType='multipart/form-data' onSubmit={handleUpload} id="addProductForm">
               <Label htmlFor="name">Name: </Label>
               <Input onChange={handleAddProductChange} name="name" className="my-1"/>
               <Label htmlFor="description">Description: </Label>

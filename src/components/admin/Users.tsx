@@ -42,7 +42,6 @@ import {
   DialogFooter,
   DialogDescription
 } from "@/components/ui/dialog"
-import useAxiosPrivate from "@/hooks/useAxiosPrivate"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import {
@@ -54,7 +53,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { useForm } from 'react-hook-form'
-import axios from 'axios'
+import axios from "@/api/axios"
 import { useToast } from '../ui/use-toast'
 import { DialogClose } from "@radix-ui/react-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
@@ -296,7 +295,6 @@ const Users = () => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [data, setData] = useState([])
-  const axiosPrivate = useAxiosPrivate();
   const { toast } = useToast()
 
   // 1. Define your form.
@@ -333,7 +331,7 @@ const Users = () => {
     const controller = new AbortController();
     const getUsers = async() => {
       try {
-        const response: any = await axiosPrivate.get(`/users`, { 
+        const response: any = await axios.get(`/users`, { 
           signal: controller.signal
         });
         setData(response.data)
