@@ -409,7 +409,6 @@ const Products = () => {
   const [data, setData] = useState([])
   const axiosPrivate = useAxiosPrivate();
   const { toast } = useToast()
-  const navigate = useNavigate()
   const [addProductForm, setAddProductForm] = useState<AddProduct>();
   const [selectedFiles, setSelectedFiles]: any = useState([]);
 
@@ -465,7 +464,7 @@ const Products = () => {
         console.error(error);
         toast({title: 'File upload failed.'});
       });
-      navigate(0)
+      window.location.reload()
   };
 
   useEffect(() => {
