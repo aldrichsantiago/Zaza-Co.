@@ -28,32 +28,55 @@ import { useNavigate } from 'react-router-dom'
 import { UseCartProps } from '@/contexts/CartProvider'
 import useCart from '@/hooks/useCart'
 
+type PaymentInfoType = { 
+  username:string,
+   phone:string,
+   paymentMethod:string,
+   productsArr:[],
+   cardNumber:number,
+   expMonth:string,
+   expYear:string,
+   ccv:string,
+   paypalEmail:string,
+   mayaPhone:string,
+   gcashPhone:string,
+   shippingAddress:string,
+   addressLine1:string,
+   city:string,
+   state:string,
+   country:string,
+   zipCode:string, 
+
+  }
+
 const Checkout: React.FC = () => {
   const cartFromLocalStorage = JSON.parse(localStorage.getItem("cart") || "[]")
   const [cart, setCartArray] = useState(cartFromLocalStorage)
-  const productsArr:any = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const productsArr: any[] = [];
   const navigate = useNavigate();
   const {setCart}:UseCartProps = useCart();
 
-  let checkoutSubtotal = cart?.reduce((accumulator: any, object: { itemCountCart: number, price: number }) => {
+  const checkoutSubtotal:number = cart?.reduce((accumulator: number, object: { itemCountCart: number, price: number }) => {
     return accumulator + (object?.itemCountCart * object?.price);
   }, 0);
 
-  cart?.forEach((product:any) => {
+  cart?.forEach((product: { id: number; itemCountCart: number }) => {
     const eachProduct = {productId: product.id, productQuantity: product.itemCountCart}
     productsArr.push(eachProduct)
   })
 
   const { auth }:UseAuthProps = useAuth();
-  const [paymentInfo, setPaymentInfo]: any = useState({
-    subtotal: checkoutSubtotal.toFixed(2),
-    shippingAmount: (checkoutSubtotal/8).toFixed(2),
+  const [paymentInfo, setPaymentInfo] = useState<PaymentInfoType>({
+    // subtotal: checkoutSubtotal.toFixed(2),
+    // shippingAmount: ((checkoutSubtotal/8).toFixed(2)),
     username: auth.username,
     paymentMethod: 'visa',
     productsArr: productsArr
   })
   const { toast } = useToast()
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { response }: any|null = useAxios({
     url:`/user/username/${auth.username}`,
     method: 'get'
@@ -63,169 +86,80 @@ const Checkout: React.FC = () => {
     e.preventDefault();
     const { username, phone, paymentMethod, productsArr, cardNumber, expMonth, expYear, ccv, paypalEmail, mayaPhone, gcashPhone, shippingAddress, addressLine1, city, state, country, zipCode } = paymentInfo;
     if(!username){
-      toast({
-        title: "User not logged in",
-        variant: "destructive"
-      });
-      return;
+      toast({ title: "User not logged in", variant: "destructive" }); return;
     }
-    
     if(!productsArr){
-      toast({
-        title: "Add some products to cart",
-        variant: "destructive"
-      });
-      return;
+      toast({ title: "Add some products to cart", variant: "destructive" }); return;
     }
     if(!phone){
-      toast({
-        title: "Please provide your number",
-        variant: "destructive"
-      });
-      return;
+      toast({ title: "Please provide your number", variant: "destructive" }); return;
     }
     if(phone.length > 11){
-      toast({
-        title: "Please enter a valid mobile number",
-        variant: "destructive"
-      });
-      return;
+      toast({ title: "Please enter a valid mobile number", variant: "destructive" }); return;
     }
     if(!paymentMethod){
-      toast({
-        title: "Please select a payment method",
-        variant: "destructive"
-      });
-      return;
+      toast({ title: "Please select a payment method", variant: "destructive" }); return;
     }
     if(paymentMethod === "visa"){
       if(!cardNumber){
-        toast({
-          title: "Please input visa card number",
-          variant: "destructive"
-        });
-        return;
+        toast({ title: "Please input visa card number", variant: "destructive" }); return;
       }
       if(!expMonth){
-        toast({
-          title: "Please input expiry month of card",
-          variant: "destructive"
-        });
-        return;
+        toast({ title: "Please input expiry month of card", variant: "destructive" }); return;
       }
       if(!expYear){
-        toast({
-          title: "Please input expiry year of card",
-          variant: "destructive"
-        });
-        return;
+        toast({ title: "Please input expiry year of card", variant: "destructive" }); return;
       }
       if(!ccv){
-        toast({
-          title: "Please input visa card number",
-          variant: "destructive"
-        });
-        return;
+        toast({ title: "Please input visa card number", variant: "destructive" }); return;
       }
     }
     if(paymentMethod === "mastercard"){
       if(!cardNumber){
-        toast({
-          title: "Please input mastercard card number",
-          variant: "destructive"
-        });
-        return;
+        toast({ title: "Please input mastercard card number", variant: "destructive" }); return;
       }
       if(!expMonth){
-        toast({
-          title: "Please input expiry month of card",
-          variant: "destructive"
-        });
-        return;
+        toast({ title: "Please input expiry month of card", variant: "destructive" }); return;
       }
       if(!expYear){
-        toast({
-          title: "Please input expiry year of card",
-          variant: "destructive"
-        });
-        return;
+        toast({ title: "Please input expiry year of card", variant: "destructive" }); return;
       }
       if(!ccv){
-        toast({
-          title: "Please input visa card number",
-          variant: "destructive"
-        });
-        return;
+        toast({ title: "Please input visa card number", variant: "destructive" }); return;
       }
     }
     if(paymentMethod === "paypal"){
       if(!paypalEmail){
-        toast({
-          title: "Please input your paypal email",
-          variant: "destructive"
-        });
-        return;
+        toast({ title: "Please input your paypal email", variant: "destructive" }); return;
       }
     }
     if(paymentMethod === "maya"){
       if(!mayaPhone){
-        toast({
-          title: "Please input your maya account number",
-          variant: "destructive"
-        });
-        return;
+        toast({ title: "Please input your maya account number", variant: "destructive" }); return;
       }
     }
     if(paymentMethod === "gcash"){
       if(!gcashPhone){
-        toast({
-          title: "Please input your gcash number",
-          variant: "destructive"
-        });
-        return;
+        toast({ title: "Please input your gcash number", variant: "destructive" }); return;
       }
     }
     if(!shippingAddress){
-      toast({
-        title: "Please input your complete address",
-        variant: "destructive"
-      });
-      return;
+      toast({ title: "Please input your complete address", variant: "destructive" }); return;
     }
     if(!addressLine1){
-      toast({
-        title: "Please input your address line 1",
-        variant: "destructive"
-      });
-      return;
+      toast({ title: "Please input your address line 1", variant: "destructive" }); return;
     }
     if(!city){
-      toast({
-        title: "Please input your city",
-        variant: "destructive"
-      });
-      return;
+      toast({ title: "Please input your city", variant: "destructive" }); return;
     }
     if(!state){
-      toast({
-        title: "Please input your state",
-        variant: "destructive"
-      });
-      return;
+      toast({ title: "Please input your state", variant: "destructive" }); return;
     }
     if(!country){
-      toast({
-        title: "Please input your country",
-        variant: "destructive"
-      });
-      return;
+      toast({ title: "Please input your country", variant: "destructive" }); return;
     }
     if(!zipCode){
-      toast({
-        title: "Please input your zipcode",
-        variant: "destructive"
-      });
-      return;
+      toast({ title: "Please input your zipcode", variant: "destructive" }); return;
     }
     console.log(paymentInfo)
     try {
@@ -252,7 +186,8 @@ const Checkout: React.FC = () => {
     e.preventDefault();
     const fieldName = e.target.getAttribute("name");
     const fieldValue = e.target.value;
-    const newFormData: any = { ...paymentInfo };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const newFormData:any = { ...paymentInfo };
     fieldName ? newFormData[fieldName] = fieldValue : ""
     setPaymentInfo(newFormData)
     console.log(paymentInfo)
@@ -264,7 +199,7 @@ const Checkout: React.FC = () => {
     <>
       <div className='py-5 px-12 flex flex-row gap-5 justify-between flex-wrap'>
         <div className='w-3/5 flex flex-col gap-5'>
-          {cart?.map((product:any) => {
+          {cart?.map((product: { id: number; images: string[]; name: string, description:string, ratings:number, price:number , itemCountCart:number}) => {
             // const images = JSON.parse(product.images)
             return(
             <div className="w-full flex flex-col gap-5" key={product.id}>

@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 const Orders = () => {
   const { auth }: UseAuthProps = useAuth();
   useRefreshToken();
-  const { response, loading }: any = useAxios({
+  const { response, loading } = useAxios({
     method: 'get',
     url: `/orders/username/${auth.username}`,
     headers: JSON.stringify({ accept: '*/*' }),
@@ -22,9 +22,9 @@ const Orders = () => {
       }
     }, [response]);
 
-  const uniqueIds: any = [];
+  const uniqueIds: number[] = [];
 
-  const unique = data.filter((element:any) => {
+  const unique = data.filter((element:{orderId:number}) => {
     const isDuplicate = uniqueIds.includes(element.orderId);
   
     if (!isDuplicate) {
@@ -47,7 +47,7 @@ const Orders = () => {
           ) 
           : unique.length !== 0 ?
           (
-            unique?.map(({orders, orderId}:any) => {
+            unique?.map(({orders, orderId}) => {
               return(
               <div key={orderId}>
                 <OrderCard orders={orders}/>

@@ -24,6 +24,7 @@ const ProductPage:React.FC = () => {
   const [itemCount, setItemCount] = useState<number>(1);
   const { toast } = useToast()
   const navigate = useNavigate()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData]:any = useState([]);
   const [noOfReviewers, setNoOfReviewers] = useState(0);
 
@@ -33,6 +34,7 @@ const ProductPage:React.FC = () => {
     .catch(e => console.log(e))
   },[]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { response }:any = useAxios({
     method: 'get',
     url: '/product/'+ productId,
@@ -47,7 +49,7 @@ const ProductPage:React.FC = () => {
   }, [response]);
   
 
-  const selectedProduct: any = response?.find((p:any)=>{return p.id === Number(productId)})  
+  const selectedProduct: {id:number, images:string[]} = response?.find((p: { id: number; })=>{return p.id === Number(productId)})  
 
 
   const OPTIONS: EmblaOptionsType = {}

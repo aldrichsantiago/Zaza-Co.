@@ -69,8 +69,8 @@ const Login: React.FC = () => {
       })
 
 
-      let cart = response.data.cart;
-      let localStorageCart = [];
+      const cart = response.data.cart;
+      const localStorageCart = [];
       for (const product of cart){
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/product/${product.id}`)
         localStorageCart.push({...res.data[0], itemCountCart: product.itemCountCart})
@@ -87,9 +87,9 @@ const Login: React.FC = () => {
       } else{
         navigate("/")
       }
-    } catch (error:any) {
+    } catch (error) {
       toast({
-        description: error.response.data.message,
+        description: "Something Went Wrong",
         variant: "destructive"
       })
       console.log(error)

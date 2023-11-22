@@ -5,7 +5,7 @@ import useAxios from '@/hooks/useAxios';
 import CardList from '../CardList';
 
 const DealsPage:React.FC = () => {
-  const [data, setData]: any= useState([]);
+  const [data, setData] = useState([]);
 
   const OPTIONS: EmblaOptionsType = { loop: true }
   const SLIDE_COUNT = 3
