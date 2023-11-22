@@ -43,7 +43,7 @@ const Orders = () => {
       
         {
           loading ? (
-            <p>loading...</p>
+            <p>Loading may take a while since I'm using a free tier to host the API</p>
           ) 
           : unique.length !== 0 ?
           (

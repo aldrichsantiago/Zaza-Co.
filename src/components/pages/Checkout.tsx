@@ -32,7 +32,7 @@ type PaymentInfoType = {
   username:string,
    phone:string,
    paymentMethod:string,
-   productsArr:[],
+   productsArr:{ productId: number; productQuantity: number }[],
    cardNumber:number,
    expMonth:string,
    expYear:string,
@@ -53,7 +53,7 @@ const Checkout: React.FC = () => {
   const cartFromLocalStorage = JSON.parse(localStorage.getItem("cart") || "[]")
   const [cart, setCartArray] = useState(cartFromLocalStorage)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const productsArr: any[] = [];
+  const productsArr: { productId: number; productQuantity: number }[] = [];
   const navigate = useNavigate();
   const {setCart}:UseCartProps = useCart();
 
@@ -72,7 +72,21 @@ const Checkout: React.FC = () => {
     // shippingAmount: ((checkoutSubtotal/8).toFixed(2)),
     username: auth.username,
     paymentMethod: 'visa',
-    productsArr: productsArr
+    productsArr: productsArr,
+    phone:'',
+    cardNumber:0,
+    expMonth:'',
+    expYear:'',
+    ccv:'',
+    paypalEmail:'',
+    mayaPhone:'',
+    gcashPhone:'',
+    shippingAddress:'',
+    addressLine1:'',
+    city:'',
+    state:'',
+    country:'',
+    zipCode:'', 
   })
   const { toast } = useToast()
 

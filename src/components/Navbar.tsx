@@ -347,7 +347,7 @@ const Navbar:React.FC = () => {
                     </Button>
                 </div>
                 <div className="hidden sm:flex">
-                    <form action={`http://localhost:5173/search`} noValidate className="flex w-full max-w-sm items-center space-x-2 focus:border-none">
+                    <form action={`${import.meta.env.VITE_API_URL}/search`} noValidate className="flex w-full max-w-sm items-center space-x-2 focus:border-none">
                         <Input 
                         autoComplete="off" 
                         type="search" 

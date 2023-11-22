@@ -27,6 +27,7 @@ import Products from './components/admin/Products.tsx';
 import Checkout from './components/pages/Checkout.tsx';
 import SearchPage from './components/pages/SearchPage.tsx';
 import BuyNow from './components/pages/BuyNow.tsx';
+import LoadingScreen from './components/LoadingScreen.tsx';
 
 
 const router = createBrowserRouter([
@@ -63,6 +64,9 @@ const router = createBrowserRouter([
             },{
               path: "/search",
               element: <SearchPage/>
+            },{
+              path: "/loading-screen",
+              element: <LoadingScreen/>
             },{
               path: "",
               element: <RequireAuth allowedRoles={["client", "admin"]}/>,

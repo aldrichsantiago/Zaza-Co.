@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import useRefreshToken from '../hooks/useRefreshToken';
 import useAuth from '../hooks/useAuth';
 import { UseAuthProps } from "@/contexts/AuthProvider";
+import LoadingScreen from "./LoadingScreen";
 
 const PersistLogin = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -39,7 +40,7 @@ const PersistLogin = () => {
     return (
         <>
             { isLoading
-                    ? <p>Loading...</p>
+                    ? <LoadingScreen/>
                     : <Outlet />
             }
         </>
