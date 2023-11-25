@@ -84,7 +84,6 @@ const ProductPage:React.FC = () => {
 
     const { addToCart }: UseCartProps = useCart();
 
-    console.log(data)
   return (
     <>
       <div className="container pt-20">

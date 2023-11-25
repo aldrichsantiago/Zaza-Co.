@@ -58,9 +58,7 @@ const Wishlist:FC = () => {
     } else{
       navigate("/login");
     }
-  }
-  console.log(wishlistArray);
-  
+  }  
 
   return (
     <div className="container py-12 w-full">

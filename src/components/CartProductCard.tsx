@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "./ui/button";
 import useCart from "@/hooks/useCart";
 import { UseCartProps } from "@/contexts/CartProvider";
+import { useNavigate } from "react-router-dom";
 
 
 export interface CartCardProps {
@@ -23,13 +24,14 @@ export interface CartCardProps {
 
 const CartProductCard = ({ id, name, price, images, itemCountCart, handleDecrement, handleIncrement, addToWishlist }: CartCardProps) => {
   const { removeFromCart }: UseCartProps = useCart();
+  const navigate = useNavigate();
 
   return (
     <>
       <div className="w-full h-44 my-2 flex items-center justify-center relative" key={id}>
-        <img src={images?`${import.meta.env.VITE_API_URL}/uploads/`+images[0]:""} className="w-2/6 h-3/6 absolute left-5"/>
+        <img src={images?`${import.meta.env.VITE_API_URL}/uploads/`+images[0]:""} className="w-2/6 h-3/6 absolute left-5" onClick={()=>navigate(`/products/${id}`)}/>
         <div className="w-2/4 flex flex-col absolute right-5 truncate">
-          <p className="text-md font-bold text-ellipsis">{name}</p>
+          <p className="text-md font-bold text-ellipsis" onClick={()=>navigate(`/products/${id}`)}>{name}</p>
           <p className="text-sm font-medium">${price}</p>
           <QuantityCounter id={id} itemCount={itemCountCart} handleDecrement={handleDecrement} handleIncrement={handleIncrement}/>
           <span className="flex justify-around">

@@ -52,9 +52,7 @@ const Settings: React.FC = () => {
       if (response !== null) {
           setData(response);
       }
-    }, [response]);
-    console.log(data);
-    
+    }, [response]);    
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),

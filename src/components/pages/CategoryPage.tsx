@@ -12,7 +12,6 @@ type CategoryParams = {
 const CategoryPage: React.FC = () => {
 
     const { categoryName } = useParams<CategoryParams>();
-    console.log(categoryName);
     const OPTIONS: EmblaOptionsType = { loop: true }
     const SLIDE_COUNT = 3
     const SLIDES = Array.from(Array(SLIDE_COUNT).keys())

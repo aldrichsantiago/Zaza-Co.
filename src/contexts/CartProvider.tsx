@@ -34,7 +34,6 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
         // const selectedProduct: any = data.find(product => product.id == id);
         const cartProduct = cart.find((product: { id: number }) => product.id == id);
         const res = await axios.get(`product/${id}`)
-        console.log(res.data[0]);
 
         console.log(cart);
         console.log(cartProduct);
@@ -80,7 +79,6 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
           } else {
             toast({variant: "destructive", description: "You've achieve the maximum amount of this product!",})
           }
-          console.log(cartFiltered);
         } else {
           cart.forEach(element => {
             contextCart.push({id: element.id, itemCountCart: element.itemCountCart})
@@ -93,6 +91,8 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
           .catch(e=> console.error(e))
 
           setCart([...cart, {...res.data[0], itemCountCart:1}])
+          toast({description: "Product(s)  has been added to cart",})
+
 
           
         }
@@ -138,7 +138,6 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
             contextCart.push({id: element.id, itemCountCart: element.itemCountCart})
           });
           let contextCartFiltered = contextCart.filter((prod: {id:number})=> prod.id !== id)
-          console.log(contextCartFiltered)
           if (cartProduct.stocks > cartProduct.itemCountCart){
             const cartToPost = {cart: [...contextCartFiltered, {id: cartProduct.id, itemCountCart: cartProduct.itemCountCart+1}]}
             axios.post(`/username/${auth.username}/cart`, cartToPost)
@@ -174,7 +173,6 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
             contextCart.push({id: element.id, itemCountCart: element.itemCountCart})
           });
           let contextCartFiltered = contextCart.filter((prod: {id:number})=> prod.id !== id)
-          console.log(contextCartFiltered)
           if (1 < cartProduct.itemCountCart){
             const cartToPost = {cart: [...contextCartFiltered, {id: cartProduct.id, itemCountCart: cartProduct.itemCountCart-1}]}
             axios.post(`/username/${auth.username}/cart`, cartToPost)

@@ -35,9 +35,7 @@ const CardList = ({data}:any) => {
     } else{
       navigate("/login");
     }
-  }
-  console.log(data);
-  
+  }  
   return (
     <div className="flex flex-wrap justify-center">
           {data?.map(({id, name, description, price, ratings, images, quantitySold}:any)=> (

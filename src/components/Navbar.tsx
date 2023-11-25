@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Search, ChevronDown, User2, Settings, LogOut, Heart, ShoppingCart, Package, LogIn, UserPlus, Menu, Lock   } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Link, useNavigate } from 'react-router-dom'
 import CartProductCard, { CartCardProps } from './CartProductCard'
@@ -290,28 +290,43 @@ const Navbar:React.FC = () => {
                                     <DropdownMenuTrigger className="flex items-center justify-center w-full text-sm font-semibold py-5">Categories<ChevronDown width={15} height={15} className="m-1"/></DropdownMenuTrigger>
                                     <DropdownMenuContent className="w-screen text-center">
                                         <DropdownMenuItem className="w-screen">
+                                            <SheetClose asChild>
                                             <Link className='w-full' to="category/electronics">Electronics</Link>
+                                            </SheetClose>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="w-screen">
+                                            <SheetClose asChild>
                                             <Link className='w-full' to="category/health-and-fitness">Health & Fitness</Link>
+                                            </SheetClose>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="w-screen">
+                                            <SheetClose asChild>
                                             <Link className='w-full' to="category/furnitures">Furnitures</Link>
+                                            </SheetClose>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="w-screen">
+                                            <SheetClose asChild>
                                             <Link className='w-full' to="category/accessories">Accessories</Link>
+                                            </SheetClose>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="w-screen">
+                                            <SheetClose asChild>
                                             <Link className='w-full' to="category/clothing">Clothing</Link>
+                                            </SheetClose>
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
 
                                 <Button variant="ghost" className="w-full py-6">
+                                    <SheetClose asChild>
                                     <Link className="w-full" to="/deals">Deals</Link>
+                                    </SheetClose>
                                 </Button>
                                 <Button variant="ghost" className="w-full py-6">
+                                    <SheetClose asChild>
                                     <Link className="w-full" to="/new-products">What's New</Link>   
+
+                                    </SheetClose>
                                 </Button>
                             </div>
                         </SheetContent>
@@ -322,19 +337,29 @@ const Navbar:React.FC = () => {
                         <DropdownMenuTrigger className="flex items-center text-sm font-semibold py-1 px-3">Categories<ChevronDown width={15} height={15} className="m-1"/></DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <DropdownMenuItem>
+                                <SheetClose>
                                 <Link className='w-full' to="category/electronics">Electronics</Link>
+                                </SheetClose>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
+                                <SheetClose>
                                 <Link className='w-full' to="category/health-and-fitness">Health & Fitness</Link>
+                                </SheetClose>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <Link className='w-full' to="category/furnitures">Furnitures</Link>
+                                <SheetClose>
+                                <Link className='w-full' to="category/furnitures">Furnitures</Link> 
+                                </SheetClose>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
+                                <SheetClose>
                                 <Link className='w-full' to="category/accessories">Accessories</Link>
+                                </SheetClose>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
+                                <SheetClose>
                                 <Link className='w-full' to="category/clothing">Clothing</Link>
+                                </SheetClose>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
