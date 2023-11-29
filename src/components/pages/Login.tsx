@@ -94,8 +94,6 @@ const Login: React.FC = () => {
       })
       console.log(error)
     }
-
-     
   }
 
   
