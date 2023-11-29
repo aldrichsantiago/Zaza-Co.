@@ -87,9 +87,9 @@ const Login: React.FC = () => {
       } else{
         navigate("/")
       }
-    } catch (error) {
+    } catch (error: unknown) {
       toast({
-        description: "Something Went Wrong",
+        description: `${error?.response.data.message}`,
         variant: "destructive"
       })
       console.log(error)

@@ -14,7 +14,6 @@ import { useToast } from "@/components/ui/use-toast"
 import useRefreshToken from "@/hooks/useRefreshToken"
 import useAuth from "@/hooks/useAuth"
 import { UseAuthProps } from "@/contexts/AuthProvider"
-import { DialogClose } from "@radix-ui/react-dialog"
 import useAxios from "@/hooks/useAxios"
 import useCart from "@/hooks/useCart"
 import { UseCartProps } from "@/contexts/CartProvider"
@@ -26,10 +25,12 @@ const Navbar:React.FC = () => {
     const navigate = useNavigate();
     const {toast} = useToast();
     useRefreshToken();
-    let subtotal = cart?.reduce((accumulator: any, element: { price: number, itemCountCart: number }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const subtotal = cart?.reduce((accumulator: any, element: { price: number, itemCountCart: number }) => {
         return accumulator + (element?.price * element?.itemCountCart);                                  
     }, 0);
-    let cartCount = cart?.reduce((accumulator: any, object: { itemCountCart: any }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cartCount = cart?.reduce((accumulator: any, object: { itemCountCart: unknown }) => {
         return accumulator + object?.itemCountCart;
     }, 0);
     const [data, setData] = useState<{ avatarImage:string }[]>([]);
@@ -231,12 +232,12 @@ const Navbar:React.FC = () => {
                                             
                                         </div>
                                         <div className='container flex justify-between py-4'>
-                                            <DialogClose>
+                                            <SheetClose>
                                                 <Button variant="outline" className='rounded-3xl w-50'>Cancel</Button>
-                                            </DialogClose>
-                                            <DialogClose>
+                                            </SheetClose>
+                                            <SheetClose>
                                                 <Button className='rounded-3xl w-50' onClick={()=>navigate("/checkout")}>Checkout</Button>
-                                            </DialogClose>
+                                            </SheetClose>
                                         </div>
                                     </SheetContent>
                                 </Sheet>
@@ -262,7 +263,7 @@ const Navbar:React.FC = () => {
                                         {
                                             searchModal ? 
                                                 <div className="w-[300px] bg-slate-100 absolute top-20 rounded-xl  z-10">
-                                                    {searchResults?.map(({id, name, price, images}: any) => (
+                                                    {searchResults?.map(({id, name, price, images}) => (
                                                         <div className="w-full h-24 p-3 my-3 flex cursor-pointer z-10 hover:bg-green-600 rounded-md" key={id} onClick={()=>navigate(`/products/${id}`)}>
                                                             <img src={`${import.meta.env.VITE_API_URL}/uploads/${images[0]}`} alt="images" width={70} className="rounded-md mr-3"/>
                                                             <div className="flex flex-col w-full">
@@ -290,29 +291,29 @@ const Navbar:React.FC = () => {
                                     <DropdownMenuTrigger className="flex items-center justify-center w-full text-sm font-semibold py-5">Categories<ChevronDown width={15} height={15} className="m-1"/></DropdownMenuTrigger>
                                     <DropdownMenuContent className="w-screen text-center">
                                         <DropdownMenuItem className="w-screen">
-                                            <SheetClose asChild>
+                                            
                                             <Link className='w-full' to="category/electronics">Electronics</Link>
-                                            </SheetClose>
+
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="w-screen">
-                                            <SheetClose asChild>
+                                            
                                             <Link className='w-full' to="category/health-and-fitness">Health & Fitness</Link>
-                                            </SheetClose>
+
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="w-screen">
-                                            <SheetClose asChild>
+                                            
                                             <Link className='w-full' to="category/furnitures">Furnitures</Link>
-                                            </SheetClose>
+
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="w-screen">
-                                            <SheetClose asChild>
+                                            
                                             <Link className='w-full' to="category/accessories">Accessories</Link>
-                                            </SheetClose>
+
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="w-screen">
-                                            <SheetClose asChild>
+                                            
                                             <Link className='w-full' to="category/clothing">Clothing</Link>
-                                            </SheetClose>
+
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -337,29 +338,29 @@ const Navbar:React.FC = () => {
                         <DropdownMenuTrigger className="flex items-center text-sm font-semibold py-1 px-3">Categories<ChevronDown width={15} height={15} className="m-1"/></DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <DropdownMenuItem>
-                                <SheetClose>
+                            
                                 <Link className='w-full' to="category/electronics">Electronics</Link>
-                                </SheetClose>
+                            
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <SheetClose>
+                               
                                 <Link className='w-full' to="category/health-and-fitness">Health & Fitness</Link>
-                                </SheetClose>
+                            
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <SheetClose>
+                               
                                 <Link className='w-full' to="category/furnitures">Furnitures</Link> 
-                                </SheetClose>
+                            
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <SheetClose>
+                               
                                 <Link className='w-full' to="category/accessories">Accessories</Link>
-                                </SheetClose>
+                            
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <SheetClose>
+                               
                                 <Link className='w-full' to="category/clothing">Clothing</Link>
-                                </SheetClose>
+                            
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -391,7 +392,7 @@ const Navbar:React.FC = () => {
                         {
                         searchModal ? 
                             <div className="w-[300px] bg-slate-100 absolute top-20 rounded-xl  z-10">
-                                {searchResults?.map(({id, name, price, images}: any) => (
+                                {searchResults?.map(({id, name, price, images}) => (
                                     <div className="w-full h-24 p-3 my-3 flex cursor-pointer z-10 hover:bg-green-600 rounded-md" key={id} onClick={()=>navigate(`/products/${id}`)}>
                                         <img src={`${import.meta.env.VITE_API_URL}/uploads/${images[0]}`} alt="images" width={70} className="rounded-md mr-3"/>
                                         <div className="flex flex-col w-full">
@@ -503,12 +504,12 @@ const Navbar:React.FC = () => {
                                 
                             </div>
                             <div className='container flex justify-between py-4'>
-                                <DialogClose>
+                                <SheetClose>
                                     <Button variant="outline" className='rounded-3xl w-50'>Cancel</Button>
-                                </DialogClose>
-                                <DialogClose>
+                                </SheetClose>
+                                <SheetClose>
                                     <Button className='rounded-3xl w-50' onClick={()=>navigate("/checkout")}>Checkout</Button>
-                                </DialogClose>
+                                </SheetClose>
                             </div>
                         </SheetContent>
                     </Sheet>

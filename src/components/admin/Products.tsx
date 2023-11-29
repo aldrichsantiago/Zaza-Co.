@@ -49,6 +49,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import axios from "@/api/axios"
 import { DialogClose } from "@radix-ui/react-dialog"
 import { useNavigate } from "react-router-dom"
+import { AxiosResponse } from "axios"
  
  
 export type Product = {
@@ -472,7 +473,7 @@ const Products = () => {
     const controller = new AbortController();
     const getProducts = async() => {
       try {
-        const response: any = await axiosPrivate.get(`/products`, { 
+        const response: AxiosResponse = await axiosPrivate.get(`/products`, { 
           signal: controller.signal
         });
         setData(response.data)
@@ -563,7 +564,7 @@ const Products = () => {
                       <div>
                         <h2>Selected Files:</h2>
                         <ul>
-                          {selectedFiles.map((file: { name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined }, index: number ) => (
+                          {selectedFiles.map((file: { name: string | number | boolean | ReactElement<unknown, string | JSXElementConstructor<unknown>> | Iterable<ReactNode> | ReactPortal | null | undefined }, index: number ) => (
                             <li key={index} 
                               className="flex justify-between">
                                 {file.name} 
