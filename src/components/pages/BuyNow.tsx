@@ -27,10 +27,12 @@ import { useToast } from '../ui/use-toast'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const BuyNow: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const productsArr:any = [];
   const navigate = useNavigate();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [product, setProduct]: any = useState()
-  let { productId, itemQuantity } = useParams();
+  const { productId, itemQuantity } = useParams();
   
   
   useEffect(()=>{
@@ -40,11 +42,12 @@ const BuyNow: React.FC = () => {
   }, [])
   
   console.log(product);
-  let checkoutSubtotal = product?.itemCountCart * product?.price;
+  const checkoutSubtotal = product?.itemCountCart * product?.price;
   const eachProduct = {productId: product?.id, productQuantity: product?.itemCountCart}
   productsArr.push(eachProduct)
 
   const { auth }:UseAuthProps = useAuth();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [paymentInfo, setPaymentInfo]: any = useState({
     subtotal: checkoutSubtotal.toFixed(2),
     shippingAmount: (checkoutSubtotal/8).toFixed(2),
@@ -54,6 +57,7 @@ const BuyNow: React.FC = () => {
   })
   const { toast } = useToast()
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { response }: any|null = useAxios({
     url:`/user/username/${auth.username}`,
     method: 'get'
@@ -186,6 +190,7 @@ const BuyNow: React.FC = () => {
     e.preventDefault();
     const fieldName = e.target.getAttribute("name");
     const fieldValue = e.target.value;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newFormData: any = { ...paymentInfo };
     fieldName ? newFormData[fieldName] = fieldValue : ""
     setPaymentInfo(newFormData)
