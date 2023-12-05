@@ -218,7 +218,7 @@ const Checkout: React.FC = () => {
             return(
             <div className="w-full flex flex-col gap-5" key={product.id}>
               <div className="w-full h-56 flex justify-between bg-slate-50 rounded-lg border">
-                <img src={`http://localhost:8000/uploads/${product.images[0]}`} alt="product1" className='w-1/5 ml-8 m-3 rounded-3xl'/>
+                <img src={`${import.meta.env.VITE_API_URL}/uploads/${product.images[0]}`} alt="product1" className='w-1/5 ml-8 m-3 rounded-3xl'/>
                 <div className="w-2/3 flex flex-col flex-wrap px-5 py-5">
                   <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
                     {product.name}
