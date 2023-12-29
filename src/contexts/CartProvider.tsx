@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PropsWithChildren, createContext, useEffect, useState } from 'react'
 import { useToast } from '@/components/ui/use-toast';
 import axios from '@/api/axios';
@@ -10,7 +11,7 @@ const CartContext = createContext({});
 
 export interface UseCartProps {
     cart?: any[] 
-    setCart?: React.Dispatch<React.SetStateAction<{}>>,
+    setCart?: React.Dispatch<React.SetStateAction<object>>,
     addToCart?: (id: number, ...args: number[]) => void,
     handleDecrement?: (id: number) => void, 
     handleIncrement?: (id: number) => void, 
@@ -26,8 +27,8 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
     
 
     const addToCart = async(id:number, ...args: number[]) => {
-        let itemCount = args[0];
-        let contextCart:{id: number, itemCountCart: number}[] = [];
+        const itemCount = args[0];
+        const contextCart:{ id: number, itemCountCart: number }[] = [];
 
         console.log("AUTH " + auth.cart)
         
@@ -38,32 +39,29 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
         console.log(cart);
         console.log(cartProduct);
         if (cartProduct?.id === res.data[0].id) {
-          let cartFiltered = cart.filter((prod)=> prod.id !== id)
-          cart.forEach(element => {
+          const cartFiltered = cart.filter( prod => prod.id !== id)
+          cart.forEach( element => {
             contextCart.push({id: element.id, itemCountCart: element.itemCountCart})
           });
-          let contextCartFiltered = contextCart.filter((prod: {id:number})=> prod.id !== id)
+          const contextCartFiltered = contextCart.filter(( prod: {id:number} )=> prod.id !== id)
           console.log(contextCartFiltered);
           
-          if (cartProduct.stocks > cartProduct.itemCountCart){
+          if (cartProduct.stocks > cartProduct.itemCountCart) {
             if(itemCount){
               if(cartProduct.stocks < cartProduct.itemCountCart + itemCount){
                 const cartToPost = {cart: [...contextCartFiltered, {id: cartProduct.id, itemCountCart: cartProduct.stocks}]}
                 axios.post(`/username/${auth.username}/cart`, cartToPost)
-                .then(res=> console.log(res.data.message))
-                .catch(e=> console.error(e))
+                .then( res => console.log(res.data.message) )
+                .catch( e => console.error(e) )
                 setCart([...cartFiltered, {...cartProduct, itemCountCart: cartProduct.stocks}])
-
-
-                toast({variant: "destructive", description: "You've achieve the maximum amount of this product!",})
+                toast({ variant: "destructive", description: "You've achieve the maximum amount of this product!" })
               } else {
 
-                const cartToPost = {cart: [...contextCartFiltered, {id: cartProduct.id, itemCountCart: cartProduct.itemCountCart+itemCount}]}
+                const cartToPost = {cart: [...contextCartFiltered, {id: cartProduct.id, itemCountCart: itemCount + cartProduct.itemCountCart}]}
                 axios.post(`/username/${auth.username}/cart`, cartToPost)
                 .then(res=> console.log(res.data.message))
                 .catch(e=> console.error(e))
-                setCart([...cartFiltered, {...cartProduct, itemCountCart: cartProduct.itemCountCart+itemCount }])
-
+                setCart([...cartFiltered, {...cartProduct, itemCountCart:itemCount + cartProduct.itemCountCart}])
                 toast({description: "Product(s)  has been added to cart",})
               }
             } else {
@@ -80,21 +78,35 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
             toast({variant: "destructive", description: "You've achieve the maximum amount of this product!",})
           }
         } else {
-          cart.forEach(element => {
-            contextCart.push({id: element.id, itemCountCart: element.itemCountCart})
-          });
-          let contextCartFiltered = contextCart.filter((prod: {id:number})=> prod.id !== id)
-          const cartToPost = {cart: [...contextCartFiltered, {id: id, itemCountCart: 1}]}
 
-          axios.post(`/username/${auth.username}/cart`, cartToPost)
-          .then(res=> console.log(res.data.message))
-          .catch(e=> console.error(e))
+          if (itemCount) {
+            cart.forEach(element => {
+              contextCart.push({id: element.id, itemCountCart: element.itemCountCart})
+            });
+            const contextCartFiltered = contextCart.filter((prod: {id:number})=> prod.id !== id)
+            const cartToPost = {cart: [...contextCartFiltered, {id: id, itemCountCart: itemCount}]}
+  
+            axios.post(`/username/${auth.username}/cart`, cartToPost)
+            .then(res=> console.log(res.data.message))
+            .catch(e=> console.error(e))
+  
+            setCart([...cart, {...res.data[0], itemCountCart:itemCount}])
+            toast({description: "Product(s)  has been added to cart",});
 
-          setCart([...cart, {...res.data[0], itemCountCart:1}])
-          toast({description: "Product(s)  has been added to cart",})
+          } else {
+            cart.forEach(element => {
+              contextCart.push({id: element.id, itemCountCart: element.itemCountCart})
+            });
+            const contextCartFiltered = contextCart.filter((prod: {id:number})=> prod.id !== id)
+            const cartToPost = {cart: [...contextCartFiltered, {id: id, itemCountCart: 1}]}
 
+            axios.post(`/username/${auth.username}/cart`, cartToPost)
+            .then(res=> console.log(res.data.message))
+            .catch(e=> console.error(e))
 
-          
+            setCart([...cart, {...res.data[0], itemCountCart:1}])
+            toast({description: "Product(s)  has been added to cart",}) 
+          }
         }
 
         // if(selectedProduct.id === id){
@@ -130,14 +142,14 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
 
 
       const handleIncrement = (id: number) => {
-        let contextCart:{id: number, itemCountCart: number}[] = [];
+        const contextCart:{id: number, itemCountCart: number}[] = [];
         const cartProduct = cart.find((product: { id: number }) => product.id == id);
         if (cartProduct.id  === id) {
-          let cartFiltered = cart.filter((prod)=> prod.id !== id)
+          const cartFiltered = cart.filter((prod)=> prod.id !== id)
           cart.forEach(element => {
             contextCart.push({id: element.id, itemCountCart: element.itemCountCart})
           });
-          let contextCartFiltered = contextCart.filter((prod: {id:number})=> prod.id !== id)
+          const contextCartFiltered = contextCart.filter((prod: {id:number})=> prod.id !== id)
           if (cartProduct.stocks > cartProduct.itemCountCart){
             const cartToPost = {cart: [...contextCartFiltered, {id: cartProduct.id, itemCountCart: cartProduct.itemCountCart+1}]}
             axios.post(`/username/${auth.username}/cart`, cartToPost)
@@ -165,14 +177,14 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
     
       const handleDecrement = (id: number) => {
 
-        let contextCart:{id: number, itemCountCart: number}[] = [];
+        const contextCart:{id: number, itemCountCart: number}[] = [];
         const cartProduct = cart.find((product: { id: number }) => product.id == id);
         if (cartProduct.id  === id) {
-          let cartFiltered = cart.filter((prod)=> prod.id !== id)
+          const cartFiltered = cart.filter((prod)=> prod.id !== id)
           cart.forEach(element => {
             contextCart.push({id: element.id, itemCountCart: element.itemCountCart})
           });
-          let contextCartFiltered = contextCart.filter((prod: {id:number})=> prod.id !== id)
+          const contextCartFiltered = contextCart.filter((prod: {id:number})=> prod.id !== id)
           if (1 < cartProduct.itemCountCart){
             const cartToPost = {cart: [...contextCartFiltered, {id: cartProduct.id, itemCountCart: cartProduct.itemCountCart-1}]}
             axios.post(`/username/${auth.username}/cart`, cartToPost)
@@ -199,11 +211,11 @@ export const CartProvider = ({ children }:PropsWithChildren ) => {
       }
     
       const removeFromCart = (id: number) => {
-        let contextCart:{id: number, itemCountCart: number}[] = [];
+        const contextCart:{id: number, itemCountCart: number}[] = [];
         cart.forEach(element => {
           contextCart.push({id: element.id, itemCountCart: element.itemCountCart})
         });
-        let contextCartFiltered = contextCart.filter((prod: {id:number})=> prod.id !== id)
+        const contextCartFiltered = contextCart.filter((prod: {id:number})=> prod.id !== id)
         const cartFiltered = cart.filter((prod)=> prod.id !== id);
 
         const cartToPost = {cart: [...contextCartFiltered]}
